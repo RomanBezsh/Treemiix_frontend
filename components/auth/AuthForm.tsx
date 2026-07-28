@@ -27,12 +27,6 @@ const AuthForm = () => {
   const changeMode = () => isLogin? setIsLogin(false) : setIsLogin(true)
   
 
-
-
-
-
-
-
   const isValidEmail = (email: string): boolean => {
     const emailRegex = /^[a-zA-C0-9._%+-]+@[a-zA-C0-9.-]+\.[a-zA-C0-9]{2,}$/i;
     return emailRegex.test(email.trim());
