@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'cdn.new-brz.net',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com', // <-- Добавь эту строчку
+      },
     ],
   },
 };
