@@ -50,18 +50,16 @@ const CategoryQuadItem = ({ title, imageSrc, href }: Omit<QuadItem, "id">) => {
       href={href}
       className="flex flex-col p-3 w-38 h-38 bg-white rounded-[16px] shadow-[0px_2px_4px_0px_#0000001A] hover:shadow-md transition-shadow group overflow-hidden cursor-pointer"
     >
-      {/* Название товара */}
       <span className="text-[12px] font-light text-[#333333] line-clamp-1 mb-2">
         {title}
       </span>
 
-      {/* Обертка для картинки */}
       <div className="relative w-full flex-1 overflow-hidden flex items-center justify-center p-1">
         <Image
           src={imageSrc}
           alt={title}
           fill
-          className="object-contain group-hover:scale-105 transition-transform duration-200"
+          className="object-contain"
         />
       </div>
     </Link>

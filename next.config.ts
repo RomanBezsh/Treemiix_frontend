@@ -1,18 +1,29 @@
-import type { NextConfig } from 'next';
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'cdn.new-brz.net',
+        hostname: 'images.samsung.com',
       },
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com', // <-- Добавь эту строчку
+        hostname: 'i01.appmifile.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'row.hyperx.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.new-brz.net',
       },
     ],
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
