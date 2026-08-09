@@ -1,9 +1,12 @@
 import CategoryCard from "@/components/home/CategoryCard";
 import CategoryQuadCard from "@/components/home/CategoryQuadCard";
 import HeroBanner from "@/components/home/HeroBanner";
-import { HorizontalProductCardProps } from "@/components/home/HorizontalProductCard";
-import PopularProductsSection from "@/components/home/PopularProductsSection";
 import PromoBanner from "@/components/home/PromoBanner";
+
+
+
+
+
 
 const nikeSaleItems = [
   {
@@ -32,24 +35,7 @@ const nikeSaleItems = [
   },
 ];
 
-const popularProductsData: HorizontalProductCardProps[] = [
-  {
-    imageSrc: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80", // Планшет
-    title: 'Tablet Samsung Galaxy Tab A7 Lite 8,7" LTE 3/32Gb Gray',
-    price: 530,
-  },
-  {
-    imageSrc: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500&q=80", // Смартфон
-    title: "Smartphone Xiaomi 11T 8/128Gb Celestial Blue",
-    price: 530,
-  },
-  {
-    imageSrc: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500&q=80", // Наушники
-    title: "Gaming Headset HyperX Cloud Alpha (HX-HSCA-RD/EE)",
-    price: 530,
-    isLastItem: true,
-  },
-];
+
 
 export default function Home() {
   return (
@@ -69,7 +55,6 @@ export default function Home() {
           moreHref="/catalog/nike"
           items={nikeSaleItems}
         />
-        <PopularProductsSection href="/catalog/popular" items={popularProductsData} />
       </div>
     </div>
   );
