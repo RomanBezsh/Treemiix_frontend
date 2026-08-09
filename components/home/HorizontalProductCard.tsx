@@ -9,8 +9,11 @@ export interface HorizontalProductCardProps {
 
 const HorizontalProductCard = ({ imageSrc, title, price, isLastItem }: HorizontalProductCardProps) => {
   return (
-    <div className={"flex flex-row items-start gap-4 "}>
-      <div className="relative w-43.5 h-43 rounded-[10px] bg-[#F8F8F8] flex items-center justify-center shadow-[0px_2px_4px_0px_#00000033]">
+    <div
+      className={`flex flex-row items-start gap-4 transition-colors ${isLastItem ? "bg-[#F8F8F8] rounded-[10px] shadow-[0px_2px_4px_0px_#00000033]" : ""
+        }`}
+    >
+      <div className={`relative w-43.5 h-43   flex items-center justify-center ${!isLastItem ? "shadow-[0px_2px_4px_0px_#00000033] rounded-[10px] bg-[#F8F8F8]" : ""}`}>
         <Image
           src={imageSrc}
           alt={title}

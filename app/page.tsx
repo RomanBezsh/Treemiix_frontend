@@ -1,12 +1,12 @@
 import CategoryCard from "@/components/home/CategoryCard";
 import CategoryQuadCard from "@/components/home/CategoryQuadCard";
 import HeroBanner from "@/components/home/HeroBanner";
+import { HorizontalProductCardProps } from "@/components/home/HorizontalProductCard";
+import PopularCategoriesSection from "@/components/home/PopularCategoriesSection";
+import { PopularCategoryTileProps } from "@/components/home/PopularCategoryTile";
+import PopularProductsSection from "@/components/home/PopularProductsSection";
+import ProductCarouselSection from "@/components/home/ProductCarouselSection";
 import PromoBanner from "@/components/home/PromoBanner";
-
-
-
-
-
 
 const nikeSaleItems = [
   {
@@ -35,11 +35,46 @@ const nikeSaleItems = [
   },
 ];
 
+const popularProductsData: HorizontalProductCardProps[] = [
+  {
+    imageSrc: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80", // Планшет
+    title: 'Tablet Samsung Galaxy Tab A7 Lite 8,7" LTE 3/32Gb Gray',
+    price: 530,
+  },
+  {
+    imageSrc: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500&q=80", // Смартфон
+    title: "Smartphone Xiaomi 11T 8/128Gb Celestial Blue",
+    price: 530,
+  },
+  {
+    imageSrc: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500&q=80", // Наушники
+    title: "Gaming Headset HyperX Cloud Alpha (HX-HSCA-RD/EE)",
+    price: 530,
+    isLastItem: true,
+  },
+];
 
+const popularCategoriesData: PopularCategoryTileProps[] = [
+  {
+    category: "Wrist Watch",
+    imageSrc: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80",
+    href: "/catalog/watches",
+  },
+  {
+    category: "Home decor",
+    imageSrc: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&q=80",
+    href: "/catalog/home-decor",
+  },
+  {
+    category: "Notebook",
+    imageSrc: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&q=80",
+    href: "/catalog/notebooks",
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black ">
+    <div className="flex flex-col flex-1 items-center justify-center font-sans mb-100">
       <img className="w-full object-cover" src="/background/main.jpg" alt="Logo" />
 
       <div className="relative z-10 -mt-43">
@@ -55,6 +90,9 @@ export default function Home() {
           moreHref="/catalog/nike"
           items={nikeSaleItems}
         />
+        <PopularProductsSection href="/catalog/popular" items={popularProductsData} />
+        <PopularCategoriesSection href="/catalog/popular-categories" items={popularCategoriesData} />
+        <ProductCarouselSection title="Home Decor Under $20" href="/catalog/home-decor" />
       </div>
     </div>
   );
