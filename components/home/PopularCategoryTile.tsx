@@ -18,7 +18,7 @@ const PopularCategoryTile = ({
         alt={category}
         width={432}
         height={378}
-        className="absolute mt-[70px] -right-1/4 h-[378px] w-[432px] object-cover"
+        className="absolute mt-17.5 -right-1/4 h-[378px] w-[432px] object-cover"
       />
 
       <h3 className="absolute bottom-4 left-4 text-[22px] font-normal text-[#333333]">
