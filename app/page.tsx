@@ -5,6 +5,7 @@ import {
   popularCategoriesData,
   popularProductsData,
 } from "@/components/common/mockData";
+import AuthBanner from "@/components/home/AuthBanner";
 import CategoryCard from "@/components/home/CategoryCard";
 import CategoryQuadCard from "@/components/home/CategoryQuadCard";
 import HeroBanner from "@/components/home/HeroBanner";
@@ -37,6 +38,7 @@ export default function Home() {
           href="/catalog/home-decor"
           products={homeDecorUnder20Products}
         />
+        <AuthBanner />
       </div>
     </div>
   );
