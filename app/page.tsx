@@ -1,11 +1,13 @@
 import Carousel from "@/components/common/Carousel";
 import {
+  carouselCardProducts,
   homeDecorUnder20Products,
   nikeSaleItems,
   popularCategoriesData,
   popularProductsData,
 } from "@/components/common/mockData";
 import AuthBanner from "@/components/home/AuthBanner";
+import CarouselCard from "@/components/home/CarouselCard";
 import CategoryCard from "@/components/home/CategoryCard";
 import CategoryQuadCard from "@/components/home/CategoryQuadCard";
 import HeroBanner from "@/components/home/HeroBanner";
@@ -39,6 +41,12 @@ export default function Home() {
           products={homeDecorUnder20Products}
         />
         <AuthBanner />
+        <CarouselCard
+          title="Featured products"
+          imageSrc={carouselCardProducts[0].imageSrc}
+          href="/catalog/featured"
+          items={carouselCardProducts}
+        />
       </div>
     </div>
   );

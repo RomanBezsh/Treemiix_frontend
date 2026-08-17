@@ -35,3 +35,9 @@ export const homeDecorUnder20Products: Product[] = [
   { id: "home-decor-4", title: "Decorative Pillow", imageSrc: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=500&q=80", price: 19.99 },
   { id: "home-decor-5", title: "Table Lamp", imageSrc: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500&q=80", price: 17.5 },
 ];
+
+export const carouselCardProducts: Product[] = [
+  { id: "carousel-card-1", title: "Wireless Headphones", imageSrc: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80", price: 13 },
+  { id: "carousel-card-2", title: "Smart Watch", imageSrc: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80", price: 18.5 },
+  { id: "carousel-card-3", title: "Portable Speaker", imageSrc: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500&q=80", price: 16.99 },
+];
