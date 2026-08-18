@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 const AuthBanner = () => {
   return (
-    <div className="relative w-[1532px] h-[282px] overflow-hidden rounded-[24px]">
+    <div className="relative w-[1532px] h-[282px] overflow-hidden rounded-[24px] mb-5">
       <div className="absolute h-[281.6px] w-[1920px] left-[-194px] top-0 bg-[linear-gradient(90deg,#9FA6B8_0%,#496B94_100%)]" />
 
       <div className="absolute w-[712.91px] h-[833.69px] left-[766px] top-[-363.51px] rounded-[60px] backdrop-blur-[10px] bg-[rgba(216,204,208,0.5)] shadow-[0px_7px_4px_rgba(0,0,0,0.25)] rotate-45" />

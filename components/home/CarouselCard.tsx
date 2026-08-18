@@ -32,7 +32,7 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
   };
 
   return (
-    <div className="flex flex-col w-92 h-115 rounded-[20px] justify-between pt-6 px-7.5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033]">
+    <div className="flex flex-col w-92 h-115 rounded-[20px] justify-between pt-6 pb-2.75 px-7.5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033]">
 
       <div className="flex flex-row justify-between items-center mb-3.5">
         <h2 className="text-[24px] font-semibold">{title}</h2>

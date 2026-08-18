@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { PopularCategoryTileProps } from "./PopularCategoryTile";
-import PopularCategoryTile from "./PopularCategoryTile";
+import PopularCategoryTile, { PopularCategoryTileProps } from "./PopularCategoryTile";
 
 
 interface PopularCategoriesSectionProps {
@@ -11,7 +10,7 @@ interface PopularCategoriesSectionProps {
 
 const PopularCategoriesSection = ({ href, items }: PopularCategoriesSectionProps) => {
   return (
-    <div className="flex flex-col w-164.75 h-158.75">
+    <div className="flex flex-col w-213.25  h-158.75">
       <div className="flex flex-row justify-between items-center mb-7">
         <h2 className="text-2xl font-semibold text-[#333333]">Most popular categories of the week</h2>
         <Link className="flex flex-row items-center" href={href}>
