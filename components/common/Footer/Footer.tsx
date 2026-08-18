@@ -58,11 +58,34 @@ const mobileFooterLinks = [
 
 export default function Footer() {
   return (
-    <footer className="w-full font-[var(--font-roboto)] text-white">
-      {/* Back to top section */}
+    <footer className="w-full font-[var(--font-roboto)]">
+      {/* Personalized recommendations */}
+      <section className="hidden border-y border-[#D5D9D9] bg-white py-[26px] md:block">
+        <div className="mx-auto flex flex-col items-center">
+          <p className="mb-[10px] text-center text-[14px] font-normal leading-[130%] text-[#565959]">
+            See personalized recommendations
+          </p>
+
+          <Link
+            href="/auth"
+            className="flex h-[48px] w-[386px] items-center justify-center rounded-[49px] bg-[#F5AD69] text-center text-[24px] font-light leading-[130%] text-white"
+          >
+            Sign in
+          </Link>
+
+          <p className="mt-[8px] text-center text-[14px] font-medium leading-[130%] text-[#333333]">
+            New Customer?{" "}
+            <Link href="/auth" className="text-[#FFA95A]">
+              Start here.
+            </Link>
+          </p>
+        </div>
+      </section>
+
+      {/* Back to top */}
       <a
         href="#top"
-        className="flex h-[42px] w-full items-center justify-center bg-[#49516D] text-[20px] font-SemiBold text-white"
+        className="flex h-[42px] w-full items-center justify-center bg-[#49516D] text-[20px] font-semibold text-white"
       >
         Back to top
       </a>
