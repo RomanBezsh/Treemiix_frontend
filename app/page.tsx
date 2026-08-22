@@ -1,11 +1,4 @@
 import Carousel from "@/components/common/Carousel";
-import {
-  carouselCardProducts,
-  homeDecorUnder20Products,
-  nikeSaleItems,
-  popularCategoriesData,
-  popularProductsData,
-} from "@/components/common/mockData";
 import AuthBanner from "@/components/home/AuthBanner";
 import CarouselCard from "@/components/home/CarouselCard";
 import CategoryCard from "@/components/home/CategoryCard";
@@ -14,6 +7,13 @@ import HeroBanner from "@/components/home/HeroBanner";
 import PopularCategoriesSection from "@/components/home/PopularCategoriesSection";
 import PopularProductsSection from "@/components/home/PopularProductsSection";
 import PromoBanner from "@/components/home/PromoBanner";
+import {
+  carouselCardProducts,
+  homeDecorUnder20Products,
+  nikeSaleItems,
+  popularCategoriesData,
+  popularProductsData,
+} from "@/data/mockData";
 
 export default function Home() {
   return (
