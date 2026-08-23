@@ -1,9 +1,9 @@
 'use client';
 import ActiveFiltersBar from "@/components/catalog/ActiveFiltersBar";
 import { CategoryHeader } from "@/components/catalog/CategoryHeader";
+import Pagination from "@/components/catalog/Pagination";
 import ProductCard from "@/components/catalog/ProductCard";
 import { useState } from "react";
-
 
 const Catalog = () => {
 
@@ -23,7 +23,8 @@ const Catalog = () => {
           onRemove: () => { console.log(chip.id) },
         }))}
       />
-      <ProductCard title="Product" stars={3} priceSale={555} priceOriginal={999} shipTo="Потужностан" />
+      <ProductCard title="Product" stars={3} priceSale={555} priceOriginal={999} shipTo="Потужностан" imageSrc={""} />
+      <Pagination />
     </div>
   );
 };
