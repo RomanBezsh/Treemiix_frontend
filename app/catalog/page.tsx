@@ -15,19 +15,34 @@ const Catalog = () => {
 
 
   return (
-    <div className="">
-      <CategoryHeader title="Catalog" description="Browse our collection of products." />
-      <ActiveFiltersBar
-        selected={26}
-        chips={chips.map((chip) => ({
-          label: chip.label,
-          onRemove: () => { console.log(chip.id) },
-        }))}
-      />
-      <ProductCard title="Product" stars={3} priceSale={555} priceOriginal={999} shipTo="Потужностан" imageSrc={""} />
-      <Pagination />
-      <Filter/>
+    <div className="flex flex-col items-center">
+      <div className="flex flex-row  ml-12.5 mr-24.25 gap-23.25">
+        <Filter />
+        <div className="flex flex-col justify-center ">
+          <CategoryHeader title="Catalog" description="Browse our collection of products." />
+          <ActiveFiltersBar
+            selected={26}
+            chips={chips.map((chip) => ({
+              label: chip.label,
+              onRemove: () => { console.log(chip.id) },
+            }))}
+          />
+          <div className="grid grid-cols-5 gap-5 mb-10">
+            {Array.from({ length: 20 }, (_, index) => {
+              return (
+                <ProductCard title="Product" stars={3} priceSale={555} priceOriginal={999} shipTo="Потужностан" imageSrc={""} />
+              );
+            })}
+          </div>
+          <Pagination />
+        </div>
+
+
+
+
+      </div>
     </div>
+
   );
 };
 
