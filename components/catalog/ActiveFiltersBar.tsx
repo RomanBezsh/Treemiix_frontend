@@ -14,7 +14,7 @@ interface Chip {
 const FilterChip = ({ label, onRemove }: Chip) => (
   <button
     onClick={onRemove}
-    className="rounded-[50px] bg-[linear-gradient(107.53deg,#7E8CBD_34.61%,#CE9AD7_106.51%)] p-0.75"
+    className="rounded-[50px] bg-[linear-gradient(107.53deg,#7E8CBD_34.61%,#CE9AD7_106.51%)] p-0.75 mr-2"
   >
     <div className="flex items-center gap-1.5 rounded-[50px] bg-white px-3 py-1">
       <span className="bg-[linear-gradient(107.53deg,#7E8CBD_34.61%,#CE9AD7_106.51%)] bg-clip-text text-transparent text-sm font-medium">
@@ -30,11 +30,11 @@ const FilterChip = ({ label, onRemove }: Chip) => (
 
 const ActiveFiltersBar = ({ selected, chips }: ActiveFiltersBarProps) => {
   return (
-    <div className="flex items-center">
-      <span className="text-[#333333] text-2xl">
+    <div className="flex items-center mb-17.75">
+      <span className="text-[#333333] text-2xl mr-5">
         {selected} <span className="text-[#2D2D2D] text-sm">Item selected</span>
       </span>
-      <button className="bg-[#B3B3B3] px-6 py-1  rounded-full shadow-[0px_2px_4px_0px_#00000033] ">
+      <button className="bg-[#B3B3B3] px-6 py-1  rounded-full shadow-[0px_2px_4px_0px_#00000033] mr-2">
         <span className="text-[18px] text-[#FFFFFF] drop-shadow-[0px_2px_4px_0px_#00000033]">Reset</span>
       </button>
       {chips?.map((chip, index) => (
