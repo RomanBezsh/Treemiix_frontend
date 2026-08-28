@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const Pagination = () => {
   return (
-    <div className="flex flex-row gap-1.5">
+    <div className="flex flex-row gap-1.5 mx-auto">
       <PaginationControl isPrevious />
       <PaginationControl page={1} />
       <PaginationControl page={2} />
