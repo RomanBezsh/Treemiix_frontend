@@ -14,7 +14,7 @@ const SortSelect = () => {
   const [selected, setSelected] = useState('Featured');
 
   return (
-    <div className="relative align-middle h-7.5 w-[210px]">
+    <div className="relative align-middle h-7.5 w-[210px] ml-auto">
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
