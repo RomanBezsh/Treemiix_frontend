@@ -41,7 +41,7 @@ const cardTypes = [
 
 export default function CardTypesGrid() {
   return (
-    <div className="grid grid-cols-1 gap-x-[18px] gap-y-[48px] md:grid-cols-2 lg:grid-cols-6">
+    <div className="grid grid-cols-1 gap-x-[18px] gap-y-[36px] sm:grid-cols-2 lg:grid-cols-6 lg:gap-y-[48px]">
       {cardTypes.map((card) => (
         <Link
           key={card.title}
@@ -60,12 +60,12 @@ export default function CardTypesGrid() {
           </div>
 
           {/* Card title */}
-          <h3 className="mt-[12px] text-[24px] font-medium leading-[150%] text-[#333333]">
+          <h3 className="mt-[10px] text-[20px] font-medium leading-[140%] text-[#333333] sm:text-[22px] lg:mt-[12px] lg:text-[24px] lg:leading-[150%]">
             {card.title}
           </h3>
 
-          {/* Card description */}
-          <p className="mt-[8px] text-[18px] font-normal leading-[150%] text-[#333333]/80">
+          {/* Description */}
+          <p className="mt-[6px] text-[15px] font-normal leading-[145%] text-[#333333]/80 sm:text-[16px] lg:mt-[8px] lg:text-[18px] lg:leading-[150%]">
             {card.description}
           </p>
         </Link>

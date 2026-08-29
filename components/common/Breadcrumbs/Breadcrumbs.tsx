@@ -17,8 +17,8 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
       className="w-full font-[var(--font-roboto)]"
     >
       <ol className="flex flex-wrap items-center gap-[12px] text-[14px] text-[#8A8A8A]">
-        {/* Home link */}
-        <li className="flex items-center gap-[12px]">
+        {/* Home */}
+        <li className="flex items-center">
           <Link
             href="/"
             aria-label="Go to home page"
@@ -32,14 +32,6 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
               aria-hidden="true"
             />
           </Link>
-
-          <Image
-  src="/common/arrow_right_icon.svg"
-  alt=""
-  width={8}
-  height={12}
-  aria-hidden="true"
-/>
         </li>
 
         {/* Breadcrumb items */}
@@ -51,8 +43,22 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
               key={`${item.title}-${index}`}
               className="flex items-center gap-[12px]"
             >
+              {/* Arrow */}
+              <Image
+                src="/common/arrow_right_icon.svg"
+                alt=""
+                width={8}
+                height={12}
+                aria-hidden="true"
+                className="shrink-0"
+              />
+
+              {/* Item */}
               {item.href && !isLastItem ? (
-                <Link href={item.href} className="whitespace-nowrap">
+                <Link
+                  href={item.href}
+                  className="whitespace-nowrap transition-opacity hover:opacity-70"
+                >
                   {item.title}
                 </Link>
               ) : (
@@ -65,12 +71,6 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
                   aria-current={isLastItem ? "page" : undefined}
                 >
                   {item.title}
-                </span>
-              )}
-
-              {!isLastItem && (
-                <span aria-hidden="true" className="text-[#A3A3A3]">
-                  ›
                 </span>
               )}
             </li>
