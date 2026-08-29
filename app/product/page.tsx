@@ -1,10 +1,15 @@
 "use client"
+import ProductCard from "@/components/catalog/ProductCard";
 import Breadcrumbs from "@/components/common/Breadcrumbs/Breadcrumbs";
+import Carousel from "@/components/common/Carousel";
+import ProductDetails from "@/components/product/ProductDetails";
 import ProductMainSection from "@/components/product/ProductMainSection"
+import ProductPromotions from "@/components/product/ProductPromotions";
+import ProductSearchQuestions from "@/components/product/ProductSearchQuestions";
 
 const ProductPage = () => {
     return (
-        <div>
+        <div className="mb-50">
             <Breadcrumbs
                 items={[
                     {
@@ -25,7 +30,18 @@ const ProductPage = () => {
                 ]}
             />
             <ProductMainSection />
-
+            <div className="mb-29">
+                <Carousel title="More to consider from our brands">
+                    {Array.from({ length: 5 }, (_, index) => {
+                        return (
+                            <ProductCard imageSrc="https://www.gamescom.gr/images/detailed/597/20180305133128_hyperx_cloud_alpha.jpeg" key={index} title="Gaming Headset HyperX Cloud Stinger Black " stars={3} priceSale={555} priceOriginal={999} shipTo="Потужностан" imageSrc={""} />
+                        );
+                    })}
+                </Carousel>
+            </div>
+            <ProductPromotions />
+            <ProductSearchQuestions />
+            <ProductDetails />
         </div>
     );
 }
