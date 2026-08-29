@@ -5,7 +5,7 @@ interface ProductCardProps {
   title: string;
   priceOriginal?: number;
   priceSale: number;
-  imageSrc: string;
+  imageSrc?: string;
   stars: number;
   shipTo: string;
   isSale?: boolean;
@@ -37,15 +37,20 @@ const ProductCard = ({ title, priceOriginal, priceSale, imageSrc, stars, shipTo,
         </div>
       </div>
 
-      <Image
-        className="mb-8"
-        src={imageSrc}
-        alt={title}
-        width={199}
-        height={172}
-      />
+      <div className="relative flex items-center justify-center w-[199px] h-[172px]">
+        <Image
+          className="mb-8 max-w-full max-h-full object-contain"
+          src={
+            imageSrc ||
+            "https://www.gamescom.gr/images/detailed/597/20180305133128_hyperx_cloud_alpha.jpeg"
+          }
+          alt={title}
+          width={199}
+          height={172}
+        />
+      </div>
 
-      <h2 className="text-[18px] text-[#333333] mb-8">{title}</h2>
+      <h2 className="text-[18px] h-min-11 text-[#333333] mb-2.5">{title}</h2>
 
       <div className="flex flex-row gap-1.5 self-start mb-2.5">
         {Array.from({ length: 5 }, (_, index) => {
