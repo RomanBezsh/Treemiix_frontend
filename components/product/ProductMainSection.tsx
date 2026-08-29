@@ -239,17 +239,17 @@ const ProductInfo = ({
 
 
 interface ProductBuyBoxProps {
-    price: number;                      // 99.99
-    shippingPrice?: number;            // 47.21 (или 0, если бесплатная)
-    shippingDestination?: string;       // "Ukraine"
-    deliveryDateText?: string;          // "Thursday, February 17"
-    orderWithinText?: string;           // "31 mins"
-    locationText?: string;              // "Select delivery location"
-    initialQuantity?: number;          // По умолчанию 1
-    maxQuantity?: number;              // Ограничение по количеству (например, 10)
+    price: number;                      
+    shippingPrice?: number;           
+    shippingDestination?: string;      
+    deliveryDateText?: string;          
+    orderWithinText?: string;           
+    locationText?: string;              
+    initialQuantity?: number;          
+    maxQuantity?: number;              
     onAddToCart?: (quantity: number) => void;
     onBuyNow?: (quantity: number) => void;
-    isSecureTransaction?: boolean;     // true
+    isSecureTransaction?: boolean;    
 }
 
 const ProductBuyBox = ({
