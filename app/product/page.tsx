@@ -6,6 +6,7 @@ import ProductDetails from "@/components/product/ProductDetails";
 import ProductMainSection from "@/components/product/ProductMainSection"
 import ProductPromotions from "@/components/product/ProductPromotions";
 import ProductSearchQuestions from "@/components/product/ProductSearchQuestions";
+import VideoCarousel from "@/components/product/VideoCarousel";
 
 const ProductPage = () => {
     return (
@@ -42,6 +43,7 @@ const ProductPage = () => {
             <ProductPromotions />
             <ProductSearchQuestions />
             <ProductDetails />
+            <VideoCarousel />
         </div>
     );
 }
