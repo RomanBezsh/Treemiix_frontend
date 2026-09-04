@@ -77,9 +77,9 @@ interface VideoCardProps {
 
 const VideoCard = ({ imageSrc, duration, title, chanel }: VideoCardProps) => {
   return (
-    <div className="flex flex-col shrink-0 w-[360px] h-[403px] rounded-[20px] border-4 border-[#F8F8F8] shadow-[0px_2px_4px_#00000033] bg-white overflow-hidden">
+    <div className="flex flex-col shrink-0 w-90 h-100.75 rounded-[20px] border-4 border-[#F8F8F8] shadow-[0px_2px_4px_#00000033] bg-white overflow-hidden">
       
-      <div className="relative w-[360px] h-[268px] -mt-[4px] -ml-[4px]">
+      <div className="relative w-90 h-67 -mt-1 -ml-1">
         <Image
           src={
             imageSrc ||
@@ -89,14 +89,14 @@ const VideoCard = ({ imageSrc, duration, title, chanel }: VideoCardProps) => {
           fill
           className="object-cover"
         />
-        <span className="absolute flex justify-center items-center bg-[#828282] w-[56px] h-[26px] opacity-80 rounded-[10px] text-[#FFFFFF] text-sm font-medium shadow-[0px_2px_4px_#00000033] bottom-2.5 right-3.5 z-10">
+        <span className="absolute flex justify-center items-center bg-[#828282] w-14 h-6.5 opacity-80 rounded-[10px] text-[#FFFFFF] text-sm font-medium shadow-[0px_2px_4px_#00000033] bottom-2.5 right-3.5 z-10">
           {duration}
         </span>
       </div>
 
       <div className="flex flex-col flex-1 pt-3.5 px-3.5 pb-4">
         <h2 className="text-[#000000] text-lg mb-3 line-clamp-1">{title}</h2>
-        <span className="mt-auto flex justify-center items-center bg-[#F8F8F8] text-[#333333] w-[108px] h-[34px] rounded-[20px] shadow-[0px_2px_4px_#00000033]">
+        <span className="mt-auto flex justify-center items-center bg-[#F8F8F8] text-[#333333] w-27 h-8.5 rounded-[20px] shadow-[0px_2px_4px_#00000033]">
           {chanel}
         </span>
       </div>
