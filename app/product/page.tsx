@@ -8,6 +8,8 @@ import ProductPromotions from "@/components/product/ProductPromotions";
 import ProductSearchQuestions from "@/components/product/ProductSearchQuestions";
 import VideoCarousel from "@/components/product/VideoCarousel";
 import ProductQnASection from "@/components/product/ProductQnASection";
+import ReviewFilterChips from "@/components/product/ReviewFilterChips";
+import ProductReviewsSection from "@/components/product/ProductReviewsSection";
 
 const ProductPage = () => {
     return (
@@ -46,6 +48,8 @@ const ProductPage = () => {
             <ProductDetails />
             <VideoCarousel />
             <ProductQnASection />
+            <ReviewFilterChips />
+            <ProductReviewsSection />
         </div>
     );
 }

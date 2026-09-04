@@ -24,6 +24,27 @@ const ProductQnASection = () => {
                 <div>
                     <QnACard />
                 </div>
+                <div className="flex flex-row items-center gap-2.25">
+                    <button className="flex justify-center items-center w-[31px] h-[31px] text-[#F8F8F8] shadow-[0_2px_4px_#00000033] rounded-full">
+                        <Image
+                            src="/catalog/chewron_down.svg"
+                            width={19}
+                            height={19}
+                            alt="chewron"
+                            className="rotate-180 [filter:brightness(0)_invert(38%)_sepia(24%)_saturate(1190%)_hue-rotate(173deg)_brightness(94%)_contrast(88%)]"
+                        />
+                    </button>
+                    <button className="flex justify-center items-center w-[31px] h-[31px] text-[#F8F8F8] shadow-[0_2px_4px_#00000033] rounded-full">
+                        <Image
+                            src="/catalog/chewron_down.svg"
+                            width={19}
+                            height={19}
+                            alt="chewron"
+                            className="[filter:brightness(0)_invert(38%)_sepia(24%)_saturate(1190%)_hue-rotate(173deg)_brightness(94%)_contrast(88%)]"
+                        />
+                    </button>
+                    <button className="text-[#496B94] bg-[#F8F8F8] shadow-[0_2px_4px_#00000033] rounded-[20px]  h-7 w-[188px]">See more answers (2)</button>
+                </div>
             </div>
         </div>
     );
