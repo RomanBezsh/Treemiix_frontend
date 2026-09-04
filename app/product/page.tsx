@@ -7,6 +7,7 @@ import ProductMainSection from "@/components/product/ProductMainSection"
 import ProductPromotions from "@/components/product/ProductPromotions";
 import ProductSearchQuestions from "@/components/product/ProductSearchQuestions";
 import VideoCarousel from "@/components/product/VideoCarousel";
+import ProductQnASection from "@/components/product/ProductQnASection";
 
 const ProductPage = () => {
     return (
@@ -44,6 +45,7 @@ const ProductPage = () => {
             <ProductSearchQuestions />
             <ProductDetails />
             <VideoCarousel />
+            <ProductQnASection />
         </div>
     );
 }
