@@ -1,6 +1,12 @@
-import type { Product } from "./Carousel";
-import type { HorizontalProductCardProps } from "../home/HorizontalProductCard";
-import type { PopularCategoryTileProps } from "../home/PopularCategoryTile";
+import type { HorizontalProductCardProps } from "../components/home/HorizontalProductCard";
+import type { PopularCategoryTileProps } from "../components/home/PopularCategoryTile";
+
+type Product = {
+  id: string;
+  title: string;
+  imageSrc: string;
+  price: number;
+};
 
 type CategoryQuadItem = {
   id: string;
