@@ -41,7 +41,7 @@ const ProductPage = () => {
                 <Carousel title="More to consider from our brands">
                     {Array.from({ length: 5 }, (_, index) => {
                         return (
-                            <ProductCard imageSrc="https://www.gamescom.gr/images/detailed/597/20180305133128_hyperx_cloud_alpha.jpeg" key={index} title="Gaming Headset HyperX Cloud Stinger Black " stars={3} priceSale={555} priceOriginal={999} shipTo="Потужностан" imageSrc={""} />
+                            <ProductCard key={index} title="Gaming Headset HyperX Cloud Stinger Black " stars={3} priceSale={555} priceOriginal={999} shipTo="USA" imageSrc="https://content1.rozetka.com.ua/goods/images/big/62124885.jpg" />
                         );
                     })}
                 </Carousel>
