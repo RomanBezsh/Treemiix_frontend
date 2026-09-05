@@ -17,6 +17,11 @@ const ProductDetails = () => {
 }
 
 
+enum ValueType {
+  text = "text",
+  rating = "rating",
+}
+
 const sampleSpecs: SpecRowData[] = [
   { id: "1", label: "ASIN", value: "B074NBSF9N" },
   { id: "2", label: "Release date", value: "September 25, 2017" },
@@ -62,11 +67,6 @@ const ProductDescriptionText = ({ text }: ProductDescriptionTextProps) => {
             <p className="text-[#333333] w-[1690px]">{text}</p>
         </div>
     );
-}
-
-enum ValueType {
-  text = "text",
-  rating = "rating",
 }
 
 interface RatingValue {
