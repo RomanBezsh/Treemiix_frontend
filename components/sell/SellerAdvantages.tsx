@@ -18,9 +18,9 @@ const advantages = [
 export default function SellerAdvantages() {
   return (
     <section className="w-full bg-white">
-      <div className="mx-auto w-full max-w-[1440px] px-[40px] py-[80px] lg:px-[80px]">
+      <div className="mx-auto w-full max-w-[1440px] px-[20px] py-[60px] sm:px-[32px] lg:px-[80px] lg:py-[80px]">
         {/* Advantage images */}
-        <div className="flex w-full items-center justify-between gap-[40px]">
+        <div className="grid grid-cols-1 gap-[28px] sm:grid-cols-2 lg:grid-cols-3 lg:gap-[40px]">
           {advantages.map((advantage) => (
             <Image
               key={advantage.title}
@@ -28,7 +28,7 @@ export default function SellerAdvantages() {
               alt={advantage.title}
               width={440}
               height={388}
-              className="h-auto min-w-0 flex-1 object-contain"
+              className="mx-auto h-auto w-full max-w-[440px] object-contain"
             />
           ))}
         </div>

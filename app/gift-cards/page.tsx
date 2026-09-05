@@ -8,50 +8,46 @@ import GiftCardsOccasionList from "@/components/gift-cards/GiftCardsOccasionList
 export default function GiftCardsPage() {
   return (
     <main className="w-full bg-white font-[var(--font-roboto)]">
-      {/* Gift cards navigation */}
+      {/* Navigation */}
       <GiftCardsNavigation />
 
-      <div className="mx-auto w-full max-w-[1440px] px-[24px] pb-[80px] pt-[40px] lg:px-[40px]">
-        {/* Shop by occasion */}
+      <div className="mx-auto w-full max-w-[1440px] px-[16px] pb-[60px] pt-[28px] sm:px-[24px] sm:pt-[34px] lg:px-[40px] lg:pb-[80px] lg:pt-[40px]">
+        {/* Occasions */}
         <section>
-          <h1 className="text-[38px] font-bold leading-[130%] text-[#333333]">
+          <h1 className="text-[22px] font-medium leading-[130%] text-[#333333] sm:text-[24px]">
             Shop the perfect gift card
           </h1>
 
-          <p className="mb-[14px] mt-[24px] text-[26px] font-light leading-[150%] text-[#777777]">
+          <p className="mb-[14px] mt-[18px] text-[14px] font-normal leading-[150%] text-[#777777] sm:mt-[24px] sm:text-[16px]">
             Shop by occasion
           </p>
 
           <GiftCardsOccasionList />
         </section>
 
-        {/* Shop by card type */}
-        <section className="mt-[48px]">
-          <h2 className="mb-[26px] text-[20px] font-normal leading-[150%] text-[#555555]">
+        {/* Card types */}
+        <section className="mt-[40px] lg:mt-[48px]">
+          <h2 className="mb-[16px] text-[18px] font-normal leading-[150%] text-[#555555] sm:text-[20px] lg:mb-[20px]">
             Shop by card type
           </h2>
 
           <CardTypesGrid />
         </section>
 
-        {/* Promotional banner */}
-        <section className="mt-[72px]">
+        {/* Banner */}
+        <section className="mt-[48px] lg:mt-[72px]">
           <GiftCardsBanner />
         </section>
 
-        {/* Frequently asked questions */}
-        <section className="mt-[72px]">
+        {/* FAQ */}
+        <section className="mt-[48px] lg:mt-[72px]">
           <GiftCardsFaq />
         </section>
 
-   {/* Events and programs */}
-        <section className="mt-[72px]">
-           <h2 className="mb-[12px] text-[26px] font-normal leading-[150%] text-[#555555]">
-        Events and Programs
-      </h2>
+        {/* Events */}
+        <section className="mt-[48px] lg:mt-[72px]">
           <GiftCardsEvents />
         </section>
-
       </div>
     </main>
   );

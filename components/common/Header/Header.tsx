@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const navigationLinks = [
-  { title: "Today's Deals", href: "/" },
+  { title: "Today's Deals", href: "/todays-deals" },
   { title: "Customer Service", href: "/customer-service" },
   { title: "Registry", href: "/" },
   { title: "Gift Cards", href: "/gift-cards" },
