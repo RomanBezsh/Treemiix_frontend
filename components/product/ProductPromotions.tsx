@@ -1,6 +1,6 @@
 const ProductPromotions = () => {
     return (
-        <div className="mb-37">
+        <div className="mb-37 w-[1690px]">
             <h2 className="text-[#333333] font-semibold text-2xl mb-10">Special offers and product promotions</h2>
             <div className="flex flex-row gap-3">
                 <p>Create your FREE Business account to save up to 10% with Business-only prices and free shipping</p>

@@ -13,26 +13,29 @@ import ProductReviewsSection from "@/components/product/ProductReviewsSection";
 
 const ProductPage = () => {
     return (
-        <div className="mb-50">
-            <Breadcrumbs
-                items={[
-                    {
-                        title: "Computer",
-                    },
-                    {
-                        title: "Аccessories",
-                    },
-                    {
-                        title: "Headphones",
-                    },
-                    {
-                        title: "HyperX",
-                    },
-                    {
-                        title: "HyperX Cloud Alpha",
-                    },
-                ]}
-            />
+        <div className="mb-50 mt-8.25 flex flex-col items-center">
+            <div className="mb-21.25 ml-45">
+                <Breadcrumbs
+                    items={[
+                        {
+                            title: "Computer",
+                        },
+                        {
+                            title: "Аccessories",
+                        },
+                        {
+                            title: "Headphones",
+                        },
+                        {
+                            title: "HyperX",
+                        },
+                        {
+                            title: "HyperX Cloud Alpha",
+                        },
+                    ]}
+                />
+            </div>
+
             <ProductMainSection />
             <div className="mb-29">
                 <Carousel title="More to consider from our brands">

@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const VideoCarousel = () => {
     return (
-        <div className="flex flex-col items-center w-[1880px]">
+        <div className="flex flex-col items-center w-[1880px] mb-37">
             <h2 className="text-[#333333] font-semibold text-2xl mb-16.75 w-[1690px]">
                 Videos
             </h2>

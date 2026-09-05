@@ -1,3 +1,4 @@
+import SimpleProductCard from "@/components/catalog/SimpleProductCard";
 import Carousel from "@/components/common/Carousel";
 import AuthBanner from "@/components/home/AuthBanner";
 import CarouselCard from "@/components/home/CarouselCard";
@@ -72,8 +73,19 @@ export default function Home() {
         <Carousel
           title="Home Decor Under $20"
           href="/catalog/home-decor"
-          products={homeDecorUnder20Products}
-        />
+        >
+          {Array.from({ length: 5 }, (_, index) => {
+            return (
+              <SimpleProductCard
+                key={index}
+                id={`product-${index}`}
+                title={homeDecorUnder20Products[index].title}
+                imageSrc={homeDecorUnder20Products[index].imageSrc}
+                price={homeDecorUnder20Products[index].price}
+              />
+            );
+          })}
+        </Carousel>
         <AuthBanner />
         <div className="flex flex-row gap-5 justify-between mb-5">
           <CarouselCard
@@ -100,10 +112,21 @@ export default function Home() {
           />
         </div>
         <Carousel
-          title="Last viewed"
+          title="Home Decor Under $20"
           href="/catalog/home-decor"
-          products={homeDecorUnder20Products}
-        />
+        >
+          {Array.from({ length: 5 }, (_, index) => {
+            return (
+              <SimpleProductCard
+                key={index}
+                id={`product-${index}`}
+                title={homeDecorUnder20Products[index].title}
+                imageSrc={homeDecorUnder20Products[index].imageSrc}
+                price={homeDecorUnder20Products[index].price}
+              />
+            )
+          })}
+        </Carousel>
 
 
       </div>

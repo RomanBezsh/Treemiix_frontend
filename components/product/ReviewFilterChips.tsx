@@ -1,6 +1,6 @@
 const ReviewFilterChips = () => {
     return (
-        <div className="flex flex-col w-[1880px]">
+        <div className="flex flex-col w-[1690] mb-37">
             <h2 className="text-[#333333] font-semibold text-2xl mb-11.75 w-[1690px]">
                 Read reviews that mention
             </h2>

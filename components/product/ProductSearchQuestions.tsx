@@ -2,8 +2,8 @@ import Image from "next/image";
 
 const ProductSearchQuestions = () => {
     return (
-        <div>
-            <h2 className="text-[#333333] font-semibold text-2xl mb-2.5">Special offers and product promotions</h2>
+        <div className="w-[1690px] mb-37">
+            <h2 className="text-[#333333] font-semibold text-2xl mb-2.5">Have a question?</h2>
             <p className="text-[#828282] mb-6.75">Find answers in product info, Q&As, reviews</p>
             <div className="relative flex flex-row -pl-4">
                 <Image 

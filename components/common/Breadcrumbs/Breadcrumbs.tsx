@@ -14,7 +14,7 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
   return (
     <nav
       aria-label="Breadcrumb"
-      className="w-full font-[var(--font-roboto)]"
+      className="w-[1690px] font-[var(--font-roboto)]"
     >
       <ol className="flex flex-wrap items-center gap-[12px] text-[14px] text-[#8A8A8A]">
         {/* Home link */}

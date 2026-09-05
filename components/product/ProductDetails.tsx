@@ -59,7 +59,7 @@ const ProductDescriptionText = ({ text }: ProductDescriptionTextProps) => {
     return (
         <div className="mb-37 w-max-[1690px]">
             <h2 className="text-[#333333] font-semibold text-2xl mb-10">Product Description</h2>
-            <p>{text}</p>
+            <p className="text-[#333333] w-[1690px]">{text}</p>
         </div>
     );
 }
@@ -69,12 +69,12 @@ enum ValueType {
   rating = "rating",
 }
 
-export interface RatingValue {
+interface RatingValue {
   stars: number;
   count: number;
 }
 
-export interface SpecRowData {
+interface SpecRowData {
   id: string;
   label: string;
   value: ReactNode | RatingValue;

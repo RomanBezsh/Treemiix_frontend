@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export interface Product {
+interface Product {
   id: string;
   title: string;
   imageSrc: string;

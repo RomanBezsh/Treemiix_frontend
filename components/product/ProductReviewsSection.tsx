@@ -28,8 +28,8 @@ const ProductReviewsSection = () => {
     };
 
     return (
-        <div className="flex flex-col">
-            <div className="flex flex-row mb-11.75">
+        <div className="flex flex-col w-[1690px] mb-37">
+            <div className="flex flex-row mb-11.75 w-[1690px]">
                 <h2 className="text-[#333333] font-semibold text-2xl mr-7.25">
                     Top reviews from the United States
                 </h2>
@@ -42,7 +42,7 @@ const ProductReviewsSection = () => {
                 </button>
             </div>
 
-            <div>
+            <div className="flex flex-col items-center gap-11.75">
                 <ReviewCard review={mockReview} />
             </div>
         </div>
