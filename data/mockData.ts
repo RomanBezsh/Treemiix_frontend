@@ -37,13 +37,23 @@ export const popularCategoriesData: PopularCategoryTileProps[] = [
 export const homeDecorUnder20Products: Product[] = [
   { id: "home-decor-1", title: "Ceramic Vase", imageSrc: "https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?w=500&q=80", price: 14.99 },
   { id: "home-decor-2", title: "Scented Candle", imageSrc: "https://images.unsplash.com/photo-1603006905003-be475563bc59?w=500&q=80", price: 12.5 },
-  { id: "home-decor-3", title: "Wooden Photo Frame", imageSrc: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80", price: 18 },
+  { id: "home-decor-3", title: "Wooden Photo Frame", imageSrc: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&q=80", price: 18 },
   { id: "home-decor-4", title: "Decorative Pillow", imageSrc: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=500&q=80", price: 19.99 },
   { id: "home-decor-5", title: "Table Lamp", imageSrc: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500&q=80", price: 17.5 },
 ];
 
 export const carouselCardProducts: Product[] = [
-  { id: "carousel-card-1", title: "Wireless Headphones", imageSrc: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80", price: 13 },
-  { id: "carousel-card-2", title: "Smart Watch", imageSrc: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80", price: 18.5 },
-  { id: "carousel-card-3", title: "Portable Speaker", imageSrc: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500&q=80", price: 16.99 },
+  { id: "carousel-card-1", title: "Wine cabinet Philco PW24FD", imageSrc: "https://images.unsplash.com/photo-1594488687126-7d3d1f5e071e?w=500&q=80", price: 250 },
+  { id: "carousel-card-2", title: "Internet Router TP-Link Archer C80", imageSrc: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=500&q=80", price: 65 },
+  { id: "carousel-card-3", title: "Monitor Samsung S24R358FZ", imageSrc: "https://images.unsplash.com/photo-1527443224154-c4a3942d3cfc?w=500&q=80", price: 350 },
+  { id: "carousel-card-4", title: "Microphone HyperX QuadCast", imageSrc: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=500&q=80", price: 160 },
+];
+
+export const recentlyViewedProducts: Product[] = [
+  { id: "rv-1", title: "Tablet Xiaomi Mi Pad 5 6/256Gb", imageSrc: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80", price: 349.99 },
+  { id: "rv-2", title: "Iron Philips GC4938/20", imageSrc: "https://images.unsplash.com/photo-1596728046462-7f67a21a60d8?w=500&q=80", price: 89.00 },
+  { id: "rv-3", title: "Table music lamp Xiaomi MIDIAN", imageSrc: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500&q=80", price: 45.50 },
+  { id: "rv-4", title: "Razer Death Adder Essential", imageSrc: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500&q=80", price: 29.99 },
+  { id: "rv-5", title: "Gembird MUSG-301", imageSrc: "https://images.unsplash.com/photo-1527443224154-c4a3942d3cfc?w=500&q=80", price: 15.00 },
+  { id: "rv-6", title: "Smart TV LG 4K", imageSrc: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=500&q=80", price: 499.00 },
 ];

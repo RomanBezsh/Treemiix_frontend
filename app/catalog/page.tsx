@@ -12,7 +12,7 @@ const Catalog = () => {
     { id: '1', label: 'Razer' },
     { id: '2', label: 'Last 30 days' },
   ]);
-
+  const [currentPage, setCurrentPage] = useState(1);
 
   return (
     <div className="flex flex-col items-center">
@@ -30,11 +30,15 @@ const Catalog = () => {
           <div className="grid grid-cols-5 gap-5 mb-10">
             {Array.from({ length: 20 }, (_, index) => {
               return (
-                <ProductCard title="Product" stars={3} priceSale={555} priceOriginal={999} shipTo="Потужностан" imageSrc={""} />
+                <ProductCard key={index} title="Product" stars={3} priceSale={555} priceOriginal={999} shipTo="Потужностан" imageSrc={""} />
               );
             })}
           </div>
-          <Pagination />
+          <Pagination 
+            totalPages={5} 
+            currentPage={currentPage} 
+            onPageChange={(page) => setCurrentPage(page)} 
+          />
         </div>
 
 

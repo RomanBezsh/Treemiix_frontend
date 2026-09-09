@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useState, MouseEvent } from "react";
 import { hyperXCloudAlphaImageSrcs } from "@/data/productGalleryData";
 import Link from "next/link";
+import RatingsDropdown from "./RatingsDropdown";
 
 
 const ProductMainSection = () => {
@@ -42,12 +43,66 @@ const ProductMainSection = () => {
 }
 
 
-interface ProductGalleryProps {
-    imageScrs: string[];
+interface ImageModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    images: string[];
+    initialIndex: number;
 }
 
+    const ImageModal = ({ isOpen, onClose, images, initialIndex }: ImageModalProps) => {
+        const [currentIndex, setCurrentIndex] = useState(initialIndex);
+        const [activeTab, setActiveTab] = useState<'Images' | 'Videos'>('Images');
+        if (!isOpen) return null;
+
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(5,5,5,0.1)] backdrop-blur-[1px]" onClick={onClose}>
+                <div className="relative w-[1500px] h-[700px] bg-[#F8F8F8] rounded-[20px] shadow-[0px_2px_4px_rgba(0,0,0,0.2)] flex flex-col p-10" onClick={(e) => e.stopPropagation()}>
+                    {/* Top Row (Videos/Images Tabs) */}
+                    <div className="flex flex-row gap-10 mb-10">
+                        <button 
+                            className={`text-2xl pb-2 cursor-pointer ${activeTab === 'Videos' ? 'text-[#333333] border-b-4 border-[#FFA95A]' : 'text-[#828282]'}`}
+                            onClick={() => setActiveTab('Videos')}
+                        >
+                            Videos
+                        </button>
+                        <button 
+                            className={`text-2xl pb-2 cursor-pointer ${activeTab === 'Images' ? 'text-[#333333] border-b-4 border-[#FFA95A]' : 'text-[#828282]'}`}
+                            onClick={() => setActiveTab('Images')}
+                        >
+                            Images
+                        </button>
+                    </div>
+
+                    <div className="flex flex-row flex-1 gap-10">
+                        {/* Main Image Area */}
+                        <div className="flex-1 flex items-center justify-center">
+                            <Image src={images[currentIndex]} width={500} height={500} alt="full view" className="object-contain" />
+                        </div>
+
+                        {/* Right Info & Thumbnails */}
+                        <div className="w-[400px] flex flex-col gap-5">
+                            <h2 className="text-3xl text-[#333333]">Gaming Headset HyperX Cloud Alpha</h2>
+                            <div className="grid grid-cols-4 gap-4">
+                                {images.map((src, idx) => (
+                                    <div key={idx} className={`w-[75px] h-[75px] bg-white rounded-[10px] shadow-sm flex items-center justify-center cursor-pointer border-2 ${currentIndex === idx ? "border-orange-500" : "border-transparent"}`} onClick={() => setCurrentIndex(idx)}>
+                                        <Image src={src} width={50} height={50} alt="thumb" className="object-contain" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+
+// ... inside ProductMainSection component ...
 const ProductGallery = ({ imageScrs }: ProductGalleryProps) => {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+// ...
 
     const [zoomStyle, setZoomStyle] = useState({
         x: 0,
@@ -72,6 +127,7 @@ const ProductGallery = ({ imageScrs }: ProductGalleryProps) => {
 
     return (
         <div className="flex flex-row gap-9.25">
+            <ImageModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} images={imageScrs} initialIndex={selectedImageIndex} />
             <div className="flex flex-col gap-3.75">
                 {imageScrs.map((src, index) => (
                     <div
@@ -101,7 +157,8 @@ const ProductGallery = ({ imageScrs }: ProductGalleryProps) => {
                 <div
                     onMouseMove={handleMouseMove}
                     onMouseLeave={handleMouseLeave}
-                    className="relative flex w-126.75 h-131.25 justify-center items-center rounded-lg border-[#FFFFFF] shadow-[0px_2px_4px_#00000033] cursor-crosshair overflow-hidden"
+                    onClick={() => setIsModalOpen(true)}
+                    className="relative flex w-126.75 h-131.25 justify-center items-center rounded-lg border-[#FFFFFF] shadow-[0px_2px_4px_#00000033] cursor-zoom-in overflow-hidden"
                 >
                     <div
                         className={`absolute top-0.5 right-0.5 w-45.25 h-45.25 border-3 border-[#D6D6D6] shadow-[0px_2px_4px_#00000033] rounded-lg overflow-hidden bg-white z-20 transition-opacity duration-200 pointer-events-none ${zoomStyle.show ? "opacity-100" : "opacity-40"
@@ -170,6 +227,8 @@ const ProductInfo = ({
     primeDeliveryNote,
     features }: ProductInfoProps) => {
 
+    const [isRatingsOpen, setIsRatingsOpen] = useState(false);
+
     return (
         <div>
             <h2 className="text-3xl text-[#333333] mb-2.5">{title}</h2>
@@ -179,24 +238,36 @@ const ProductInfo = ({
             </div>
 
             <div className="flex flex-row gap-1.5 self-start mb-7">
-                {Array.from({ length: 5 }, (_, index) => {
-                    const isFilled = index < rating;
+                <div 
+                    className="relative flex flex-row gap-1.5 items-center cursor-pointer"
+                    onMouseEnter={() => setIsRatingsOpen(true)}
+                    onMouseLeave={() => setIsRatingsOpen(false)}
+                >
+                    {Array.from({ length: 5 }, (_, index) => {
+                        const isFilled = index < rating;
 
-                    return (
-                        <img
-                            key={index}
-                            src={isFilled ? "/common/star_filled.svg" : "/common/star_empty.svg"}
-                            alt={isFilled ? "Filled star" : "Empty star"}
-                        />
-                    );
-                })}
-                <Image
-                    src="/catalog/chewron_down.svg"
-                    width={19}
-                    height={19}
-                    alt="chewron"
-                    className="filter-[brightness(0)_saturate(100%)_invert(55%)_sepia(0%)_saturate(0%)_hue-rotate(182deg)_brightness(94%)_contrast(91%)]"
-                />
+                        return (
+                            <img
+                                key={index}
+                                src={isFilled ? "/common/star_filled.svg" : "/common/star_empty.svg"}
+                                alt={isFilled ? "Filled star" : "Empty star"}
+                            />
+                        );
+                    })}
+                    <Image
+                        src="/catalog/chewron_down.svg"
+                        width={19}
+                        height={19}
+                        alt="chewron"
+                        className="filter-[brightness(0)_saturate(100%)_invert(55%)_sepia(0%)_saturate(0%)_hue-rotate(182deg)_brightness(94%)_contrast(91%)]"
+                    />
+                    
+                    <RatingsDropdown 
+                        rating={rating} 
+                        ratingsCount={ratingsCount} 
+                        isOpen={isRatingsOpen} 
+                    />
+                </div>
                 <span className="text-[#496B94]">{ratingsCount.toLocaleString('en-US')} ratings</span>
             </div>
 

@@ -1,5 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useRef, useEffect } from "react";
+import AllCategoriesDropdown from "./AllCategoriesDropdown";
+import AccountDropdown from "./AccountDropdown";
 
 const navigationLinks = [
   { title: "Today's Deals", href: "/" },
@@ -10,6 +15,33 @@ const navigationLinks = [
 ];
 
 export default function Header() {
+  const [isAllDropdownOpen, setIsAllDropdownOpen] = useState(false);
+  const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
+  const allDropdownRef = useRef<HTMLFormElement>(null);
+  const accountDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        allDropdownRef.current &&
+        !allDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsAllDropdownOpen(false);
+      }
+      if (
+        accountDropdownRef.current &&
+        !accountDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsAccountDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <header className="w-full font-[var(--font-roboto)] text-white">
       {/* Top header */}
@@ -58,15 +90,21 @@ export default function Header() {
           {/* Search */}
           <form
             action="/"
-            className="flex h-[42px] min-w-0 flex-1 overflow-hidden rounded-[26px] bg-white lg:h-[45px]"
+            ref={allDropdownRef}
+            className="relative flex h-[42px] min-w-0 flex-1 overflow-visible rounded-[26px] bg-white lg:h-[45px]"
           >
             {/* Category */}
             <button
               type="button"
+              onClick={() => setIsAllDropdownOpen(!isAllDropdownOpen)}
               className="hidden h-full w-[78px] shrink-0 items-center justify-center rounded-[26px] bg-[#9EA5B8] text-[16px] font-medium text-white sm:flex lg:w-[88px] lg:text-[18px]"
             >
               All
             </button>
+            <AllCategoriesDropdown
+              isOpen={isAllDropdownOpen}
+              onClose={() => setIsAllDropdownOpen(false)}
+            />
 
             {/* Input */}
             <input
@@ -95,19 +133,25 @@ export default function Header() {
           </form>
 
           {/* Account */}
-          <Link
-            href="/account"
-            aria-label="Open account"
-            className="hidden min-h-[45px] shrink-0 flex-col justify-center rounded-[14px] border-2 border-white px-3 py-1 leading-tight lg:flex"
-          >
-            <span className="text-[14px] font-medium text-white">
-              Hello, Sign in
-            </span>
+          <div ref={accountDropdownRef} className="relative hidden lg:block">
+            <button
+              type="button"
+              onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
+              className="flex min-h-[45px] shrink-0 flex-col justify-center rounded-[14px] border-2 border-white px-3 py-1 leading-tight"
+            >
+              <span className="text-[14px] font-medium text-white">
+                Hello, Sign in
+              </span>
 
-            <span className="text-[14px] font-medium text-white">
-              Account
-            </span>
-          </Link>
+              <span className="text-[14px] font-medium text-white">
+                Account
+              </span>
+            </button>
+            <AccountDropdown
+              isOpen={isAccountDropdownOpen}
+              onClose={() => setIsAccountDropdownOpen(false)}
+            />
+          </div>
 
           {/* Mobile account */}
           <Link
@@ -143,7 +187,7 @@ export default function Header() {
           <Link
             href="/cart"
             aria-label="Open shopping cart"
-            className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[12px] bg-[#9EA5B8] sm:h-[45px] sm:w-[45px] sm:rounded-[14px]"
+            className="relative flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[12px] bg-[#9EA5B8] sm:h-[45px] sm:w-[45px] sm:rounded-[14px]"
           >
             <Image
               src="/header/cart_icon.svg"
@@ -153,6 +197,10 @@ export default function Header() {
               aria-hidden="true"
               className="h-[26px] w-[26px] sm:h-[30px] sm:w-[30px]"
             />
+            {/* Cart count indicator */}
+            <span className="absolute -right-1 -top-1 flex h-[20px] w-[20px] items-center justify-center rounded-full bg-gradient-to-br from-[#FFDB5A] to-[#FF825A] text-[12px] font-black text-white shadow-[inset_-2px_2px_3px_rgba(0,0,0,0.1)] drop-shadow-md">
+              2
+            </span>
           </Link>
         </div>
       </div>

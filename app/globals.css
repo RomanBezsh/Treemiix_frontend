@@ -12,6 +12,15 @@
     @apply pointer-events-auto h-[18px] w-[18px] appearance-none rounded-full cursor-pointer border-none shadow-md transition-transform active:scale-110;
     background: linear-gradient(144.29deg, #FFDB5A -0.18%, #FF825A 101.85%);
   }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 :root {
