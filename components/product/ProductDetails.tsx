@@ -2,14 +2,34 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReactNode } from "react";
 
-const ProductDetails = () => {
+interface ProductDetailsProps {
+    product: any;
+}
+
+const ProductDetails = ({ product }: ProductDetailsProps) => {
+    const dynamicSpecs = [
+        { id: "asin", label: "ASIN", value: product.asin || "N/A" },
+        { id: "releaseDate", label: "Release date", value: product.releaseDate || "N/A" },
+        { id: "model", label: "Item model number", value: product.itemModelNumber || "N/A" },
+        { id: "manufacturer", label: "Manufacturer", value: product.manufacturer || "N/A" },
+        { id: "country", label: "Country of Origin", value: product.countryOfOrigin || "N/A" },
+        { id: "dimensions", label: "Product Dimensions", value: product.productDimensions || "N/A" },
+        { id: "weight", label: "Item Weight", value: product.itemWeight || "N/A" },
+        { id: "binding", label: "Binding", value: product.binding || "N/A" },
+        ...(product.attributeValues?.map((attr: any) => ({
+            id: attr.id,
+            label: attr.nameAttr,
+            value: attr.value
+        })) || [])
+    ].filter(spec => spec.value && spec.value !== "N/A");
+
     return (
         <>
-            <ProductDescriptionText text="HyperXTM Cloud Alpha's groundbreaking Dual Chamber Drivers design gives audio more distinction and clarity by reducing distortion. The dual chambers separate the bass for cleaner, smoother sound. Cloud Alpha has premium red memory foam, an expanded headband and softer, more pliable leatherette, an aluminum frame, detachable braided cable and noise-cancellation microphone. Multi-platform compatible with in-line audio controls on PC, PS4, Xbox One and other platforms with 3.5mm ports. Frequency response of Microphone is 50Hz-18,000Hz. Issues due to headset detachable main cord partially inserted in the ear cup jack resulting in no microphone audio or quiet/static sounds. The customer should follow the Cloud Alpha User Manual or HyperX Gaming support website headset cable attachment guidelines to properly connect the cord, activate the microphone audio on the Alpha inline volume control box, and ensure Cloud Alpha configured as primary audio playback and recording device on the host system." />
+            <ProductDescriptionText text={product.description || "No description available."} />
             <div className="flex flex-row items-stretch gap-9">
-                <ProductSpecsTable specs={sampleSpecs} />
+                <ProductSpecsTable specs={dynamicSpecs.length > 0 ? dynamicSpecs : sampleSpecs} />
                 <div className="border-r-2 border-[#EFEFEF] self-stretch" />
-                <ProductSupportSection />
+                <ProductSupportSection warrantyLink={product.warrantyInfo} />
             </div>
             
         </>
@@ -194,13 +214,14 @@ const ProductSupportSection = ({
     { id: "3", title: "Specification Sheet", fileUrl: "#", fileType: "PDF" },
   ],
 }: ProductSupportSectionProps) => {
+  const validWarrantyLink = warrantyLink || "#";
   return (
     <div className="flex flex-col gap-6 max-w-[615px] text-[#333333]">
       <div className="flex flex-col gap-3.5 mb-12.5">
         <h2 className="text-[#333333] font-semibold text-2xl ">Warranty & Support</h2>
         <p className=" text-[#666666]">
           Product Warranty: For warranty information about this product, please{" "}
-          <Link href={warrantyLink} className="text-[#007185] hover:underline">
+          <Link href={validWarrantyLink} className="text-[#007185] hover:underline">
             click her
           </Link>{" "}
           (PDF).

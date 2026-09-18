@@ -1,5 +1,5 @@
-
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface ProductCardProps {
   title: string;
@@ -9,11 +9,36 @@ interface ProductCardProps {
   stars: number;
   shipTo: string;
   isSale?: boolean;
+  onClick?: () => void;
+  id?: string;
 }
 
-const ProductCard = ({ title, priceOriginal, priceSale, imageSrc, stars, shipTo, isSale }: ProductCardProps) => {
+const ProductCard = ({
+  title,
+  priceOriginal,
+  priceSale,
+  imageSrc,
+  stars,
+  shipTo,
+  isSale,
+  onClick,
+  id,
+}: ProductCardProps) => {
+  const router = useRouter();
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else if (id) {
+      router.push(`/product/${id}`);
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center w-[271px] h-[460px] bg-[#F8F8F8] rounded-[10px] px-4.5 pt-3">
+    <div
+      className="flex flex-col items-center w-[271px] h-[460px] bg-[#F8F8F8] rounded-[10px] px-4.5 pt-3 cursor-pointer"
+      onClick={handleClick}
+    >
       <div className="flex flex-row w-full items-center justify-between mb-8.25">
         <span className="w-19.75 h-9.75 text-[#FFFFFF] py-2 px-4.5 rounded-[10px] bg-[#FFA95A] shadow-inner-[-4px_4px_6px_0px_#0000001A]">
           SALE
@@ -40,10 +65,7 @@ const ProductCard = ({ title, priceOriginal, priceSale, imageSrc, stars, shipTo,
       <div className="relative flex items-center justify-center w-[199px] h-[172px]">
         <Image
           className="mb-8 max-w-full max-h-full object-contain"
-          src={
-            imageSrc ||
-            "https://www.gamescom.gr/images/detailed/597/20180305133128_hyperx_cloud_alpha.jpeg"
-          }
+          src={imageSrc || ""}
           alt={title}
           width={199}
           height={172}
@@ -86,8 +108,6 @@ const ProductCard = ({ title, priceOriginal, priceSale, imageSrc, stars, shipTo,
       <span className="self-start">
         Ship to {shipTo}
       </span>
-
-
     </div>
   );
 };

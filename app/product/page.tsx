@@ -36,7 +36,14 @@ const ProductPage = () => {
                 />
             </div>
 
-            <ProductMainSection />
+            <ProductMainSection product={{
+                id: "w",
+                name: "Gaming Headset HyperX Cloud Alpha",
+                price: 99.99,
+                stock: 10,
+                description: "HyperX Dual Chamber Drivers...",
+                imageUrl: "https://content1.rozetka.com.ua/goods/images/big/62124885.jpg"
+            }} />
             <div className="mb-29">
                 <Carousel title="More to consider from our brands">
                     {Array.from({ length: 5 }, (_, index) => {
@@ -48,8 +55,18 @@ const ProductPage = () => {
             </div>
             <ProductPromotions />
             <ProductSearchQuestions />
-            <ProductDetails />
-            <VideoCarousel />
+            <ProductDetails product={{
+                description: "HyperX Dual Chamber Drivers...",
+                asin: "B074NBSF9N",
+                releaseDate: "September 25, 2017",
+                itemModelNumber: "HX-HSCA-RD/AM",
+                manufacturer: "Kingston",
+                countryOfOrigin: "China",
+                productDimensions: "9.2 x 8.25 x 4.65 inches",
+                itemWeight: "12 ounces",
+                binding: "Personal Computers"
+            }} />
+            <VideoCarousel videos={[]} />
             <ProductQnASection />
             <ReviewFilterChips />
             <ProductReviewsSection />

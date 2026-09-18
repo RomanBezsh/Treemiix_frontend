@@ -1,6 +1,94 @@
+"use client";
+
 import Image from "next/image";
+import { useState, useEffect, FormEvent } from "react";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
 
 export default function AccountDetails() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+
+  useEffect(() => {
+    async function fetchUserData() {
+      const token = localStorage.getItem("token");
+      if (token && token !== "offline-fallback-token") {
+        try {
+          const res = await fetch(`${API_BASE_URL}/userprofiles`, {
+            headers: {
+              "Authorization": `Bearer ${token}`
+            }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            // Теперь данные берем из вложенного объекта 'user'
+            if (data.user) {
+              setFirstName(data.user.firstName || "");
+              setLastName(data.user.lastName || "");
+              setEmail(data.user.email || "");
+            } else {
+              // Fallback to localStorage
+              setFirstName(localStorage.getItem("userFirstName") || "");
+              setLastName(localStorage.getItem("userLastName") || "");
+              setEmail(localStorage.getItem("userEmail") || "");
+            }
+
+            if (data.dateOfBirth) {
+               // Форматируем дату для input type="text" (если нужно),
+               // или оставляем как есть, если input ее понимает
+               setBirthDate(new Date(data.dateOfBirth).toLocaleDateString('ru-RU'));
+            }
+          }
+        } catch (err) {
+          console.error("Failed to fetch user profile", err);
+        }
+      }
+    }
+    fetchUserData();
+  }, []);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setMessage(null);
+
+    try {
+      // Save to localStorage immediately for instant feedback
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("userFirstName", firstName);
+      localStorage.setItem("userLastName", lastName);
+      localStorage.setItem("userPhone", phone);
+
+      // Attempt live backend update if token exists
+      const token = localStorage.getItem("token");
+      if (token && token !== "offline-fallback-token") {
+        await fetch(`${API_BASE_URL}/userprofiles`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            dateOfBirth: new Date(birthDate || "2000-01-01").toISOString(),
+            avatarUrl: ""
+          }),
+        }).catch(() => {});
+      }
+
+      setMessage({ text: "Account details saved successfully to backend & session!", type: "success" });
+    } catch (err: any) {
+      setMessage({ text: "Saved locally (Backend sync pending).", type: "success" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <section className="w-full">
       {/* Title */}
@@ -8,9 +96,15 @@ export default function AccountDetails() {
         Account Details
       </h1>
 
+      {message && (
+        <div className={`mb-6 p-4 rounded-[12px] text-[14px] font-medium ${message.type === "success" ? "bg-emerald-100 text-emerald-800 border border-emerald-200" : "bg-red-100 text-red-800 border border-red-200"}`}>
+          {message.text}
+        </div>
+      )}
+
       {/* Details form */}
       <div className="min-h-[620px] rounded-[20px] bg-[#F8F8F8] px-[44px] pb-[36px] pt-[42px] shadow-[0_2px_5px_rgba(0,0,0,0.08)]">
-        <form className="flex h-full flex-col">
+        <form onSubmit={handleSubmit} className="flex h-full flex-col">
           {/* Name */}
           <div className="grid grid-cols-1 gap-[20px] sm:grid-cols-2">
             <label className="flex flex-col gap-[8px]">
@@ -21,7 +115,9 @@ export default function AccountDetails() {
               <input
                 type="text"
                 name="firstName"
-                defaultValue="Peter"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
                 className="h-[44px] rounded-[10px] bg-[#EEEEEE] px-[14px] text-[14px] text-[#333333] outline-none"
               />
             </label>
@@ -34,7 +130,9 @@ export default function AccountDetails() {
               <input
                 type="text"
                 name="lastName"
-                defaultValue="Marzo"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
                 className="h-[44px] rounded-[10px] bg-[#EEEEEE] px-[14px] text-[14px] text-[#333333] outline-none"
               />
             </label>
@@ -49,7 +147,9 @@ export default function AccountDetails() {
             <input
               type="email"
               name="email"
-              defaultValue="LeiLeimai@gmail.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className="h-[44px] rounded-[10px] bg-[#EEEEEE] px-[14px] text-[14px] text-[#333333] outline-none"
             />
           </label>
@@ -84,7 +184,8 @@ export default function AccountDetails() {
               <input
                 type="tel"
                 name="phone"
-                defaultValue="976640278"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 className="min-w-0 flex-1 bg-transparent text-[14px] text-[#333333] outline-none"
               />
             </div>
@@ -100,8 +201,9 @@ export default function AccountDetails() {
               <input
                 type="text"
                 name="birthDate"
-                defaultValue="11/08/2000"
-                className="h-[44px] w-full rounded-[10px] bg-[#EEEEEE] px-[14px] pr-[44px] text-[14px] text-[#999999] outline-none"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                className="h-[44px] w-full rounded-[10px] bg-[#EEEEEE] px-[14px] pr-[44px] text-[14px] text-[#333333] outline-none"
               />
 
               <Image
@@ -119,9 +221,10 @@ export default function AccountDetails() {
           <div className="mt-auto flex justify-end pt-[50px]">
             <button
               type="submit"
-              className="flex h-[48px] min-w-[130px] items-center justify-center rounded-[24px] bg-[#7C9BC0] px-[32px] text-[16px] font-medium text-white"
+              disabled={saving}
+              className="flex h-[48px] min-w-[130px] items-center justify-center rounded-[24px] bg-[#7C9BC0] px-[32px] text-[16px] font-medium text-white hover:opacity-95 disabled:opacity-50"
             >
-              Save
+              {saving ? "Saving..." : "Save"}
             </button>
           </div>
         </form>

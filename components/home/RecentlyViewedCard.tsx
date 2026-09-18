@@ -1,14 +1,34 @@
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface RecentlyViewedCardProps {
   id: string;
   title: string;
   imageSrc: string;
+  onClick?: () => void;
 }
 
-const RecentlyViewedCard = ({ id, title, imageSrc }: RecentlyViewedCardProps) => {
+const RecentlyViewedCard = ({
+  id,
+  title,
+  imageSrc,
+  onClick,
+}: RecentlyViewedCardProps) => {
+  const router = useRouter();
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      router.push(`/product/${id}`);
+    }
+  };
+
   return (
-    <div className="flex-shrink-0 flex flex-col w-[250px] h-[256px] bg-[#F8F8F8] shadow-[0px_2px_4px_rgba(0,0,0,0.2)] rounded-[20px] relative">
+    <div
+      className="flex-shrink-0 flex flex-col w-[250px] h-[256px] bg-[#F8F8F8] shadow-[0px_2px_4px_rgba(0,0,0,0.2)] rounded-[20px] relative cursor-pointer"
+      onClick={handleClick}
+    >
       <div className="flex items-center justify-center w-[140px] h-[140px] absolute left-[55px] top-[25px]">
         <Image
           src={imageSrc}

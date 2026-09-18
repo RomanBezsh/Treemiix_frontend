@@ -1,42 +1,54 @@
 import Image from "next/image";
 import { useState, MouseEvent } from "react";
-import { hyperXCloudAlphaImageSrcs } from "@/data/productGalleryData";
 import Link from "next/link";
 import RatingsDropdown from "./RatingsDropdown";
 
 
-const ProductMainSection = () => {
+interface ProductMainSectionProps {
+    product: any; // Using 'any' for now, should be typed properly based on API response
+}
+
+const ProductMainSection = ({ product }: ProductMainSectionProps) => {
+    const imagesList = product.galleries && product.galleries.length > 0 
+        ? product.galleries.map((g: any) => g.path) 
+        : (product.images && product.images.length > 0 
+            ? product.images 
+            : [product.imageUrl || ""]);
+        
+    let parsedFeatures: string[] = [];
+    try {
+        if (product.features) {
+            parsedFeatures = JSON.parse(product.features);
+        }
+    } catch (e) {
+        parsedFeatures = product.features ? [product.features] : [];
+    }
+    if (parsedFeatures.length === 0 && product.description) {
+        parsedFeatures = [product.description];
+    }
+
     return (
         <div className="flex flex-row gap-5">
-            <ProductGallery imageScrs={hyperXCloudAlphaImageSrcs} />
+            <ProductGallery imageScrs={imagesList} />
             <ProductInfo
-                id="w"
-                title={"Gaming Headset HyperX Cloud Alpha  "}
-                storeName={"HyperX Store"}
-                platform="PlayStation 4"
-                rating={4}
-                ratingsCount={9600}
-                inStock
-                price={99.99}
-                installmentText="Pay $16.67/month for 6 months, interest-free upon approval for the Amazon Rewards Visa Card"
-                primeDeliveryNote="Available at a lower price from other sellers that may not offer free Prime shipping."
-                features={[
-                    "HyperX Dual Chamber Drivers for more distinction and less distortion",
-                    "Signature award winning HyperX comfort",
-                    "Durable aluminum frame with expanded headband",
-                    "Detachable braided cable with convenient in line audio control",
-                    "Detachable noise cancellation microphone",
-                    "Compatible with PC, PS4, PS4 Pro, Xbox One, Xbox One S, Mac, Mobile, Nintendo Switch, VR",
-                ]}
+                id={product.id}
+                title={product.name}
+                storeName={product.seller?.storeName || "Treemiix Official Store"}
+                platform={product.binding || "N/A"}
+                rating={product.rating || 4}
+                ratingsCount={0}
+                inStock={product.stock > 0}
+                price={product.price}
+                installmentText="Pay monthly or pay over time with Treemiix credit"
+                features={parsedFeatures}
             />
             <ProductBuyBox
-                price={99.99}
-                shippingPrice={47.21}
+                price={product.price}
+                shippingPrice={0}
                 shippingDestination="Ukraine"
-                deliveryDateText="Thursday, February 17"
-                orderWithinText="31 mins"
-                locationText="Select delivery location"
-                isSecureTransaction
+                deliveryDateText="Tomorrow, Sep 18"
+                orderWithinText="10 hrs 30 mins"
+                isSecureTransaction={true}
             />
         </div>
     );
@@ -99,7 +111,7 @@ interface ImageModalProps {
 
 
 // ... inside ProductMainSection component ...
-const ProductGallery = ({ imageScrs }: ProductGalleryProps) => {
+const ProductGallery = ({ imageScrs }: { imageScrs: string[] }) => {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
 // ...

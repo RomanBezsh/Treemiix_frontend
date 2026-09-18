@@ -4,6 +4,7 @@ import SortSelect from "./SortSelect";
 interface ActiveFiltersBarProps {
   selected: number;
   chips?: Chip[];
+  onReset?: () => void;
 }
 
 interface Chip {
@@ -28,13 +29,13 @@ const FilterChip = ({ label, onRemove }: Chip) => (
 );
 
 
-const ActiveFiltersBar = ({ selected, chips }: ActiveFiltersBarProps) => {
+const ActiveFiltersBar = ({ selected, chips, onReset }: ActiveFiltersBarProps) => {
   return (
     <div className="flex items-center mb-17.75">
       <span className="text-[#333333] text-2xl mr-5">
         {selected} <span className="text-[#2D2D2D] text-sm">Item selected</span>
       </span>
-      <button className="bg-[#B3B3B3] px-6 py-1  rounded-full shadow-[0px_2px_4px_0px_#00000033] mr-2">
+      <button onClick={onReset} className="bg-[#B3B3B3] px-6 py-1  rounded-full shadow-[0px_2px_4px_0px_#00000033] mr-2">
         <span className="text-[18px] text-[#FFFFFF] drop-shadow-[0px_2px_4px_0px_#00000033]">Reset</span>
       </button>
       {chips?.map((chip, index) => (

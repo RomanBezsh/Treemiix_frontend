@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface Product {
   id: string;
@@ -7,10 +8,36 @@ interface Product {
   price: number;
 }
 
+interface SimpleProductCardProps {
+  id: string;
+  title: string;
+  imageSrc: string;
+  price: number;
+  onClick?: () => void;
+}
 
-const SimpleProductCard = ({ id, title, imageSrc, price }: Product) => {
+const SimpleProductCard = ({
+  id,
+  title,
+  imageSrc,
+  price,
+  onClick,
+}: SimpleProductCardProps) => {
+  const router = useRouter();
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      router.push(`/product/${id}`);
+    }
+  };
+
   return (
-    <div className="flex flex-col w-67.5 h-93.75 ">
+    <div
+      className="flex flex-col w-67.5 h-93.75 cursor-pointer"
+      onClick={handleClick}
+    >
       <div className="relative flex items-center justify-center w-[270px] h-[270px] bg-[#F8F8F8] shadow-[0_2px_4px_0px_#00000033] rounded-[20px] mb-[18px] p-4">
         <Image
           src={imageSrc}
@@ -28,6 +55,5 @@ const SimpleProductCard = ({ id, title, imageSrc, price }: Product) => {
     </div>
   );
 };
-
 
 export default SimpleProductCard;

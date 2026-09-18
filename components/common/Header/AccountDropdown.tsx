@@ -10,17 +10,18 @@ const yourLists = [
 ];
 
 const yourAccount = [
-  "Account",
-  "Orders",
-  "Recommendations",
-  "Browsing History",
-  "Watchlist",
-  "Video Purchases & Rentals",
-  "Kindle Unlimited",
-  "Content & Devices",
-  "Subscribe & Save Items",
-  "Memberships & Subscriptions",
-  "Music Library",
+  { title: "Account", href: "/account" },
+  { title: "Admin Panel", href: "/admin" },
+  { title: "Orders", href: "/account/orders" },
+  { title: "Recommendations", href: "/account" },
+  { title: "Browsing History", href: "/account" },
+  { title: "Watchlist", href: "/account" },
+  { title: "Video Purchases & Rentals", href: "/account" },
+  { title: "Kindle Unlimited", href: "/account" },
+  { title: "Content & Devices", href: "/account" },
+  { title: "Subscribe & Save Items", href: "/account" },
+  { title: "Memberships & Subscriptions", href: "/account" },
+  { title: "Music Library", href: "/account" },
 ];
 
 interface AccountDropdownProps {
@@ -38,12 +39,13 @@ export default function AccountDropdown({ isOpen, onClose }: AccountDropdownProp
 
       {/* Sign in */}
       <div className="flex flex-col items-center gap-2">
-        <button
-          className="w-[204px] rounded-[20px] bg-gradient-to-br from-[#FFDB5A] to-[#FF825A] py-2 text-[18px] font-medium text-[#EFEFEF] shadow-[0px_2px_4px_rgba(0,0,0,0.2)]"
+        <Link
+          href="/auth"
+          className="flex items-center justify-center w-[204px] rounded-[20px] bg-gradient-to-br from-[#FFDB5A] to-[#FF825A] py-2 text-[18px] font-medium text-white shadow-[0px_2px_4px_rgba(0,0,0,0.2)] hover:opacity-95"
           onClick={onClose}
         >
           Sign in
-        </button>
+        </Link>
         <Link href="/register" className="text-[12px] text-[#828282]" onClick={onClose}>
           New customer? <span className="text-blue-500">Start here.</span>
         </Link>
@@ -65,8 +67,8 @@ export default function AccountDropdown({ isOpen, onClose }: AccountDropdownProp
         <div className="flex flex-col gap-2">
           <span className="font-medium text-[#828282]">Your Account</span>
           {yourAccount.map((item) => (
-            <Link key={item} href="/" className="hover:text-black" onClick={onClose}>
-              {item}
+            <Link key={item.title} href={item.href} className={`hover:text-black ${item.title === "Admin Panel" ? "font-bold text-[#FF825A]" : ""}`} onClick={onClose}>
+              {item.title}
             </Link>
           ))}
         </div>
