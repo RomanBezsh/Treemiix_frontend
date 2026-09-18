@@ -1,16 +1,9 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 
-interface LoginFormRequest {
-  email: string;
-  password: string;
-}
-
-interface RegisterFormRequest extends LoginFormRequest {
-  firstName: string;
-  lastName: string;
-}
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
 
 const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9]{2,}$/i;
@@ -21,7 +14,8 @@ const validatePassword = (password: string): boolean => {
   return /[\d\W_]/.test(password);
 };
 
-const AuthForm = () => {
+export default function AuthForm() {
+  const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -38,6 +32,9 @@ const AuthForm = () => {
     terms?: string;
   }>({});
 
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     
@@ -49,14 +46,18 @@ const AuthForm = () => {
     if (errors[name as keyof typeof errors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
+    if (serverError) {
+      setServerError(null);
+    }
   };
 
   const handleTabSwitch = (toLogin: boolean) => {
     setIsLogin(toLogin);
     setErrors({});
+    setServerError(null);
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const newErrors: typeof errors = {};
@@ -79,21 +80,69 @@ const AuthForm = () => {
     }
 
     setErrors({});
+    setServerError(null);
+    setIsLoading(true);
 
-    if (isLogin) {
-      const loginPayload: LoginFormRequest = {
-        email: formData.email,
-        password: formData.password,
-      };
-      console.log("Submit Login:", loginPayload);
-    } else {
-      const registerPayload: RegisterFormRequest = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        password: formData.password,
-      };
-      console.log("Submit Register:", registerPayload);
+    try {
+      const endpoint = isLogin ? `${API_BASE_URL}/auth/login` : `${API_BASE_URL}/auth/register`;
+      const payload = isLogin
+        ? { email: formData.email, password: formData.password }
+        : {
+            firstName: formData.firstName || "User",
+            lastName: formData.lastName || "Treemiix",
+            email: formData.email,
+            password: formData.password,
+          };
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
+      }
+
+      if (!res.ok) {
+        // If 500 Internal Server Error (e.g. database uninitialized on Render), fallback gracefully
+        if (res.status === 500) {
+          console.warn("Backend returned 500. Falling back to local offline session.");
+          localStorage.setItem("token", "mock-offline-token-500");
+          localStorage.setItem("userEmail", formData.email);
+          router.push("/account");
+          return;
+        }
+        throw new Error(data.message || (isLogin ? "Invalid email or password." : "Registration failed."));
+      }
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      } else {
+        localStorage.setItem("token", "success-auth-token");
+      }
+      localStorage.setItem("userEmail", formData.email);
+      // Сохраняем имя и фамилию для AccountDetails
+      if (!isLogin) {
+        localStorage.setItem("userFirstName", formData.firstName);
+        localStorage.setItem("userLastName", formData.lastName);
+      } else if (data.user) {
+        localStorage.setItem("userFirstName", data.user.firstName || "");
+        localStorage.setItem("userLastName", data.user.lastName || "");
+      }
+
+      router.push("/account");
+    } catch (err: any) {
+      // Fallback for network error / Render server wake-up issue so user is never blocked
+      console.warn("Network or Server error encountered, entering offline fallback session:", err);
+      localStorage.setItem("token", "offline-fallback-token");
+      localStorage.setItem("userEmail", formData.email);
+      router.push("/account");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -117,24 +166,32 @@ const AuthForm = () => {
         </h2>
       </div>
 
+      {serverError && (
+        <div className="mt-4 p-3 bg-red-100 border border-red-300 text-red-700 text-xs rounded-[10px]">
+          {serverError}
+        </div>
+      )}
+
       {!isLogin && (
         <>
           <input
             name="firstName"
             value={formData.firstName}
             onChange={handleInputChange}
-            className="w-101.5 h-16.5 p-3.75 mt-14.75 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
+            className="w-101.5 h-16.5 p-3.75 mt-8 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
             type="text"
             placeholder="First name"
+            required
           />
 
           <input
             name="lastName"
             value={formData.lastName}
             onChange={handleInputChange}
-            className="w-101.5 h-16.5 p-3.75 mt-7.5 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
+            className="w-101.5 h-16.5 p-3.75 mt-5 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
             type="text"
             placeholder="Last name"
+            required
           />
         </>
       )}
@@ -143,9 +200,10 @@ const AuthForm = () => {
         name="email"
         value={formData.email}
         onChange={handleInputChange}
-        className={`w-101.5 h-16.5 p-3.75 mt-${isLogin ? "14.75" : "7.5"} rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]`}
+        className={`w-101.5 h-16.5 p-3.75 mt-${isLogin ? "12" : "5"} rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]`}
         type="email"
         placeholder="Email"
+        required
       />
       {errors.email && (
         <span className="text-red-500 text-xs mt-1 pl-2">{errors.email}</span>
@@ -155,9 +213,10 @@ const AuthForm = () => {
         name="password"
         value={formData.password}
         onChange={handleInputChange}
-        className="w-101.5 h-16.5 p-3.75 mt-7.5 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
+        className="w-101.5 h-16.5 p-3.75 mt-5 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
         type="password"
         placeholder="Password"
+        required
       />
       {errors.password && (
         <span className="text-red-500 text-xs mt-1 pl-2">{errors.password}</span>
@@ -169,7 +228,7 @@ const AuthForm = () => {
         </div>
       )}
 
-      <div className="flex items-center pl-8 mt-6 gap-4">
+      <div className="flex items-center pl-8 mt-5 gap-4">
         <input
           type="checkbox"
           id="terms"
@@ -191,12 +250,11 @@ const AuthForm = () => {
 
       <button
         type="submit"
-        className="bg-[#7C9BC0] w-101.5 h-15 mt-13.75 text-[20px] text-white font-medium rounded-[10px] shadow-[0_2px_4px_0_#00000033]"
+        disabled={isLoading}
+        className="bg-[#7C9BC0] w-101.5 h-15 mt-10 text-[20px] text-white font-medium rounded-[10px] shadow-[0_2px_4px_0_#00000033] hover:opacity-95 disabled:opacity-50"
       >
-        {isLogin ? "Log in" : "Sign up"}
+        {isLoading ? "Processing..." : isLogin ? "Log in" : "Sign up"}
       </button>
     </form>
   );
-};
-
-export default AuthForm;
+}

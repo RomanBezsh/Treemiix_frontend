@@ -5,11 +5,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'cdn.new-brz.net',
+        hostname: '**',
       },
       {
-        protocol: 'https',
-        hostname: 'images.unsplash.com', // <-- Добавь эту строчку
+        protocol: 'http',
+        hostname: '**',
       },
     ],
   },
