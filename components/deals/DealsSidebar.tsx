@@ -73,34 +73,37 @@ export default function DealsSidebar() {
     );
   };
 
+  const linkButtonClass =
+    "w-fit transition-all duration-200 ease-out hover:translate-x-[3px] hover:text-[#496B94]";
+
   return (
-    <aside className="w-full font-[var(--font-roboto)] lg:w-[280px] lg:shrink-0">
+    <aside className="deals-fade-left w-full font-[var(--font-roboto)] lg:w-[280px] lg:shrink-0">
       {/* Top navigation */}
       <div className="border-b border-[#E5E5E5] pb-[16px]">
         <button
           type="button"
-          className="block text-[14px] font-semibold leading-[130%] text-[#496B94]"
+          className={`${linkButtonClass} block text-[14px] font-semibold leading-[130%] text-[#496B94]`}
         >
           All deals
         </button>
 
         <button
           type="button"
-          className="mt-[18px] block text-[14px] font-normal leading-[130%] text-[#333333]"
+          className={`${linkButtonClass} mt-[18px] block text-[14px] font-normal leading-[130%] text-[#333333]`}
         >
           Available
         </button>
 
         <button
           type="button"
-          className="mt-[18px] block text-[14px] font-normal leading-[130%] text-[#333333]"
+          className={`${linkButtonClass} mt-[18px] block text-[14px] font-normal leading-[130%] text-[#333333]`}
         >
           Upcoming
         </button>
 
         <button
           type="button"
-          className="mt-[18px] block text-[14px] font-normal leading-[130%] text-[#333333]"
+          className={`${linkButtonClass} mt-[18px] block text-[14px] font-normal leading-[130%] text-[#333333]`}
         >
           Watchlist
         </button>
@@ -108,15 +111,19 @@ export default function DealsSidebar() {
 
       {/* Prime */}
       <FilterSection title="Prime">
-        <label className="flex cursor-pointer items-center gap-[10px]">
+        <label className="group flex cursor-pointer items-center gap-[10px]">
           <input
             type="checkbox"
             checked={primeEligible}
             onChange={(event) => setPrimeEligible(event.target.checked)}
-            className="h-[18px] w-[18px] rounded-[5px] accent-[#7E8CBD]"
+            className="
+              h-[18px] w-[18px] rounded-[5px] accent-[#7E8CBD]
+              transition-transform duration-200
+              group-hover:scale-[1.1]
+            "
           />
 
-          <span className="text-[14px] font-normal leading-[130%] text-[#333333]">
+          <span className="text-[14px] font-normal leading-[130%] text-[#333333] transition-colors duration-200 group-hover:text-[#496B94]">
             Prime eligible
           </span>
         </label>
@@ -128,16 +135,25 @@ export default function DealsSidebar() {
           {departments.map((department) => (
             <label
               key={department}
-              className="flex cursor-pointer items-start gap-[10px]"
+              className="
+                group flex cursor-pointer items-start gap-[10px]
+                transition-transform duration-200 ease-out
+                hover:translate-x-[3px]
+              "
             >
               <input
                 type="checkbox"
                 checked={selectedDepartments.includes(department)}
                 onChange={() => toggleDepartment(department)}
-                className="mt-[1px] h-[18px] w-[18px] shrink-0 rounded-[5px] accent-[#7E8CBD]"
+                className="
+                  mt-[1px] h-[18px] w-[18px] shrink-0
+                  rounded-[5px] accent-[#7E8CBD]
+                  transition-transform duration-200
+                  group-hover:scale-[1.08]
+                "
               />
 
-              <span className="text-[14px] font-normal leading-[130%] text-[#333333]">
+              <span className="text-[14px] font-normal leading-[130%] text-[#333333] transition-colors duration-200 group-hover:text-[#496B94]">
                 {department}
               </span>
             </label>
@@ -148,60 +164,80 @@ export default function DealsSidebar() {
       {/* Deal type */}
       <FilterSection title="Deal type">
         <div className="flex flex-col gap-[16px]">
-          <button
-            type="button"
-            className="w-fit text-[14px] font-normal leading-[130%] text-[#496B94]"
-          >
-            All deals
-          </button>
-
-          <button
-            type="button"
-            className="w-fit text-[14px] font-normal leading-[130%] text-[#333333]"
-          >
-            Top Deal
-          </button>
-
-          <button
-            type="button"
-            className="w-fit text-[14px] font-normal leading-[130%] text-[#333333]"
-          >
-            Lightning deal
-          </button>
-
-          <button
-            type="button"
-            className="w-fit text-[14px] font-normal leading-[130%] text-[#333333]"
-          >
-            Best deal
-          </button>
+          {["All deals", "Top Deal", "Lightning deal", "Best deal"].map(
+            (item, index) => (
+              <button
+                key={item}
+                type="button"
+                className={`w-fit text-[14px] font-normal leading-[130%] transition-all duration-200 ease-out hover:translate-x-[3px] hover:text-[#496B94] ${
+                  index === 0 ? "text-[#496B94]" : "text-[#333333]"
+                }`}
+              >
+                {item}
+              </button>
+            ),
+          )}
         </div>
       </FilterSection>
 
       {/* Price */}
       <FilterSection title="Price">
         <div>
-          {/* Price inputs */}
           <div className="flex items-center gap-[8px]">
             <input
               type="text"
               value={minPrice}
               onChange={(event) => setMinPrice(event.target.value)}
-              className="h-[26px] w-[70px] rounded-[6px] border border-[#E5E5E5] bg-[#F8F8F8] text-center text-[12px] font-normal text-[#828282] outline-none"
+              className="
+                h-[26px] w-[70px]
+                rounded-[6px] border border-[#E5E5E5]
+                bg-[#F8F8F8]
+                text-center text-[12px] font-normal text-[#828282]
+                outline-none
+                transition-all duration-200
+                focus:border-[#7E8CBD]
+                focus:bg-white
+                focus:shadow-[0_2px_6px_rgba(126,140,189,0.15)]
+              "
             />
 
-            <span className="text-[14px] text-[#B3B3B3]">−</span>
+            <span className="text-[14px] text-[#B3B3B3]">
+              −
+            </span>
 
             <input
               type="text"
               value={maxPrice}
               onChange={(event) => setMaxPrice(event.target.value)}
-              className="h-[26px] w-[70px] rounded-[6px] border border-[#E5E5E5] bg-[#F8F8F8] text-center text-[12px] font-normal text-[#828282] outline-none"
+              className="
+                h-[26px] w-[70px]
+                rounded-[6px] border border-[#E5E5E5]
+                bg-[#F8F8F8]
+                text-center text-[12px] font-normal text-[#828282]
+                outline-none
+                transition-all duration-200
+                focus:border-[#7E8CBD]
+                focus:bg-white
+                focus:shadow-[0_2px_6px_rgba(126,140,189,0.15)]
+              "
             />
 
             <button
               type="button"
-              className="flex h-[26px] min-w-[46px] items-center justify-center rounded-[13px] bg-[linear-gradient(90deg,#FFDB5A_0%,#FF825A_100%)] px-[12px] text-[12px] font-medium text-white"
+              className="
+                flex h-[26px] min-w-[46px]
+                items-center justify-center
+                rounded-[13px]
+                bg-[linear-gradient(90deg,#FFDB5A_0%,#FF825A_100%)]
+                px-[12px]
+                text-[12px] font-medium text-white
+                transition-all duration-200 ease-out
+                hover:-translate-y-[1px]
+                hover:scale-[1.04]
+                hover:shadow-[0_4px_10px_rgba(255,130,90,0.22)]
+                active:translate-y-0
+                active:scale-[0.95]
+              "
             >
               GO
             </button>
@@ -227,7 +263,7 @@ export default function DealsSidebar() {
             <button
               key={option}
               type="button"
-              className={`w-fit text-[14px] font-normal leading-[130%] ${
+              className={`w-fit text-[14px] font-normal leading-[130%] transition-all duration-200 ease-out hover:translate-x-[3px] hover:text-[#496B94] ${
                 index === 0 ? "text-[#496B94]" : "text-[#333333]"
               }`}
             >
@@ -241,14 +277,17 @@ export default function DealsSidebar() {
       <FilterSection title="Avg. Customer Review">
         <button
           type="button"
-          className="flex items-center gap-[8px]"
+          className="
+            group flex items-center gap-[8px]
+            transition-transform duration-200 ease-out
+            hover:translate-x-[3px]
+          "
         >
-          {/* Stars */}
           <div className="flex items-center gap-[3px]">
             {[1, 2, 3, 4].map((star) => (
               <span
                 key={star}
-                className="text-[20px] leading-none text-[#FF9D55]"
+                className="text-[20px] leading-none text-[#FF9D55] transition-transform duration-200 group-hover:scale-[1.06]"
               >
                 ★
               </span>

@@ -16,34 +16,64 @@ export default function DealCard({
   rating = 4,
 }: DealCardProps) {
   return (
-    <article className="relative flex h-full flex-col rounded-[12px] bg-[#F8F8F8] p-[12px] shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+    <article
+      className="
+        deals-scale-in
+        group relative flex h-full flex-col
+        rounded-[12px] bg-[#F8F8F8] p-[12px]
+        shadow-[0_1px_3px_rgba(0,0,0,0.08)]
+        transition-all duration-300 ease-out
+        hover:-translate-y-[5px]
+        hover:shadow-[0_10px_22px_rgba(0,0,0,0.12)]
+      "
+    >
       {/* Deal badge */}
-      <span className="absolute left-[10px] top-[10px] flex min-h-[39px] items-center justify-center rounded-[10px] bg-[#DE3A3A] px-[14px] text-[18px] font-normal leading-[130%] text-white">
+      <span
+        className="
+          absolute left-[10px] top-[10px]
+          flex min-h-[39px] items-center justify-center
+          rounded-[10px] bg-[#DE3A3A]
+          px-[14px]
+          text-[18px] font-normal leading-[130%] text-white
+          transition-transform duration-200 ease-out
+          group-hover:scale-[1.04]
+        "
+      >
         Deal
       </span>
 
-     {/* Favorite */}
-<button
-  type="button"
-  aria-label="Add to favorites"
-  className="
-    absolute right-[8px] top-[9px]
-    flex h-[40px] w-[40px]
-    items-center justify-center
-    rounded-[10px]
-    bg-[#F8F8F8]/10
-    shadow-[0_2px_4px_0_rgba(0,0,0,0.20)]
-  "
->
-  <Image
-    src="/deals/deal_favorite_icon.svg"
-    alt=""
-    width={24}
-    height={22}
-    aria-hidden="true"
-    className="h-[22px] w-[24px] object-contain opacity-30"
-  />
-</button>
+      {/* Favorite */}
+      <button
+        type="button"
+        aria-label="Add to favorites"
+        className="
+          absolute right-[8px] top-[9px]
+          flex h-[40px] w-[40px]
+          items-center justify-center
+          rounded-[10px]
+          bg-[#F8F8F8]/10
+          shadow-[0_2px_4px_0_rgba(0,0,0,0.20)]
+          transition-all duration-200 ease-out
+          hover:scale-[1.1]
+          hover:bg-white/60
+          hover:shadow-[0_5px_10px_rgba(0,0,0,0.16)]
+          active:scale-[0.92]
+        "
+      >
+        <Image
+          src="/deals/deal_favorite_icon.svg"
+          alt=""
+          width={24}
+          height={22}
+          aria-hidden="true"
+          className="
+            h-[22px] w-[24px] object-contain opacity-30
+            transition-all duration-200
+            hover:opacity-60
+          "
+        />
+      </button>
+
       {/* Product image */}
       <div className="mt-[48px] flex h-[150px] items-center justify-center">
         <Image
@@ -51,12 +81,23 @@ export default function DealCard({
           alt={title}
           width={140}
           height={140}
-          className="max-h-[140px] max-w-[140px] object-contain"
+          className="
+            max-h-[140px] max-w-[140px] object-contain
+            transition-transform duration-300 ease-out
+            group-hover:scale-[1.06]
+          "
         />
       </div>
 
       {/* Product title */}
-      <h3 className="mt-[10px] line-clamp-2 text-[18px] font-normal leading-[120%] text-[#333333]">
+      <h3
+        className="
+          mt-[10px] line-clamp-2
+          text-[18px] font-normal leading-[120%] text-[#333333]
+          transition-colors duration-200
+          group-hover:text-[#496B94]
+        "
+      >
         {title}
       </h3>
 
@@ -65,7 +106,11 @@ export default function DealCard({
         {[1, 2, 3, 4, 5].map((star) => (
           <span
             key={star}
-            className="text-[14px] leading-none text-[#FF9D55]"
+            className="
+              text-[14px] leading-none text-[#FF9D55]
+              transition-transform duration-200
+              group-hover:scale-[1.04]
+            "
           >
             {star <= rating ? "★" : "☆"}
           </span>

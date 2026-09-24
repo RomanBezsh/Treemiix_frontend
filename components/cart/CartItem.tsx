@@ -80,13 +80,28 @@ export default function CartItem({
   const totalPrice = price * quantity + servicesTotal;
 
   return (
-    <article className="relative flex w-full gap-[18px] rounded-[14px] bg-[#F8F8F8] px-[18px] py-[16px] shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+    <article
+      className="
+        group relative flex w-full gap-[18px]
+        rounded-[14px] bg-[#F8F8F8]
+        px-[18px] py-[16px]
+        shadow-[0_1px_3px_rgba(0,0,0,0.08)]
+        transition-all duration-300 ease-out
+        hover:-translate-y-[2px]
+        hover:shadow-[0_7px_18px_rgba(0,0,0,0.10)]
+      "
+    >
       {/* Select item */}
       <button
         type="button"
         onClick={() => onSelect(id)}
         aria-label={selected ? "Unselect item" : "Select item"}
-        className="mt-[4px] shrink-0"
+        className="
+          mt-[4px] shrink-0
+          transition-transform duration-200 ease-out
+          hover:scale-[1.12]
+          active:scale-[0.9]
+        "
       >
         <Image
           src={
@@ -109,7 +124,11 @@ export default function CartItem({
           alt={title}
           width={140}
           height={120}
-          className="max-h-[120px] max-w-[140px] object-contain"
+          className="
+            max-h-[120px] max-w-[140px] object-contain
+            transition-transform duration-300 ease-out
+            group-hover:scale-[1.035]
+          "
         />
       </div>
 
@@ -133,12 +152,24 @@ export default function CartItem({
         <label className="mt-[6px] flex items-center gap-[8px] text-[16px] font-normal leading-[150%] text-[#333333]">
           <input
             type="checkbox"
-            className="h-[14px] w-[14px] accent-[#7C9BC0]"
+            className="
+              h-[14px] w-[14px] accent-[#7C9BC0]
+              transition-transform duration-200
+              hover:scale-[1.12]
+            "
           />
 
           <span>
             This is a gift.{" "}
-            <button type="button" className="text-[#496B94]">
+            <button
+              type="button"
+              className="
+                text-[#496B94]
+                transition-colors duration-200
+                hover:text-[#6A8AAF]
+                hover:underline
+              "
+            >
               Learn more
             </button>
           </span>
@@ -148,14 +179,20 @@ export default function CartItem({
         <button
           type="button"
           onClick={() => setServicesOpen((current) => !current)}
-          className="mt-[8px] flex w-fit items-center gap-[8px] text-[18px] font-normal leading-[150%] text-[#496B94]"
+          className="
+            mt-[8px] flex w-fit items-center gap-[8px]
+            text-[18px] font-normal leading-[150%] text-[#496B94]
+            transition-all duration-200 ease-out
+            hover:translate-x-[3px]
+            hover:text-[#6A8AAF]
+          "
         >
           <span
-            className={`text-[12px] transition-transform duration-200 ${
+            className={`text-[12px] transition-transform duration-300 ease-out ${
               servicesOpen ? "rotate-180" : ""
             }`}
           >
-           ⌄
+            ⌄
           </span>
 
           <span>Additional services</span>
@@ -178,12 +215,24 @@ export default function CartItem({
               type="button"
               onClick={() => onDecrease(id)}
               aria-label="Decrease quantity"
-              className="flex h-[26px] w-[37px] shrink-0 items-center justify-center rounded-[31px] bg-[#7C9BC0] text-[18px] font-normal leading-[130%] text-white"
+              className="
+                flex h-[26px] w-[37px] shrink-0 items-center justify-center
+                rounded-[31px] bg-[#7C9BC0]
+                text-[18px] font-normal leading-[130%] text-white
+                transition-all duration-200 ease-out
+                hover:scale-[1.08]
+                hover:bg-[#6E8EB5]
+                hover:shadow-[0_3px_8px_rgba(0,0,0,0.12)]
+                active:scale-[0.92]
+              "
             >
               −
             </button>
 
-            <span className="flex h-[26px] flex-1 items-center justify-center text-[16px] font-normal text-[#333333]">
+            <span
+              key={quantity}
+              className="cart-scale-in flex h-[26px] flex-1 items-center justify-center text-[16px] font-normal text-[#333333]"
+            >
               {quantity}
             </span>
 
@@ -191,7 +240,16 @@ export default function CartItem({
               type="button"
               onClick={() => onIncrease(id)}
               aria-label="Increase quantity"
-              className="flex h-[26px] w-[37px] shrink-0 items-center justify-center rounded-[31px] bg-[#7C9BC0] text-[18px] font-normal leading-[130%] text-white"
+              className="
+                flex h-[26px] w-[37px] shrink-0 items-center justify-center
+                rounded-[31px] bg-[#7C9BC0]
+                text-[18px] font-normal leading-[130%] text-white
+                transition-all duration-200 ease-out
+                hover:scale-[1.08]
+                hover:bg-[#6E8EB5]
+                hover:shadow-[0_3px_8px_rgba(0,0,0,0.12)]
+                active:scale-[0.92]
+              "
             >
               +
             </button>
@@ -213,7 +271,14 @@ export default function CartItem({
         type="button"
         onClick={() => onDelete(id)}
         aria-label="Delete item"
-        className="absolute right-[16px] top-[14px]"
+        className="
+          absolute right-[16px] top-[14px]
+          rounded-[8px] p-[4px]
+          transition-all duration-200 ease-out
+          hover:scale-[1.1]
+          hover:bg-red-50
+          active:scale-[0.9]
+        "
       >
         <Image
           src="/cart/trash_icon.svg"
@@ -221,7 +286,11 @@ export default function CartItem({
           width={20}
           height={20}
           aria-hidden="true"
-          className="h-[20px] w-[20px] object-contain"
+          className="
+            h-[20px] w-[20px] object-contain
+            transition-opacity duration-200
+            hover:opacity-70
+          "
         />
       </button>
     </article>

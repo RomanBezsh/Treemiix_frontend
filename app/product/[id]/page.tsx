@@ -1,12 +1,10 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
-import Image from "next/image";
+import { useEffect, useState } from "react";
+
 import ProductMainSection from "@/components/product/ProductMainSection";
 import ProductDetails from "@/components/product/ProductDetails";
-import Breadcrumbs from "@/components/common/Breadcrumbs/Breadcrumbs";
-import Carousel from "@/components/common/Carousel";
 import ProductPromotions from "@/components/product/ProductPromotions";
 import ProductSearchQuestions from "@/components/product/ProductSearchQuestions";
 import VideoCarousel from "@/components/product/VideoCarousel";
@@ -14,8 +12,9 @@ import ProductQnASection from "@/components/product/ProductQnASection";
 import ReviewFilterChips from "@/components/product/ReviewFilterChips";
 import ProductReviewsSection from "@/components/product/ProductReviewsSection";
 
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://treemiix-backend.onrender.com/api";
 
 interface ProductItem {
   id: string;
@@ -41,15 +40,30 @@ interface ProductItem {
   features?: string;
   binding?: string;
   releaseDate?: string;
-  category?: { name: string };
-  seller?: { storeName: string };
-  galleries?: { id: string; path: string; isMain: boolean }[];
-  attributeValues?: { id: string; nameAttr: string; value: string }[];
+  category?: {
+    name: string;
+  };
+  seller?: {
+    storeName: string;
+  };
+  galleries?: {
+    id: string;
+    path: string;
+    isMain: boolean;
+  }[];
+  attributeValues?: {
+    id: string;
+    nameAttr: string;
+    value: string;
+  }[];
 }
 
 export default function ProductDetailPage() {
   const { id } = useParams();
-  const [product, setProduct] = useState<ProductItem | null>(null);
+
+  const [product, setProduct] =
+    useState<ProductItem | null>(null);
+
   const [videos, setVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -58,16 +72,24 @@ export default function ProductDetailPage() {
       setLoading(false);
       return;
     }
-    
+
     setLoading(true);
-    
+
     fetch(`${API_BASE_URL}/products/${id}`)
       .then((res) => res.json())
       .then(async (productData) => {
         setProduct(productData);
-        // Fetch videos from our new Next.js API proxy
-        const videoRes = await fetch(`/api/videos?query=${encodeURIComponent(productData.name)}`);
-        const videoResults = videoRes.ok ? await videoRes.json() : [];
+
+        const videoRes = await fetch(
+          `/api/videos?query=${encodeURIComponent(
+            productData.name,
+          )}`,
+        );
+
+        const videoResults = videoRes.ok
+          ? await videoRes.json()
+          : [];
+
         setVideos(videoResults);
         setLoading(false);
       })
@@ -80,22 +102,43 @@ export default function ProductDetailPage() {
 
   if (loading || !product) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-[18px] text-[#555]">Loading product detail...</p>
+      <div className="flex min-h-screen items-center justify-center px-[20px]">
+        <p className="text-center text-[18px] text-[#555555]">
+          Loading product detail...
+        </p>
       </div>
     );
   }
 
-  return (
-    <div className="mb-50 mt-8.25 flex flex-col items-center">
-      <ProductMainSection product={product} />
-      <ProductPromotions />
-      <ProductSearchQuestions />
-      <ProductDetails product={product} />
-      <VideoCarousel videos={videos} />
-      <ProductQnASection />
-      <ReviewFilterChips />
-      <ProductReviewsSection />
-    </div>
-  );
+return (
+  <main
+    className="
+      mt-[20px]
+      flex w-full min-w-0
+      flex-col items-center
+      overflow-x-hidden
+      pb-[80px]
+      sm:mt-[26px]
+      sm:pb-[120px]
+      lg:mt-[33px]
+      lg:pb-[200px]
+    "
+  >
+    <ProductMainSection product={product} />
+
+    <ProductPromotions />
+
+    <ProductSearchQuestions />
+
+    <ProductDetails product={product} />
+
+    <VideoCarousel videos={videos} />
+
+    <ProductQnASection />
+
+    <ReviewFilterChips />
+
+    <ProductReviewsSection />
+  </main>
+);
 }

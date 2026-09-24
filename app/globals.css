@@ -47,3 +47,484 @@ body {
   color: var(--foreground);
   font-family: 'Roboto', sans-serif;
 }
+
+/* Sell page entrance animations */
+
+@keyframes sellFadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sellFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sellFadeLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-35px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes sellFadeRight {
+  from {
+    opacity: 0;
+    transform: translateX(35px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes sellParachuteEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-35px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.sell-fade-down {
+  opacity: 0;
+  animation: sellFadeDown 0.55s ease-out forwards;
+}
+
+.sell-fade-up {
+  opacity: 0;
+  animation: sellFadeUp 0.65s ease-out forwards;
+}
+
+.sell-fade-left {
+  opacity: 0;
+  animation: sellFadeLeft 0.65s ease-out forwards;
+}
+
+.sell-fade-right {
+  opacity: 0;
+  animation: sellFadeRight 0.65s ease-out forwards;
+}
+
+.sell-parachute-enter {
+  opacity: 0;
+  animation: sellParachuteEnter 0.8s ease-out forwards;
+}
+
+.sell-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.sell-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.sell-delay-3 {
+  animation-delay: 0.3s;
+}
+
+.sell-delay-4 {
+  animation-delay: 0.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sell-fade-down,
+  .sell-fade-up,
+  .sell-fade-left,
+  .sell-fade-right,
+  .sell-parachute-enter {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+}
+/* Gift Cards page animations */
+
+@keyframes giftFadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes giftFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes giftFadeLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes giftFadeRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes giftScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.gift-fade-down {
+  opacity: 0;
+  animation: giftFadeDown 0.55s ease-out forwards;
+}
+
+.gift-fade-up {
+  opacity: 0;
+  animation: giftFadeUp 0.65s ease-out forwards;
+}
+
+.gift-fade-left {
+  opacity: 0;
+  animation: giftFadeLeft 0.65s ease-out forwards;
+}
+
+.gift-fade-right {
+  opacity: 0;
+  animation: giftFadeRight 0.65s ease-out forwards;
+}
+
+.gift-scale-in {
+  opacity: 0;
+  animation: giftScaleIn 0.65s ease-out forwards;
+}
+
+.gift-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.gift-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.gift-delay-3 {
+  animation-delay: 0.3s;
+}
+
+.gift-delay-4 {
+  animation-delay: 0.4s;
+}
+
+.gift-delay-5 {
+  animation-delay: 0.5s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gift-fade-down,
+  .gift-fade-up,
+  .gift-fade-left,
+  .gift-fade-right,
+  .gift-scale-in {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+}
+/* Cart page animations */
+
+@keyframes cartFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cartFadeRight {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes cartScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.cart-fade-up {
+  opacity: 0;
+  animation: cartFadeUp 0.6s ease-out forwards;
+}
+
+.cart-fade-right {
+  opacity: 0;
+  animation: cartFadeRight 0.6s ease-out forwards;
+}
+
+.cart-scale-in {
+  opacity: 0;
+  animation: cartScaleIn 0.45s ease-out forwards;
+}
+
+.cart-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.cart-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.cart-delay-3 {
+  animation-delay: 0.3s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-fade-up,
+  .cart-fade-right,
+  .cart-scale-in {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+}
+/* Customer Service animations */
+
+@keyframes helpFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes helpFadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes helpScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.help-fade-up {
+  opacity: 0;
+  animation: helpFadeUp 0.6s ease-out forwards;
+}
+
+.help-fade-down {
+  opacity: 0;
+  animation: helpFadeDown 0.55s ease-out forwards;
+}
+
+.help-scale-in {
+  opacity: 0;
+  animation: helpScaleIn 0.55s ease-out forwards;
+}
+
+.help-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.help-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.help-delay-3 {
+  animation-delay: 0.3s;
+}
+
+.help-delay-4 {
+  animation-delay: 0.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .help-fade-up,
+  .help-fade-down,
+  .help-scale-in {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+}
+/* Today's Deals animations */
+
+@keyframes dealsFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dealsFadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dealsFadeLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-26px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes dealsScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.deals-fade-up {
+  opacity: 0;
+  animation: dealsFadeUp 0.6s ease-out forwards;
+}
+
+.deals-fade-down {
+  opacity: 0;
+  animation: dealsFadeDown 0.55s ease-out forwards;
+}
+
+.deals-fade-left {
+  opacity: 0;
+  animation: dealsFadeLeft 0.6s ease-out forwards;
+}
+
+.deals-scale-in {
+  opacity: 0;
+  animation: dealsScaleIn 0.55s ease-out forwards;
+}
+
+.deals-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.deals-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.deals-delay-3 {
+  animation-delay: 0.3s;
+}
+
+.deals-delay-4 {
+  animation-delay: 0.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deals-fade-up,
+  .deals-fade-down,
+  .deals-fade-left,
+  .deals-scale-in {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+}

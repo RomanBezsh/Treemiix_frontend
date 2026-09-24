@@ -27,7 +27,7 @@ export default function CartItemsList({
 }: CartItemsListProps) {
   if (items.length === 0) {
     return (
-      <div className="flex min-h-[160px] w-full items-center justify-center rounded-[14px] bg-[#F8F8F8]">
+      <div className="cart-scale-in flex min-h-[160px] w-full items-center justify-center rounded-[14px] bg-[#F8F8F8]">
         <p className="text-[16px] font-normal leading-[150%] text-[#333333]">
           Your shopping cart is empty.
         </p>
@@ -38,15 +38,22 @@ export default function CartItemsList({
   return (
     <div className="flex w-full flex-col gap-[14px]">
       {/* Cart items */}
-      {items.map((item) => (
-        <CartItem
+      {items.map((item, index) => (
+        <div
           key={item.id}
-          {...item}
-          onSelect={onSelect}
-          onIncrease={onIncrease}
-          onDecrease={onDecrease}
-          onDelete={onDelete}
-        />
+          className="cart-fade-up"
+          style={{
+            animationDelay: `${index * 100}ms`,
+          }}
+        >
+          <CartItem
+            {...item}
+            onSelect={onSelect}
+            onIncrease={onIncrease}
+            onDecrease={onDecrease}
+            onDelete={onDelete}
+          />
+        </div>
       ))}
     </div>
   );

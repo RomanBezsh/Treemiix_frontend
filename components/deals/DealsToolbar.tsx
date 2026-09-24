@@ -50,7 +50,7 @@ export default function DealsToolbar() {
     "Featured";
 
   return (
-    <div className="flex w-full flex-col gap-[14px] sm:flex-row sm:items-center sm:justify-between">
+    <div className="deals-fade-down deals-delay-1 flex w-full flex-col gap-[14px] sm:flex-row sm:items-center sm:justify-between">
       {/* Selected filters */}
       <div className="flex flex-wrap items-center gap-[10px]">
         {/* Selected count */}
@@ -75,6 +75,12 @@ export default function DealsToolbar() {
             px-[24px]
             text-[16px] font-normal leading-[130%] text-white
             shadow-[inset_-4px_4px_6px_0_rgba(0,0,0,0.10)]
+            transition-all duration-200 ease-out
+            hover:-translate-y-[2px]
+            hover:bg-[#A7A7A7]/50
+            hover:shadow-[0_4px_10px_rgba(0,0,0,0.10),inset_-4px_4px_6px_0_rgba(0,0,0,0.10)]
+            active:translate-y-0
+            active:scale-[0.97]
           "
         >
           Reset
@@ -87,20 +93,30 @@ export default function DealsToolbar() {
             type="button"
             onClick={() => removeFilter(filter)}
             className="
-              flex h-[40px] items-center justify-center gap-[10px]
+              group flex h-[40px] items-center justify-center gap-[10px]
               rounded-[51px]
               border-2 border-[#B3B3B3]/60
               bg-white
               px-[24px]
               text-[16px] font-normal leading-[130%]
               text-[#828282]/70
+              transition-all duration-200 ease-out
+              hover:-translate-y-[2px]
+              hover:border-[#7E8CBD]/50
+              hover:shadow-[0_4px_10px_rgba(0,0,0,0.08)]
+              active:translate-y-0
+              active:scale-[0.97]
             "
           >
             <span>{filter}</span>
 
             <span
               aria-hidden="true"
-              className="text-[18px] leading-none text-[#828282]/60"
+              className="
+                text-[18px] leading-none text-[#828282]/60
+                transition-transform duration-200
+                group-hover:rotate-90
+              "
             >
               ×
             </span>
@@ -124,6 +140,11 @@ export default function DealsToolbar() {
             text-[18px] font-normal leading-[120%]
             text-white
             shadow-[inset_-4px_4px_6px_0_rgba(0,0,0,0.10)]
+            transition-all duration-200 ease-out
+            hover:-translate-y-[2px]
+            hover:bg-[#A7A7A7]/50
+            hover:shadow-[0_4px_10px_rgba(0,0,0,0.10),inset_-4px_4px_6px_0_rgba(0,0,0,0.10)]
+            active:translate-y-0
           "
         >
           <span>
@@ -133,49 +154,54 @@ export default function DealsToolbar() {
             </span>
           </span>
 
-          {/* Arrow */}
           <span
             aria-hidden="true"
-            className={`ml-[2px] block h-[9px] w-[9px] border-b-[2px] border-r-[2px] border-white transition-transform duration-200 ${
+            className={`ml-[2px] block h-[9px] w-[9px] border-b-[2px] border-r-[2px] border-white transition-transform duration-300 ${
               isSortOpen ? "rotate-[225deg]" : "rotate-45"
             }`}
           />
         </button>
 
         {/* Dropdown */}
-        {isSortOpen && (
-          <div
-            role="listbox"
-            className="
-              absolute right-0 top-[48px] z-30
-              w-[274px] overflow-hidden
-              rounded-[14px]
-              border border-[#E8E8E8]
-              bg-white py-[6px]
-              shadow-[0_4px_12px_rgba(0,0,0,0.12)]
-            "
-          >
-            {sortOptions.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                role="option"
-                aria-selected={sort === option.value}
-                onClick={() => {
-                  setSort(option.value);
-                  setIsSortOpen(false);
-                }}
-                className={`block w-full px-[18px] py-[10px] text-left text-[14px] leading-[130%] transition-colors hover:bg-[#F5F5F5] ${
-                  sort === option.value
-                    ? "font-medium text-[#333333]"
-                    : "font-normal text-[#828282]"
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        )}
+        <div
+          role="listbox"
+          aria-hidden={!isSortOpen}
+          className={`
+            absolute right-0 top-[48px] z-30
+            w-[274px] overflow-hidden
+            rounded-[14px]
+            border border-[#E8E8E8]
+            bg-white py-[6px]
+            shadow-[0_4px_12px_rgba(0,0,0,0.12)]
+            origin-top
+            transition-all duration-200 ease-out
+            ${
+              isSortOpen
+                ? "visible translate-y-0 scale-100 opacity-100"
+                : "invisible pointer-events-none -translate-y-[7px] scale-[0.97] opacity-0"
+            }
+          `}
+        >
+          {sortOptions.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              role="option"
+              aria-selected={sort === option.value}
+              onClick={() => {
+                setSort(option.value);
+                setIsSortOpen(false);
+              }}
+              className={`block w-full px-[18px] py-[10px] text-left text-[14px] leading-[130%] transition-all duration-150 hover:translate-x-[2px] hover:bg-[#F5F5F5] ${
+                sort === option.value
+                  ? "font-medium text-[#333333]"
+                  : "font-normal text-[#828282]"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
