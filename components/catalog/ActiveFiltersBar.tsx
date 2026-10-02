@@ -5,6 +5,8 @@ interface ActiveFiltersBarProps {
   selected: number;
   chips?: Chip[];
   onReset?: () => void;
+  sortValue?: string;
+  onSortChange?: (value: string) => void;
 }
 
 interface Chip {
@@ -29,7 +31,7 @@ const FilterChip = ({ label, onRemove }: Chip) => (
 );
 
 
-const ActiveFiltersBar = ({ selected, chips, onReset }: ActiveFiltersBarProps) => {
+const ActiveFiltersBar = ({ selected, chips, onReset, sortValue, onSortChange }: ActiveFiltersBarProps) => {
   return (
     <div className="flex items-center mb-17.75">
       <span className="text-[#333333] text-2xl mr-5">
@@ -41,7 +43,7 @@ const ActiveFiltersBar = ({ selected, chips, onReset }: ActiveFiltersBarProps) =
       {chips?.map((chip, index) => (
         <FilterChip key={index} label={chip.label} onRemove={chip.onRemove} />
       ))}
-      <SortSelect />
+      <SortSelect value={sortValue} onChange={onSortChange} />
     </div>
   );
 };

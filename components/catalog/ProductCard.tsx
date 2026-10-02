@@ -26,6 +26,9 @@ const ProductCard = ({
 }: ProductCardProps) => {
   const router = useRouter();
 
+  // Show the SALE badge for real discounts: explicit prop or priceOriginal > priceSale
+  const showSale = isSale !== undefined ? isSale : Boolean(priceOriginal && priceOriginal > priceSale);
+
   const handleClick = () => {
     if (onClick) {
       onClick();
@@ -36,13 +39,17 @@ const ProductCard = ({
 
   return (
     <div
-      className="flex flex-col items-center w-[271px] h-[460px] bg-[#F8F8F8] rounded-[10px] px-4.5 pt-3 cursor-pointer"
+      className="flex flex-col items-center w-full max-w-[271px] h-[460px] bg-[#F8F8F8] rounded-[10px] px-4.5 pt-3 cursor-pointer"
       onClick={handleClick}
     >
       <div className="flex flex-row w-full items-center justify-between mb-8.25">
-        <span className="w-19.75 h-9.75 text-[#FFFFFF] py-2 px-4.5 rounded-[10px] bg-[#FFA95A] shadow-inner-[-4px_4px_6px_0px_#0000001A]">
-          SALE
-        </span>
+        {showSale ? (
+          <span className="w-19.75 h-9.75 text-[#FFFFFF] py-2 px-4.5 rounded-[10px] bg-[#FFA95A] shadow-inner-[-4px_4px_6px_0px_#0000001A]">
+            SALE
+          </span>
+        ) : (
+          <span aria-hidden />
+        )}
         <div className="w-10 h-10 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] flex items-center justify-center rounded-[10px]">
           <div className="flex items-center justify-center w-6 h-5.5">
             <svg

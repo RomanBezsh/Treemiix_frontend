@@ -13,6 +13,7 @@ interface SimpleProductCardProps {
   title: string;
   imageSrc: string;
   price: number;
+  rating?: number;
   onClick?: () => void;
 }
 
@@ -21,6 +22,7 @@ const SimpleProductCard = ({
   title,
   imageSrc,
   price,
+  rating = 0,
   onClick,
 }: SimpleProductCardProps) => {
   const router = useRouter();
@@ -48,6 +50,15 @@ const SimpleProductCard = ({
         />
       </div>
       <p className="text-[18px] text-[#333333]">{title}</p>
+      <div className="flex flex-row gap-1.5 mt-1.5 mb-1.5">
+        {Array.from({ length: 5 }, (_, index) => (
+          <img
+            key={index}
+            src={index < rating ? "/common/star_filled.svg" : "/common/star_empty.svg"}
+            alt={index < rating ? "Filled star" : "Empty star"}
+          />
+        ))}
+      </div>
       <p className="text-4xl font-light text-[#2D2D2D]">
         <span className="text-[18px] inline-block align-top font-light">$</span>
         {price.toFixed(2)}

@@ -73,10 +73,10 @@ const Select = ({
             </button>
 
             {isOpen && type === OptionType.radio && (
-                <div>
+                <div className="flex flex-col gap-2">
                     <span
                         onClick={() => onRadioSelect && onRadioSelect(null)}
-                        className={`block cursor-pointer text-sm mb-1 ${!selectedRadioId ? "text-[#7C9BC0] font-medium" : "text-[#333333]"}`}
+                        className={`block cursor-pointer text-sm ${!selectedRadioId ? "text-[#7C9BC0] font-medium" : "text-[#333333]"}`}
                     >
                         All
                     </span>
@@ -176,25 +176,21 @@ interface CheckboxProps {
 }
 
 const Checkbox = ({ label, checked = false, onChange }: CheckboxProps) => {
-    const [isChecked, setIsChecked] = useState(checked);
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const nextState = e.target.checked;
-        setIsChecked(nextState);
-        if (onChange) onChange(nextState);
+        if (onChange) onChange(e.target.checked);
     };
 
     return (
         <label className="flex items-center gap-2 cursor-pointer select-none text-sm text-[#333333]">
             <input
                 type="checkbox"
-                checked={isChecked}
+                checked={checked}
                 onChange={handleChange}
                 className="hidden"
             />
 
             <span className="shrink-0">
-                {isChecked ? <CheckedIcon /> : <UncheckedIcon />}
+                {checked ? <CheckedIcon /> : <UncheckedIcon />}
             </span>
 
             <span>{label}</span>
@@ -346,11 +342,16 @@ const PriceRange: React.FC<PriceRangeProps> = ({
 
 
 
+interface AttributeGroup {
+    name: string;
+    values: { id: string; title: string }[];
+}
+
 interface FilterProps {
     categories?: { id: string; title: string }[];
     brands?: { id: string; title: string }[];
-    selectedCategory?: string | null;
-    onSelectCategory?: (id: string | null) => void;
+    selectedCategories?: Record<string, boolean>;
+    onCategoryChange?: (id: string, checked: boolean) => void;
     selectedBrands?: Record<string, boolean>;
     onCheckboxChange?: (id: string, checked: boolean) => void;
     minPrice?: number;
@@ -358,13 +359,23 @@ interface FilterProps {
     onPriceApply?: (min: number, max: number) => void;
     minRating?: number;
     onRatingChange?: (rating: number) => void;
+    availability?: Record<string, boolean>;
+    onAvailabilityChange?: (id: string, checked: boolean) => void;
+    attributeGroups?: AttributeGroup[];
+    selectedAttributes?: Record<string, Record<string, boolean>>;
+    onAttributeChange?: (group: string, valueId: string, checked: boolean) => void;
 }
+
+const AVAILABILITY_OPTIONS: FilterOption[] = [
+    { id: "inStock", title: "In stock only" },
+    { id: "onSale", title: "On sale only" },
+];
 
 const Filter = ({
     categories = [],
     brands = [],
-    selectedCategory,
-    onSelectCategory,
+    selectedCategories = {},
+    onCategoryChange,
     selectedBrands,
     onCheckboxChange,
     minPrice,
@@ -372,15 +383,40 @@ const Filter = ({
     onPriceApply,
     minRating,
     onRatingChange,
+    availability = {},
+    onAvailabilityChange,
+    attributeGroups = [],
+    selectedAttributes = {},
+    onAttributeChange,
 }: FilterProps) => {
+    const activeCategoryId =
+        Object.keys(selectedCategories).find((k) => selectedCategories[k]) || null;
+
+    const handleCategoryRadioSelect = (id: string | null) => {
+        if (!onCategoryChange) return;
+        if (id === null) {
+            if (activeCategoryId) onCategoryChange(activeCategoryId, false);
+        } else {
+            onCategoryChange(id, true);
+        }
+    };
+
     return (
         <div className="flex flex-col gap-4">
             <Select
                 title="Department"
                 type={OptionType.radio}
                 options={categories}
-                selectedRadioId={selectedCategory}
-                onRadioSelect={onSelectCategory}
+                selectedRadioId={activeCategoryId}
+                onRadioSelect={handleCategoryRadioSelect}
+            />
+
+            <Select
+                title="Availability"
+                type={OptionType.checkBox}
+                options={AVAILABILITY_OPTIONS}
+                selectedCheckboxes={availability}
+                onCheckboxChange={onAvailabilityChange}
             />
 
             <Select
@@ -390,6 +426,19 @@ const Filter = ({
                 selectedCheckboxes={selectedBrands}
                 onCheckboxChange={onCheckboxChange}
             />
+
+            {attributeGroups.map((group) => (
+                <Select
+                    key={group.name}
+                    title={group.name}
+                    type={OptionType.checkBox}
+                    options={group.values}
+                    selectedCheckboxes={selectedAttributes[group.name] || {}}
+                    onCheckboxChange={(valueId, checked) =>
+                        onAttributeChange && onAttributeChange(group.name, valueId, checked)
+                    }
+                />
+            ))}
 
             <Select 
                 type={OptionType.rating} 
