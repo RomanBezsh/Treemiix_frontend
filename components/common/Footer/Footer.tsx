@@ -34,7 +34,7 @@ const desktopFooterSections = [
     links: [
       { title: "Treemix and COVID-19", href: "/" },
       { title: "Your Account", href: "/auth" },
-      { title: "Your Orders", href: "/orders" },
+      { title: "Your Orders", href: "/account/orders" },
       { title: "Shipping Rates & Policies", href: "/" },
       { title: "Returns & Replacements", href: "/" },
       { title: "Manage Your Content and Devices", href: "/" },
@@ -46,7 +46,7 @@ const desktopFooterSections = [
 
 const mobileFooterLinks = [
   { title: "Your Lists", href: "/" },
-  { title: "Your Orders", href: "/orders" },
+  { title: "Your Orders", href: "/account/orders" },
   { title: "Find a Gift", href: "/" },
   { title: "Gift Cards & Registry", href: "/" },
   { title: "Browsing History", href: "/" },

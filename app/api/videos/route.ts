@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   }
 
   if (!YOUTUBE_API_KEY) {
-    return NextResponse.json({ error: 'API Key is missing' }, { status: 500 });
+    return NextResponse.json([]);
   }
 
   function parseDuration(duration: string): string {

@@ -74,7 +74,7 @@ export default function AccountDropdown({
         </Link>
 
         <Link
-          href="/register"
+          href="/auth"
           onClick={onClose}
           className="
             text-[12px] text-[#828282]
