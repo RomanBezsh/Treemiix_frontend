@@ -2,10 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import AccountDropdown from "./AccountDropdown";
 import AllCategoriesDropdown from "./AllCategoriesDropdown";
+import { clearAuthSession } from "@/lib/authSession";
+
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://treemiix-backend.onrender.com/api";
 
 const navigationLinks = [
   { title: "Today's Deals", href: "/" },
@@ -16,9 +22,19 @@ const navigationLinks = [
 ];
 
 export default function Header() {
+  const pathname = usePathname();
+  const router = useRouter();
   const [isAllDropdownOpen, setIsAllDropdownOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] =
     useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [searchValue, setSearchValue] = useState("");
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const query = searchValue.trim();
+    router.push(query ? `/catalog?search=${encodeURIComponent(query)}` : "/catalog");
+  };
 
   const allDropdownRef = useRef<HTMLFormElement>(null);
   const accountDropdownRef = useRef<HTMLDivElement>(null);
@@ -46,6 +62,69 @@ export default function Header() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    const loadCartCount = async () => {
+      const token =
+        typeof window !== "undefined"
+          ? localStorage.getItem("token")
+          : null;
+
+      if (!token) {
+        setCartCount(0);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/carts/my`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (res.status === 401) {
+          clearAuthSession();
+          setCartCount(0);
+          return;
+        }
+
+        if (!res.ok) {
+          setCartCount(0);
+          return;
+        }
+
+        const cart = await res.json();
+        const cartItems: { quantity?: number }[] = Array.isArray(
+          cart?.items,
+        )
+          ? cart.items
+          : [];
+
+        setCartCount(
+          cartItems.reduce(
+            (total, item) =>
+              total + (Number(item.quantity) || 0),
+            0,
+          ),
+        );
+      } catch {
+        setCartCount(0);
+      }
+    };
+
+    loadCartCount();
+
+    const handleCartUpdated = () => {
+      loadCartCount();
+    };
+
+    window.addEventListener("cart-updated", handleCartUpdated);
+
+    return () => {
+      window.removeEventListener(
+        "cart-updated",
+        handleCartUpdated,
+      );
+    };
+  }, [pathname]);
 
   return (
     <header className="w-full font-[var(--font-roboto)] text-white">
@@ -114,6 +193,7 @@ export default function Header() {
           {/* Search */}
           <form
             action="/"
+            onSubmit={handleSearchSubmit}
             ref={allDropdownRef}
             className="
               relative flex h-[42px] min-w-0 flex-1
@@ -154,6 +234,8 @@ export default function Header() {
               name="search"
               aria-label="Search products"
               placeholder="Search"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
               className="
                 min-w-0 flex-1 bg-white px-[14px]
                 text-[14px] text-[#49516D]
@@ -313,21 +395,23 @@ export default function Header() {
             />
 
             {/* Cart count */}
-            <span
-              className="
-                absolute -right-1 -top-1
-                flex h-[20px] w-[20px] items-center justify-center
-                rounded-full
-                bg-gradient-to-br from-[#FFDB5A] to-[#FF825A]
-                text-[12px] font-black text-white
-                shadow-[inset_-2px_2px_3px_rgba(0,0,0,0.1)]
-                drop-shadow-md
-                transition-transform duration-200 ease-out
-                group-hover:scale-[1.12]
-              "
-            >
-              2
-            </span>
+            {cartCount > 0 && (
+              <span
+                className="
+                  absolute -right-1 -top-1
+                  flex h-[20px] w-[20px] items-center justify-center
+                  rounded-full
+                  bg-gradient-to-br from-[#FFDB5A] to-[#FF825A]
+                  text-[12px] font-black text-white
+                  shadow-[inset_-2px_2px_3px_rgba(0,0,0,0.1)]
+                  drop-shadow-md
+                  transition-transform duration-200 ease-out
+                  group-hover:scale-[1.12]
+                "
+              >
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            )}
           </Link>
         </div>
       </div>

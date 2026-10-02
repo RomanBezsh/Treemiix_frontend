@@ -11,7 +11,6 @@ const yourLists = [
 
 const yourAccount = [
   { title: "Account", href: "/account" },
-  { title: "Admin Panel", href: "/admin" },
   { title: "Orders", href: "/account/orders" },
   { title: "Recommendations", href: "/account" },
   { title: "Browsing History", href: "/account" },
@@ -128,16 +127,12 @@ export default function AccountDropdown({
               key={item.title}
               href={item.href}
               onClick={onClose}
-              className={`
+              className="
                 w-fit
                 transition-all duration-150 ease-out
                 hover:translate-x-[2px]
-                ${
-                  item.title === "Admin Panel"
-                    ? "font-bold text-[#FF825A] hover:text-[#FF6B3D]"
-                    : "hover:text-black"
-                }
-              `}
+                hover:text-black
+              "
             >
               {item.title}
             </Link>

@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getApi } from "@/components/api/useApi";
 
-const categories = [
-  "All Departments",
+const fallbackCategories = [
   "Arts & Crafts",
   "Baby",
   "Beauty & Personal Care",
@@ -17,6 +18,11 @@ const categories = [
   "Women's Fashion",
 ];
 
+interface DropdownItem {
+  label: string;
+  categoryId?: string;
+}
+
 interface AllCategoriesDropdownProps {
   isOpen: boolean;
   onClose: () => void;
@@ -26,6 +32,53 @@ export default function AllCategoriesDropdown({
   isOpen,
   onClose,
 }: AllCategoriesDropdownProps) {
+  const router = useRouter();
+  const [items, setItems] = useState<DropdownItem[]>([
+    { label: "All Departments" },
+    ...fallbackCategories.map((label) => ({ label })),
+  ]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCategories() {
+      try {
+        const { data } = await getApi("/categories");
+        if (cancelled || !Array.isArray(data) || data.length === 0) return;
+
+        const sorted = [...data].sort(
+          (a: { sortOrder?: number; isActive?: boolean }, b: { sortOrder?: number; isActive?: boolean }) =>
+            (a.sortOrder ?? Number.MAX_SAFE_INTEGER) -
+            (b.sortOrder ?? Number.MAX_SAFE_INTEGER)
+        );
+        const active = sorted.filter(
+          (c: { isActive?: boolean }) => c.isActive !== false
+        );
+        setItems([
+          { label: "All Departments" },
+          ...active.map((c: { id: string; name: string }) => ({
+            label: c.name,
+            categoryId: c.id,
+          })),
+        ]);
+      } catch {
+        // Keep the fallback list on API errors
+      }
+    }
+
+    loadCategories();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleItemClick = (item: DropdownItem) => {
+    onClose();
+    router.push(
+      item.categoryId ? `/catalog?category=${item.categoryId}` : "/catalog"
+    );
+  };
+
   return (
     <div
       aria-hidden={!isOpen}
@@ -46,11 +99,11 @@ export default function AllCategoriesDropdown({
       <div className="absolute -top-[10px] left-[95px] h-[10px] w-[20px] bg-[#F8F8F8] [clip-path:polygon(50%_0%,0%_100%,100%_100%)]" />
 
       <div className="flex flex-col gap-[5px]">
-        {categories.map((category) => (
+        {items.map((item) => (
           <button
-            key={category}
+            key={item.label}
             type="button"
-            onClick={onClose}
+            onClick={() => handleItemClick(item)}
             className="
               w-full rounded-[4px] px-7 py-1
               text-left text-[14px] leading-[190%] text-[#828282]
@@ -63,7 +116,7 @@ export default function AllCategoriesDropdown({
               active:scale-[0.99]
             "
           >
-            {category}
+            {item.label}
           </button>
         ))}
       </div>
