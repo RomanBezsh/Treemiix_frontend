@@ -1,7 +1,8 @@
 import CartItem from "./CartItem";
 
 export type CartProduct = {
-  id: number;
+  id: string;
+  productId?: string;
   title: string;
   image?: string;
   price: number;
@@ -12,10 +13,10 @@ export type CartProduct = {
 
 type CartItemsListProps = {
   items: CartProduct[];
-  onSelect: (id: number) => void;
-  onIncrease: (id: number) => void;
-  onDecrease: (id: number) => void;
-  onDelete: (id: number) => void;
+  onSelect: (id: string) => void;
+  onIncrease: (id: string) => void;
+  onDecrease: (id: string) => void;
+  onDelete: (id: string) => void;
 };
 
 export default function CartItemsList({

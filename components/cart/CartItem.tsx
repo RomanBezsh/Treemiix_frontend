@@ -6,17 +6,17 @@ import { useState } from "react";
 import AdditionalServices from "./AdditionalServices";
 
 type CartItemProps = {
-  id: number;
+  id: string;
   title: string;
   image?: string;
   price: number;
   quantity: number;
   selected: boolean;
   inStock?: boolean;
-  onSelect: (id: number) => void;
-  onIncrease: (id: number) => void;
-  onDecrease: (id: number) => void;
-  onDelete: (id: number) => void;
+  onSelect: (id: string) => void;
+  onIncrease: (id: string) => void;
+  onDecrease: (id: string) => void;
+  onDelete: (id: string) => void;
 };
 
 const additionalServices = [
@@ -61,9 +61,7 @@ export default function CartItem({
 }: CartItemProps) {
   const [servicesOpen, setServicesOpen] = useState(false);
 
-  const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>(
-    id === 1 ? [2] : [],
-  );
+  const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
 
   const toggleService = (serviceId: number) => {
     setSelectedServiceIds((current) =>
