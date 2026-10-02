@@ -36,7 +36,7 @@ export const customerServiceCategories: Record<
         actions: [
           {
             title: "Go to your orders",
-            href: "/orders",
+            href: "/account/orders",
           },
           {
             title: "I need more help",
@@ -53,7 +53,7 @@ export const customerServiceCategories: Record<
         actions: [
           {
             title: "Track your order",
-            href: "/orders",
+            href: "/account/orders",
           },
           {
             title: "I need more help",
@@ -70,7 +70,7 @@ export const customerServiceCategories: Record<
         actions: [
           {
             title: "Start a return",
-            href: "/orders",
+            href: "/account/orders",
           },
           {
             title: "I need more help",
@@ -187,7 +187,7 @@ export const customerServiceCategories: Record<
         actions: [
           {
             title: "Review your orders",
-            href: "/orders",
+            href: "/account/orders",
           },
           {
             title: "I need more help",
@@ -239,7 +239,7 @@ export const customerServiceCategories: Record<
           },
           {
             title: "Update order",
-            href: "/orders",
+            href: "/account/orders",
           },
           {
             title: "I need more help",

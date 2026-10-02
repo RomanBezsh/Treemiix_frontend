@@ -340,7 +340,7 @@ export default function Header() {
 
           {/* Orders */}
           <Link
-            href="/orders"
+            href="/account/orders"
             className="
               hidden min-h-[45px] shrink-0 flex-col justify-center
               rounded-[14px] border-2 border-white

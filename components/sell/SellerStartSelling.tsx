@@ -34,7 +34,7 @@ export default function SellerStartSelling() {
 
               {/* Sign up */}
               <Link
-                href="/register"
+                href="/auth"
                 className="
                   mt-[20px] flex h-[46px] w-fit min-w-[110px]
                   items-center justify-center

@@ -30,7 +30,7 @@ export default function SellerHero() {
           {/* Animated wrapper */}
           <div className="sell-fade-left sell-delay-4 w-fit">
             <Link
-              href="/register"
+              href="/auth"
               className="
                 mt-[28px] flex h-[50px] w-fit items-center justify-center
                 rounded-[12px]
