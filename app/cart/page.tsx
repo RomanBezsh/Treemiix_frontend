@@ -1,52 +1,255 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import Breadcrumbs from "@/components/common/Breadcrumbs/Breadcrumbs";
 import CartItemsList, {
   type CartProduct,
 } from "@/components/cart/CartItemsList";
 import CartSummary from "@/components/cart/CartSummary";
-import RecentlyViewed from "@/components/cart/RecentlyViewed";
+import RecentlyViewed, {
+  type RecentItem,
+} from "@/components/cart/RecentlyViewed";
+import { clearAuthSession } from "@/lib/authSession";
 
-const initialCartItems: CartProduct[] = [
-  {
-    id: 1,
-    title:
-      "Notebook ASUS TUF Gaming F15 FX506LH-HN153 (90NR03U1-M08940) Fortress Gray + mouse Asus TUF M5",
-    price: 1500,
-    quantity: 1,
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://treemiix-backend.onrender.com/api";
+
+type BackendCartItem = {
+  id: string;
+  productId?: string;
+  price: number;
+  quantity: number;
+  product?: {
+    name?: string;
+    stock?: number;
+    galleries?: { path?: string; isMain?: boolean }[];
+  };
+};
+
+const mapBackendItem = (item: BackendCartItem): CartProduct => {
+  const galleries = item.product?.galleries || [];
+  const mainGallery =
+    galleries.find((g) => g.isMain) || galleries[0];
+
+  return {
+    id: item.id,
+    productId: item.productId,
+    title: item.product?.name || "Product",
+    image: mainGallery?.path || undefined,
+    price: Number(item.price) || 0,
+    quantity: item.quantity,
     selected: false,
-    inStock: true,
-  },
-  {
-    id: 2,
-    title: "Razer Kraken X Lite (Black)",
-    price: 920,
-    quantity: 1,
-    selected: false,
-    inStock: true,
-  },
-  {
-    id: 3,
-    title: "Razer Kraken Multi Platform (Green)",
-    price: 250,
-    quantity: 1,
-    selected: false,
-    inStock: true,
-  },
-  {
-    id: 4,
-    title: '4" Glue Sticks by ArtMinds',
-    price: 3.5,
-    quantity: 8,
-    selected: false,
-    inStock: true,
-  },
-];
+    inStock: (item.product?.stock ?? 1) > 0,
+  };
+};
 
 export default function CartPage() {
-  const [items, setItems] = useState<CartProduct[]>(initialCartItems);
+  const router = useRouter();
+  const [items, setItems] = useState<CartProduct[]>([]);
+
+  useEffect(() => {
+    const token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("token")
+        : null;
+
+    if (!token) return;
+
+    const loadCart = async () => {
+      try {
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+
+        const cartRes = await fetch(
+          `${API_BASE_URL}/carts/my`,
+          { headers },
+        );
+        if (cartRes.status === 401) {
+          clearAuthSession();
+          return;
+        }
+        if (!cartRes.ok) return;
+
+        const cart = await cartRes.json();
+        if (!cart?.id) return;
+
+        const itemsRes = await fetch(
+          `${API_BASE_URL}/cartitems/bycart/${cart.id}`,
+          { headers },
+        );
+        if (!itemsRes.ok) return;
+
+        const data = await itemsRes.json();
+        if (Array.isArray(data)) {
+          setItems(data.map(mapBackendItem));
+        }
+      } catch (e) {
+        console.error("Error loading cart", e);
+      }
+    };
+
+    loadCart();
+  }, []);
+
+  const addRecentToCart = async (
+    item: RecentItem,
+  ): Promise<boolean> => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.push("/auth");
+      return false;
+    }
+
+    try {
+      const authHeaders = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      let cartId: string | null = null;
+
+      const cartRes = await fetch(
+        `${API_BASE_URL}/carts/my`,
+        { headers: authHeaders },
+      );
+
+      if (cartRes.status === 401) {
+        router.push("/auth");
+        return false;
+      }
+
+      if (cartRes.ok) {
+        const cart = await cartRes.json();
+        cartId = cart?.id || null;
+      } else if (cartRes.status === 404) {
+        const createRes = await fetch(
+          `${API_BASE_URL}/carts`,
+          {
+            method: "POST",
+            headers: authHeaders,
+          },
+        );
+        if (createRes.status === 401) {
+          router.push("/auth");
+          return false;
+        }
+        if (createRes.ok) {
+          const created = await createRes.json();
+          cartId = created?.id || null;
+        }
+      }
+
+      if (!cartId) return false;
+
+      const addRes = await fetch(
+        `${API_BASE_URL}/cartitems`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            cartId,
+            productId: item.id,
+            quantity: 1,
+          }),
+        },
+      );
+
+      if (addRes.status === 401) {
+        router.push("/auth");
+        return false;
+      }
+
+      if (!addRes.ok) return false;
+
+      const created = await addRes.json();
+
+      if (created?.id) {
+        setItems((currentItems) => {
+          if (
+            currentItems.some(
+              (cartItem) => cartItem.productId === item.id,
+            )
+          ) {
+            return currentItems;
+          }
+
+          return [
+            ...currentItems,
+            {
+              id: String(created.id),
+              productId: item.id,
+              title: item.title,
+              image: item.imageSrc,
+              price: Number(created.price ?? item.price ?? 0),
+              quantity: Number(created.quantity) || 1,
+              selected: false,
+              inStock: true,
+            },
+          ];
+        });
+      }
+
+      window.dispatchEvent(
+        new CustomEvent("cart-updated"),
+      );
+
+      return true;
+    } catch (e) {
+      console.error("Error adding to cart", e);
+      return false;
+    }
+  };
+
+  const persistQuantity = async (
+    id: string,
+    quantity: number,
+  ) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/cartitems/${id}?quantity=${quantity}`,
+        {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      if (res.ok) {
+        window.dispatchEvent(
+          new CustomEvent("cart-updated"),
+        );
+      }
+    } catch (e) {
+      console.error("Error updating quantity", e);
+    }
+  };
+
+  const persistDelete = async (id: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/cartitems/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        window.dispatchEvent(
+          new CustomEvent("cart-updated"),
+        );
+      }
+    } catch (e) {
+      console.error("Error deleting item", e);
+    }
+  };
 
   const allSelected =
     items.length > 0 && items.every((item) => item.selected);
@@ -56,7 +259,7 @@ export default function CartPage() {
     0,
   );
 
-  const toggleItem = (id: number) => {
+  const toggleItem = (id: string) => {
     setItems((currentItems) =>
       currentItems.map((item) =>
         item.id === id
@@ -78,36 +281,37 @@ export default function CartPage() {
     );
   };
 
-  const increaseQuantity = (id: number) => {
+  const increaseQuantity = (id: string) => {
     setItems((currentItems) =>
-      currentItems.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              quantity: item.quantity + 1,
-            }
-          : item,
-      ),
+      currentItems.map((item) => {
+        if (item.id !== id) return item;
+
+        const quantity = item.quantity + 1;
+        void persistQuantity(id, quantity);
+        return { ...item, quantity };
+      }),
     );
   };
 
-  const decreaseQuantity = (id: number) => {
+  const decreaseQuantity = (id: string) => {
     setItems((currentItems) =>
-      currentItems.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              quantity: Math.max(1, item.quantity - 1),
-            }
-          : item,
-      ),
+      currentItems.map((item) => {
+        if (item.id !== id) return item;
+
+        const quantity = Math.max(1, item.quantity - 1);
+        if (quantity === item.quantity) return item;
+
+        void persistQuantity(id, quantity);
+        return { ...item, quantity };
+      }),
     );
   };
 
-  const deleteItem = (id: number) => {
+  const deleteItem = (id: string) => {
     setItems((currentItems) =>
       currentItems.filter((item) => item.id !== id),
     );
+    void persistDelete(id);
   };
 
   return (
@@ -167,7 +371,12 @@ export default function CartPage() {
           <div className="flex flex-col gap-[24px]">
             <CartSummary items={items} />
 
-            <RecentlyViewed />
+            <RecentlyViewed
+              excludedProductIds={items
+                .map((item) => item.productId)
+                .filter((id): id is string => Boolean(id))}
+              onAddToCart={addRecentToCart}
+            />
           </div>
         </div>
       </div>

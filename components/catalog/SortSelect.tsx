@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useState } from "react";
 
-const SORT_OPTIONS = [
+export const SORT_OPTIONS = [
   'Featured',
   'Price: Low to High',
   'Price: High to Low',
@@ -9,9 +9,15 @@ const SORT_OPTIONS = [
   'Newest Arrivals',
 ];
 
-const SortSelect = () => {
+interface SortSelectProps {
+  value?: string;
+  onChange?: (value: string) => void;
+}
+
+const SortSelect = ({ value = 'Featured', onChange }: SortSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState('Featured');
+  const selected = value;
+  const setSelected = (v: string) => onChange && onChange(v);
 
   return (
     <div className="relative align-middle h-7.5 w-[210px] ml-auto">

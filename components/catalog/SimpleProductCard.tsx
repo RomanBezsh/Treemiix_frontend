@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface Product {
   id: string;
@@ -7,10 +8,38 @@ interface Product {
   price: number;
 }
 
+interface SimpleProductCardProps {
+  id: string;
+  title: string;
+  imageSrc: string;
+  price: number;
+  rating?: number;
+  onClick?: () => void;
+}
 
-const SimpleProductCard = ({ id, title, imageSrc, price }: Product) => {
+const SimpleProductCard = ({
+  id,
+  title,
+  imageSrc,
+  price,
+  rating = 0,
+  onClick,
+}: SimpleProductCardProps) => {
+  const router = useRouter();
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      router.push(`/product/${id}`);
+    }
+  };
+
   return (
-    <div className="flex flex-col w-67.5 h-93.75 ">
+    <div
+      className="flex flex-col w-67.5 h-93.75 cursor-pointer"
+      onClick={handleClick}
+    >
       <div className="relative flex items-center justify-center w-[270px] h-[270px] bg-[#F8F8F8] shadow-[0_2px_4px_0px_#00000033] rounded-[20px] mb-[18px] p-4">
         <Image
           src={imageSrc}
@@ -21,6 +50,15 @@ const SimpleProductCard = ({ id, title, imageSrc, price }: Product) => {
         />
       </div>
       <p className="text-[18px] text-[#333333]">{title}</p>
+      <div className="flex flex-row gap-1.5 mt-1.5 mb-1.5">
+        {Array.from({ length: 5 }, (_, index) => (
+          <img
+            key={index}
+            src={index < rating ? "/common/star_filled.svg" : "/common/star_empty.svg"}
+            alt={index < rating ? "Filled star" : "Empty star"}
+          />
+        ))}
+      </div>
       <p className="text-4xl font-light text-[#2D2D2D]">
         <span className="text-[18px] inline-block align-top font-light">$</span>
         {price.toFixed(2)}
@@ -28,6 +66,5 @@ const SimpleProductCard = ({ id, title, imageSrc, price }: Product) => {
     </div>
   );
 };
-
 
 export default SimpleProductCard;

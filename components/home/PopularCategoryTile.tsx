@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export interface PopularCategoryTileProps {
   category: string;
@@ -12,7 +13,10 @@ const PopularCategoryTile = ({
   imageSrc,
 }: PopularCategoryTileProps) => {
   return (
-    <div className="relative h-139 w-67.75 shrink-0 overflow-hidden rounded-lg bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033]">
+    <Link
+      href={href}
+      className="relative block h-139 w-67.75 shrink-0 overflow-hidden rounded-lg bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] transition-transform hover:scale-[1.02]"
+    >
       <Image
         src={imageSrc}
         alt={category}
@@ -24,7 +28,7 @@ const PopularCategoryTile = ({
       <h3 className="absolute bottom-4 left-4 text-[22px] font-normal text-[#333333]">
         {category}
       </h3>
-    </div>
+    </Link>
   );
 };
 

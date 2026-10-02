@@ -4,10 +4,11 @@ export interface HorizontalProductCardProps {
   imageSrc: string;
   title: string;
   price: number;
+  rating?: number;
   isLastItem?: boolean;
 }
 
-const HorizontalProductCard = ({ imageSrc, title, price, isLastItem }: HorizontalProductCardProps) => {
+const HorizontalProductCard = ({ imageSrc, title, price, rating = 0, isLastItem }: HorizontalProductCardProps) => {
   return (
     <div
       className={`flex flex-row items-start gap-4 transition-colors ${isLastItem ? "bg-[#F8F8F8] rounded-[10px] shadow-[0px_2px_4px_0px_#00000033]" : ""
@@ -24,6 +25,15 @@ const HorizontalProductCard = ({ imageSrc, title, price, isLastItem }: Horizonta
       </div>
       <div className="flex flex-col mt-4 gap-3">
         <h3 className="text-[18px] text-[#333333] leading-tight">{title}</h3>
+        <div className="flex flex-row gap-1.5 -mt-1.5">
+          {Array.from({ length: 5 }, (_, index) => (
+            <img
+              key={index}
+              src={index < rating ? "/common/star_filled.svg" : "/common/star_empty.svg"}
+              alt={index < rating ? "Filled star" : "Empty star"}
+            />
+          ))}
+        </div>
         <h3 className="text-4xl font-light">
           <span className="text-[18px] inline-block align-top font-light">$</span>
           {price.toFixed(2)}

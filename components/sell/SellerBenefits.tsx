@@ -12,19 +12,32 @@ export default function SellerBenefits() {
   return (
     <section className="w-full bg-white font-[var(--font-roboto)]">
       <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center gap-[44px] px-[20px] py-[60px] sm:px-[32px] lg:flex-row lg:gap-[70px] lg:px-[80px] lg:py-[100px]">
-        {/* Sales chart */}
-        <div className="flex w-full max-w-[320px] shrink-0 items-center justify-center lg:w-[380px] lg:max-w-none">
-          <Image
-            src="/sell/sales-chart.svg"
-            alt="Sales growth chart"
-            width={360}
-            height={360}
-            className="h-auto w-full object-contain"
-          />
+        {/* Sales chart animation */}
+        <div className="sell-fade-left w-full max-w-[320px] shrink-0 lg:w-[380px] lg:max-w-none">
+          <div
+            className="
+              group flex w-full items-center justify-center
+              transition-transform duration-300 ease-out
+              hover:-translate-y-[5px]
+            "
+          >
+            <Image
+              src="/sell/sales-chart.svg"
+              alt="Sales growth chart"
+              width={360}
+              height={360}
+              className="
+                h-auto w-full object-contain
+                transition-all duration-300 ease-out
+                group-hover:scale-[1.03]
+                group-hover:drop-shadow-[0_10px_15px_rgba(0,0,0,0.08)]
+              "
+            />
+          </div>
         </div>
 
         {/* Benefits content */}
-        <div className="flex min-w-0 flex-1 flex-col items-start">
+        <div className="sell-fade-right sell-delay-1 flex min-w-0 flex-1 flex-col items-start">
           <h2 className="text-[34px] font-black leading-[120%] text-[#333333]/80 sm:text-[42px] lg:text-[60px] lg:leading-[130%]">
             Over $50K in potential benefits
           </h2>
@@ -38,7 +51,14 @@ export default function SellerBenefits() {
             {benefits.map((benefit) => (
               <li
                 key={benefit}
-                className="flex items-start gap-[10px] text-[16px] font-medium leading-[150%] sm:text-[18px] lg:text-[22px]"
+                className="
+                  flex items-start gap-[10px]
+                  text-[16px] font-medium leading-[150%]
+                  transition-transform duration-200 ease-out
+                  hover:translate-x-[4px]
+                  sm:text-[18px]
+                  lg:text-[22px]
+                "
               >
                 <span className="bg-[linear-gradient(90deg,#6A7DBE_0%,#87618D_100%)] bg-clip-text text-transparent">
                   •
@@ -53,7 +73,23 @@ export default function SellerBenefits() {
 
           <Link
             href="/sell/learn-more"
-            className="mt-[26px] flex items-center justify-center rounded-[18px] border-[3px] border-[#7C9BC0] px-[30px] py-[10px] text-[16px] font-medium leading-[120%] text-[#7C9BC0] lg:mt-[28px] lg:rounded-[20px] lg:px-[45px] lg:py-[12px] lg:text-[20px]"
+            className="
+              mt-[26px] flex items-center justify-center
+              rounded-[18px] border-[3px] border-[#7C9BC0]
+              px-[30px] py-[10px]
+              text-[16px] font-medium leading-[120%] text-[#7C9BC0]
+              transition-all duration-200 ease-out
+              hover:-translate-y-[2px]
+              hover:bg-[#7C9BC0]/10
+              hover:shadow-[0_5px_12px_rgba(0,0,0,0.10)]
+              active:translate-y-0
+              active:scale-[0.97]
+              lg:mt-[28px]
+              lg:rounded-[20px]
+              lg:px-[45px]
+              lg:py-[12px]
+              lg:text-[20px]
+            "
           >
             Learn more
           </Link>

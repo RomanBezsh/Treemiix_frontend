@@ -22,11 +22,32 @@ interface SelectProps {
     options?: FilterOption[];
     from?: number;
     to?: number;
+    selectedRadioId?: string | null;
+    onRadioSelect?: (id: string | null) => void;
+    selectedCheckboxes?: Record<string, boolean>;
+    onCheckboxChange?: (id: string, checked: boolean) => void;
+    minPrice?: number;
+    maxPrice?: number;
+    onPriceApply?: (min: number, max: number) => void;
+    minRating?: number;
+    onRatingChange?: (rating: number) => void;
 }
 
-const Select = ({ title, type = OptionType.radio, options = [] }: SelectProps) => {
+const Select = ({ 
+    title, 
+    type = OptionType.radio, 
+    options = [],
+    selectedRadioId,
+    onRadioSelect,
+    selectedCheckboxes = {},
+    onCheckboxChange,
+    minPrice,
+    maxPrice,
+    onPriceApply,
+    minRating,
+    onRatingChange,
+}: SelectProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(true);
-    const [selectedId, setSelectedId] = useState<string | null>(null);
 
 
     const TITLE_MAP: Partial<Record<OptionType, string>> = {
@@ -52,13 +73,19 @@ const Select = ({ title, type = OptionType.radio, options = [] }: SelectProps) =
             </button>
 
             {isOpen && type === OptionType.radio && (
-                <div>
+                <div className="flex flex-col gap-2">
+                    <span
+                        onClick={() => onRadioSelect && onRadioSelect(null)}
+                        className={`block cursor-pointer text-sm ${!selectedRadioId ? "text-[#7C9BC0] font-medium" : "text-[#333333]"}`}
+                    >
+                        All
+                    </span>
                     {options.map((option) => (
                         <Radio
                             key={option.id}
                             title={option.title}
-                            isTarget={selectedId === option.id}
-                            onClick={() => setSelectedId(option.id)}
+                            isTarget={selectedRadioId === option.id}
+                            onClick={() => onRadioSelect && onRadioSelect(option.id)}
                         />
                     ))}
                 </div>
@@ -69,16 +96,17 @@ const Select = ({ title, type = OptionType.radio, options = [] }: SelectProps) =
                         <Checkbox
                             key={option.id}
                             label={option.title}
-                            onChange={(checked) => console.log(option.title, checked)}
+                            checked={!!selectedCheckboxes[option.id]}
+                            onChange={(checked) => onCheckboxChange && onCheckboxChange(option.id, checked)}
                         />
                     ))}
                 </div>
             )}
             {isOpen && type === OptionType.rating && (
-                <Rating />
+                <Rating minRating={minRating} onRatingChange={onRatingChange} />
             )}
             {isOpen && type === OptionType.price && (
-                <PriceRange minLimit={0} maxLimit={1000} />
+                <PriceRange minLimit={0} maxLimit={5000} minVal={minPrice} maxVal={maxPrice} onApply={onPriceApply} />
             )}
         </div>
     );
@@ -148,25 +176,21 @@ interface CheckboxProps {
 }
 
 const Checkbox = ({ label, checked = false, onChange }: CheckboxProps) => {
-    const [isChecked, setIsChecked] = useState(checked);
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const nextState = e.target.checked;
-        setIsChecked(nextState);
-        if (onChange) onChange(nextState);
+        if (onChange) onChange(e.target.checked);
     };
 
     return (
         <label className="flex items-center gap-2 cursor-pointer select-none text-sm text-[#333333]">
             <input
                 type="checkbox"
-                checked={isChecked}
+                checked={checked}
                 onChange={handleChange}
                 className="hidden"
             />
 
             <span className="shrink-0">
-                {isChecked ? <CheckedIcon /> : <UncheckedIcon />}
+                {checked ? <CheckedIcon /> : <UncheckedIcon />}
             </span>
 
             <span>{label}</span>
@@ -179,25 +203,35 @@ const Checkbox = ({ label, checked = false, onChange }: CheckboxProps) => {
 
 
 
-const Rating = () => {
-    const [stars, setStarts] = useState<number>(5);
+interface RatingProps {
+    minRating?: number;
+    onRatingChange?: (rating: number) => void;
+}
+
+const Rating = ({ minRating = 0, onRatingChange }: RatingProps) => {
+    const [stars, setStars] = useState<number>(minRating);
 
     return (
         <div className="flex flex-row gap-1.5 items-center">
             {Array.from({ length: 5 }, (_, index) => {
+                const starVal = index + 1;
                 return (
                     <img
                         key={index}
-                        onClick={() => setStarts(index)}
-                        src={(index <= stars) ? "/common/star_filled.svg" : "/common/star_empty.svg"}
-                        alt={(index <= stars) ? "Filled star" : "Empty star"}
+                        onClick={() => {
+                            setStars(starVal);
+                            if (onRatingChange) onRatingChange(starVal);
+                        }}
+                        className="cursor-pointer"
+                        src={(starVal <= stars) ? "/common/star_filled.svg" : "/common/star_empty.svg"}
+                        alt={(starVal <= stars) ? "Filled star" : "Empty star"}
                     />
                 );
             })}
             <span className="text-sm text-[#828282]">& Up</span>
         </div>
     );
-}
+};
 
 
 
@@ -206,25 +240,31 @@ const Rating = () => {
 interface PriceRangeProps {
     minLimit?: number;
     maxLimit?: number;
+    minVal?: number;
+    maxVal?: number;
     onApply?: (min: number, max: number) => void;
 }
 
 const PriceRange: React.FC<PriceRangeProps> = ({
     minLimit = 0,
     maxLimit = 59999,
+    minVal,
+    maxVal,
     onApply,
 }) => {
-    const [minValue, setMinValue] = useState<number>(minLimit);
-    const [maxValue, setMaxValue] = useState<number>(maxLimit);
+    const [minValue, setMinValue] = useState<number>(minVal !== undefined ? minVal : minLimit);
+    const [maxValue, setMaxValue] = useState<number>(maxVal !== undefined ? maxVal : maxLimit);
 
     const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = Math.min(Number(e.target.value), maxValue);
         setMinValue(value);
+        if (onApply) onApply(value, maxValue);
     };
 
     const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = Math.max(Number(e.target.value), minValue);
         setMaxValue(value);
+        if (onApply) onApply(minValue, value);
     };
 
     const handleApply = () => {
@@ -302,17 +342,64 @@ const PriceRange: React.FC<PriceRangeProps> = ({
 
 
 
-const Filter = () => {
-    const categories = [
-        { id: "1", title: "Activity Centers" },
-        { id: "2", title: "Baby Gyms & Playmats" },
-    ];
+interface AttributeGroup {
+    name: string;
+    values: { id: string; title: string }[];
+}
 
-    const brands = [
-        { id: "b1", title: "Splashin'kids" },
-        { id: "b2", title: "GRACO" },
-        { id: "b3", title: "Fisher-Price" },
-    ];
+interface FilterProps {
+    categories?: { id: string; title: string }[];
+    brands?: { id: string; title: string }[];
+    selectedCategories?: Record<string, boolean>;
+    onCategoryChange?: (id: string, checked: boolean) => void;
+    selectedBrands?: Record<string, boolean>;
+    onCheckboxChange?: (id: string, checked: boolean) => void;
+    minPrice?: number;
+    maxPrice?: number;
+    onPriceApply?: (min: number, max: number) => void;
+    minRating?: number;
+    onRatingChange?: (rating: number) => void;
+    availability?: Record<string, boolean>;
+    onAvailabilityChange?: (id: string, checked: boolean) => void;
+    attributeGroups?: AttributeGroup[];
+    selectedAttributes?: Record<string, Record<string, boolean>>;
+    onAttributeChange?: (group: string, valueId: string, checked: boolean) => void;
+}
+
+const AVAILABILITY_OPTIONS: FilterOption[] = [
+    { id: "inStock", title: "In stock only" },
+    { id: "onSale", title: "On sale only" },
+];
+
+const Filter = ({
+    categories = [],
+    brands = [],
+    selectedCategories = {},
+    onCategoryChange,
+    selectedBrands,
+    onCheckboxChange,
+    minPrice,
+    maxPrice,
+    onPriceApply,
+    minRating,
+    onRatingChange,
+    availability = {},
+    onAvailabilityChange,
+    attributeGroups = [],
+    selectedAttributes = {},
+    onAttributeChange,
+}: FilterProps) => {
+    const activeCategoryId =
+        Object.keys(selectedCategories).find((k) => selectedCategories[k]) || null;
+
+    const handleCategoryRadioSelect = (id: string | null) => {
+        if (!onCategoryChange) return;
+        if (id === null) {
+            if (activeCategoryId) onCategoryChange(activeCategoryId, false);
+        } else {
+            onCategoryChange(id, true);
+        }
+    };
 
     return (
         <div className="flex flex-col gap-4">
@@ -320,16 +407,50 @@ const Filter = () => {
                 title="Department"
                 type={OptionType.radio}
                 options={categories}
+                selectedRadioId={activeCategoryId}
+                onRadioSelect={handleCategoryRadioSelect}
+            />
+
+            <Select
+                title="Availability"
+                type={OptionType.checkBox}
+                options={AVAILABILITY_OPTIONS}
+                selectedCheckboxes={availability}
+                onCheckboxChange={onAvailabilityChange}
             />
 
             <Select
                 title="Featured Brands"
                 type={OptionType.checkBox}
                 options={brands}
+                selectedCheckboxes={selectedBrands}
+                onCheckboxChange={onCheckboxChange}
             />
 
-            <Select type={OptionType.rating} />
-            <Select type={OptionType.price} />
+            {attributeGroups.map((group) => (
+                <Select
+                    key={group.name}
+                    title={group.name}
+                    type={OptionType.checkBox}
+                    options={group.values}
+                    selectedCheckboxes={selectedAttributes[group.name] || {}}
+                    onCheckboxChange={(valueId, checked) =>
+                        onAttributeChange && onAttributeChange(group.name, valueId, checked)
+                    }
+                />
+            ))}
+
+            <Select 
+                type={OptionType.rating} 
+                minRating={minRating}
+                onRatingChange={onRatingChange}
+            />
+            <Select 
+                type={OptionType.price} 
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+                onPriceApply={onPriceApply}
+            />
         </div>
     );
 };

@@ -32,7 +32,7 @@ export default function GiftCardsFaq() {
   };
 
   return (
-    <section className="w-full font-[var(--font-roboto)]">
+    <section className="gift-fade-up w-full font-[var(--font-roboto)]">
       <h2 className="mb-[18px] text-[24px] font-normal leading-[150%] text-[#333333]">
         Frequently asked questions about TreeMiix.com gift cards
       </h2>
@@ -46,25 +46,53 @@ export default function GiftCardsFaq() {
               key={item.question}
               className="flex items-start gap-[12px]"
             >
-              <div className="min-w-0 flex-1 overflow-hidden rounded-[20px] border border-[#E5E5E5] bg-[#F8F8F8] shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
+              <div
+                className={`
+                  min-w-0 flex-1 overflow-hidden
+                  rounded-[20px] border border-[#E5E5E5] bg-[#F8F8F8]
+                  shadow-[0_1px_3px_rgba(0,0,0,0.06)]
+                  transition-all duration-300 ease-out
+                  ${
+                    isOpen
+                      ? "shadow-[0_5px_14px_rgba(0,0,0,0.08)]"
+                      : "hover:-translate-y-[1px] hover:shadow-[0_4px_10px_rgba(0,0,0,0.08)]"
+                  }
+                `}
+              >
                 <button
                   type="button"
                   onClick={() => toggleItem(index)}
                   aria-expanded={isOpen}
-                  className="flex min-h-[76px] w-full items-center px-[34px] py-[20px] text-left"
+                  className="
+                    flex min-h-[76px] w-full items-center
+                    px-[34px] py-[20px] text-left
+                    transition-colors duration-200
+                    hover:bg-white/40
+                  "
                 >
                   <span className="text-[24px] font-normal leading-[150%] text-[#333333]">
                     {item.question}
                   </span>
                 </button>
 
-                {isOpen && (
+                {/* Animated answer */}
+                <div
+                  className={`
+                    overflow-hidden
+                    transition-all duration-300 ease-out
+                    ${
+                      isOpen
+                        ? "max-h-[400px] opacity-100"
+                        : "max-h-0 opacity-0"
+                    }
+                  `}
+                >
                   <div className="border-t border-[#EFEFEF] px-[34px] pb-[24px] pt-[20px]">
                     <p className="max-w-[1040px] text-[24px] font-normal leading-[150%] text-[#333333]">
                       {item.answer}
                     </p>
                   </div>
-                )}
+                </div>
               </div>
 
               <button
@@ -72,18 +100,30 @@ export default function GiftCardsFaq() {
                 onClick={() => toggleItem(index)}
                 aria-label={isOpen ? "Close answer" : "Open answer"}
                 aria-expanded={isOpen}
-                className="flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-[20px] border border-[#E5E5E5] bg-[#F8F8F8] shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
+                className="
+                  group flex h-[76px] w-[76px] shrink-0
+                  items-center justify-center
+                  rounded-[20px] border border-[#E5E5E5] bg-[#F8F8F8]
+                  shadow-[0_1px_3px_rgba(0,0,0,0.06)]
+                  transition-all duration-200 ease-out
+                  hover:-translate-y-[2px]
+                  hover:shadow-[0_5px_12px_rgba(0,0,0,0.10)]
+                  active:translate-y-0
+                  active:scale-[0.96]
+                "
               >
-               <Image
-  src="/common/arrow_right_icon.svg"
-  alt=""
-  width={24}
-  height={24}
-  aria-hidden="true"
-  className={`object-contain transition-transform duration-200 ${
-    isOpen ? "rotate-90" : "rotate-0"
-  }`}
-/>
+                <Image
+                  src="/common/arrow_right_icon.svg"
+                  alt=""
+                  width={24}
+                  height={24}
+                  aria-hidden="true"
+                  className={`
+                    object-contain
+                    transition-transform duration-300 ease-out
+                    ${isOpen ? "rotate-90" : "rotate-0"}
+                  `}
+                />
               </button>
             </div>
           );

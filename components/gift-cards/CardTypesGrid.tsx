@@ -42,33 +42,67 @@ const cardTypes = [
 export default function CardTypesGrid() {
   return (
     <div className="grid grid-cols-1 gap-x-[18px] gap-y-[36px] sm:grid-cols-2 lg:grid-cols-6 lg:gap-y-[48px]">
-      {cardTypes.map((card) => (
-        <Link
+      {cardTypes.map((card, index) => (
+        <div
           key={card.title}
-          href={card.href}
-          className={`group block ${card.gridClassName}`}
+          className={`
+            gift-fade-up
+            ${index === 0 ? "gift-delay-1" : ""}
+            ${index === 1 ? "gift-delay-2" : ""}
+            ${index === 2 ? "gift-delay-3" : ""}
+            ${index === 3 ? "gift-delay-4" : ""}
+            ${index === 4 ? "gift-delay-5" : ""}
+            ${card.gridClassName}
+          `}
         >
-          {/* Card image */}
-          <div className="w-full overflow-hidden rounded-[14px] bg-white">
-            <Image
-              src={card.image}
-              alt={card.title}
-              width={620}
-              height={280}
-              className="h-auto w-full object-contain"
-            />
-          </div>
+          <Link
+            href={card.href}
+            className="
+              group block
+              transition-transform duration-300 ease-out
+              hover:-translate-y-[5px]
+            "
+          >
+            {/* Card image */}
+            <div
+              className="
+                w-full overflow-hidden rounded-[14px] bg-white
+                transition-shadow duration-300 ease-out
+                group-hover:shadow-[0_10px_24px_rgba(0,0,0,0.10)]
+              "
+            >
+              <Image
+                src={card.image}
+                alt={card.title}
+                width={620}
+                height={280}
+                className="
+                  h-auto w-full object-contain
+                  transition-transform duration-300 ease-out
+                  group-hover:scale-[1.025]
+                "
+              />
+            </div>
 
-          {/* Card title */}
-          <h3 className="mt-[10px] text-[20px] font-medium leading-[140%] text-[#333333] sm:text-[22px] lg:mt-[12px] lg:text-[24px] lg:leading-[150%]">
-            {card.title}
-          </h3>
+            {/* Card title */}
+            <h3
+              className="
+                mt-[10px] text-[20px] font-medium leading-[140%] text-[#333333]
+                transition-colors duration-200
+                group-hover:text-[#6A7DBE]
+                sm:text-[22px]
+                lg:mt-[12px] lg:text-[24px] lg:leading-[150%]
+              "
+            >
+              {card.title}
+            </h3>
 
-          {/* Description */}
-          <p className="mt-[6px] text-[15px] font-normal leading-[145%] text-[#333333]/80 sm:text-[16px] lg:mt-[8px] lg:text-[18px] lg:leading-[150%]">
-            {card.description}
-          </p>
-        </Link>
+            {/* Description */}
+            <p className="mt-[6px] text-[15px] font-normal leading-[145%] text-[#333333]/80 sm:text-[16px] lg:mt-[8px] lg:text-[18px] lg:leading-[150%]">
+              {card.description}
+            </p>
+          </Link>
+        </div>
       ))}
     </div>
   );

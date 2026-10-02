@@ -59,7 +59,7 @@ const mobileFooterLinks = [
 export default function Footer() {
   return (
     <footer className="w-full font-[var(--font-roboto)]">
-      {/* Personalized recommendations */}
+      {/* Recommendations */}
       <section className="hidden border-y border-[#D5D9D9] bg-white py-[26px] md:block">
         <div className="mx-auto flex flex-col items-center">
           <p className="mb-[10px] text-center text-[14px] font-normal leading-[130%] text-[#565959]">
@@ -68,14 +68,33 @@ export default function Footer() {
 
           <Link
             href="/auth"
-            className="flex h-[48px] w-[386px] items-center justify-center rounded-[49px] bg-[#F5AD69] text-center text-[24px] font-light leading-[130%] text-white"
+            className="
+              flex h-[48px] w-[386px] items-center justify-center
+              rounded-[49px] bg-[#F5AD69]
+              text-center text-[24px] font-light leading-[130%] text-white
+              transition-all duration-200 ease-out
+              hover:-translate-y-[2px]
+              hover:scale-[1.01]
+              hover:bg-[#F7B475]
+              hover:shadow-[0_6px_14px_rgba(0,0,0,0.14)]
+              active:translate-y-0
+              active:scale-[0.98]
+            "
           >
             Sign in
           </Link>
 
           <p className="mt-[8px] text-center text-[14px] font-medium leading-[130%] text-[#333333]">
             New Customer?{" "}
-            <Link href="/auth" className="text-[#FFA95A]">
+            <Link
+              href="/auth"
+              className="
+                text-[#FFA95A]
+                transition-colors duration-200
+                hover:text-[#F28C35]
+                hover:underline
+              "
+            >
               Start here.
             </Link>
           </p>
@@ -85,7 +104,15 @@ export default function Footer() {
       {/* Back to top */}
       <a
         href="#top"
-        className="flex h-[42px] w-full items-center justify-center bg-[#49516D] text-[20px] font-semibold text-white"
+        className="
+          flex h-[42px] w-full items-center justify-center
+          bg-[#49516D]
+          text-[20px] font-semibold text-white
+          transition-all duration-200 ease-out
+          hover:bg-[#555E7D]
+          hover:tracking-[0.4px]
+          active:bg-[#414861]
+        "
       >
         Back to top
       </a>
@@ -100,7 +127,13 @@ export default function Footer() {
             <Link
               key={link.title}
               href={link.href}
-              className="text-[14px] font-normal leading-[1.25] text-white"
+              className="
+                w-fit text-[14px] font-normal leading-[1.25] text-white
+                transition-all duration-200 ease-out
+                hover:translate-x-[3px]
+                hover:text-white/75
+                active:translate-x-[1px]
+              "
             >
               {link.title}
             </Link>
@@ -122,7 +155,13 @@ export default function Footer() {
                   <li key={link.title}>
                     <Link
                       href={link.href}
-                      className="text-[16px] font-normal leading-[1.2] text-white"
+                      className="
+                        inline-block text-[16px] font-normal leading-[1.2] text-white
+                        transition-all duration-200 ease-out
+                        hover:translate-x-[3px]
+                        hover:text-white/75
+                        active:translate-x-[1px]
+                      "
                     >
                       {link.title}
                     </Link>
