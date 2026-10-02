@@ -124,6 +124,7 @@ export default function AuthForm() {
       } else {
         localStorage.setItem("token", "success-auth-token");
       }
+      localStorage.setItem("userRole", data.user?.role || "User");
       localStorage.setItem("userEmail", formData.email);
       // Сохраняем имя и фамилию для AccountDetails
       if (!isLogin) {

@@ -1,8 +1,9 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { isAdminSession } from "@/lib/adminAuth";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
 
@@ -24,13 +25,22 @@ interface ProductItem {
 
 export default function AdminProductDetailPage() {
   const { id } = useParams();
+  const router = useRouter();
   const [product, setProduct] = useState<ProductItem | null>(null);
-  const [videos, setVideos] = useState<string[]>([]);
+  const [videos, setVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    if (!id) return;
+    async function authorizeAndLoad() {
+      if (!isAdminSession()) {
+        router.replace(localStorage.getItem("token") ? "/" : "/auth");
+        return;
+      }
+      setIsAuthorized(true);
+
+      if (!id) return;
     fetch(`${API_BASE_URL}/products/${id}`)
       .then(async (res) => {
         if (!res.ok) {
@@ -58,7 +68,14 @@ export default function AdminProductDetailPage() {
         }
       })
       .catch(() => setVideos([]));
-  }, [id]);
+    }
+
+    authorizeAndLoad();
+  }, [id, router]);
+
+  if (!isAuthorized) {
+    return null;
+  }
 
   if (loading) {
     return (

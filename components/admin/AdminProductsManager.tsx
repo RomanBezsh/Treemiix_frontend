@@ -3,6 +3,18 @@
 import React, { useState } from "react";
 import Image from "next/image";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
+const MEDIA_BASE_URL = API_BASE_URL.replace(/\/api$/, "");
+
+const getAuthHeaders = () => {
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  return {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+};
+
+const toAbsoluteMediaUrl = (path: string) => (path.startsWith("/") ? `${MEDIA_BASE_URL}${path}` : path);
+
 export interface ProductItem {
   id: string;
   name: string;
@@ -27,6 +39,8 @@ export interface ProductItem {
   features?: string;
   binding?: string;
   releaseDate?: string;
+  galleries?: { id: string; path: string; isMain?: boolean; sortOrder?: number }[];
+  productGalleries?: { id: string; path: string; isMain?: boolean; sortOrder?: number }[];
 }
 
 interface AdminProductsManagerProps {
@@ -135,41 +149,90 @@ export default function AdminProductsManager({
     setIsModalOpen(true);
   };
 
-  // Handle file uploads for images
-  const handleImageFilesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newUrls: string[] = [];
-      Array.from(e.target.files).forEach((file) => {
-        const objectUrl = URL.createObjectURL(file);
-        newUrls.push(objectUrl);
+  // Save files to the backend media folder (wwwroot/media)
+  const uploadMediaFiles = async (files: File[]): Promise<string[]> => {
+    const paths: string[] = [];
+    for (const file of files) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await fetch(`${API_BASE_URL}/upload/media`, {
+          method: "POST",
+          headers: getAuthHeaders(),
+          body: formData,
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          console.error("Upload failed:", res.status, err);
+          alert(`Failed to upload ${file.name}: ${err.message || res.statusText}`);
+          continue;
+        }
+        const json = await res.json();
+        if (json?.path) paths.push(toAbsoluteMediaUrl(json.path));
+      } catch (e) {
+        console.error("Upload error:", e);
+        alert(`Failed to upload ${file.name}: ${e instanceof Error ? e.message : "Network error"}`);
+      }
+    }
+    return paths;
+  };
+
+  // Download a remote URL into the backend media folder (wwwroot/media)
+  const importMediaUrl = async (url: string): Promise<string> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/upload/import`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        body: JSON.stringify({ url }),
       });
-      setImageList((prev) => [...prev, ...newUrls]);
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.path) return toAbsoluteMediaUrl(json.path);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        console.error("Import failed:", res.status, err);
+        alert(`Failed to import URL: ${err.message || res.statusText}`);
+      }
+    } catch (e) {
+      console.error("Import error:", e);
+      alert(`Failed to import URL: ${e instanceof Error ? e.message : "Network error"}`);
+    }
+    return url;
+  };
+
+  // Handle file uploads for images
+  const handleImageFilesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const uploaded = await uploadMediaFiles(Array.from(e.target.files));
+      if (uploaded.length > 0) setImageList((prev) => [...prev, ...uploaded]);
+      e.target.value = "";
     }
   };
 
   // Handle file uploads for videos
-  const handleVideoFilesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoFilesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const newUrls: string[] = [];
-      Array.from(e.target.files).forEach((file) => {
-        const objectUrl = URL.createObjectURL(file);
-        newUrls.push(objectUrl);
-      });
-      setVideoList((prev) => [...prev, ...newUrls]);
+      const uploaded = await uploadMediaFiles(Array.from(e.target.files));
+      if (uploaded.length > 0) setVideoList((prev) => [...prev, ...uploaded]);
+      e.target.value = "";
     }
   };
 
-  const handleAddImageUrl = () => {
-    if (urlInput.trim()) {
-      setImageList((prev) => [...prev, urlInput.trim()]);
+  const handleAddImageUrl = async () => {
+    const url = urlInput.trim();
+    if (url) {
       setUrlInput("");
+      const savedUrl = await importMediaUrl(url);
+      setImageList((prev) => [...prev, savedUrl]);
     }
   };
 
-  const handleAddVideoUrl = () => {
-    if (videoUrlInput.trim()) {
-      setVideoList((prev) => [...prev, videoUrlInput.trim()]);
+  const handleAddVideoUrl = async () => {
+    const url = videoUrlInput.trim();
+    if (url) {
       setVideoUrlInput("");
+      const savedUrl = await importMediaUrl(url);
+      setVideoList((prev) => [...prev, savedUrl]);
     }
   };
 
@@ -471,13 +534,18 @@ export default function AdminProductsManager({
 
                   <div className="flex-1">
                     <label className="block text-[12px] font-medium text-[#555] mb-1">Upload Image File(s)</label>
-                    <input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleImageFilesUpload}
-                      className="w-full text-[13px] text-[#555] file:mr-3 file:py-1.5 file:px-3 file:rounded-[8px] file:border-0 file:text-[13px] file:font-medium file:bg-[#FF825A] file:text-white hover:file:opacity-90 cursor-pointer"
-                    />
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleImageFilesUpload}
+                        className="sr-only"
+                      />
+                      <div className="w-full px-4 py-2.5 border-2 border-dashed border-[#DDD] rounded-[10px] text-center text-[13px] text-[#555] hover:border-[#FF825A] hover:bg-[#FFF8F0] transition-colors cursor-pointer">
+                        <span className="font-medium text-[#FF825A]">Choose images</span> or drag & drop
+                      </div>
+                    </label>
                   </div>
                 </div>
 
@@ -537,13 +605,18 @@ export default function AdminProductsManager({
 
                   <div className="flex-1">
                     <label className="block text-[12px] font-medium text-[#555] mb-1">Upload Video File(s)</label>
-                    <input
-                      type="file"
-                      multiple
-                      accept="video/*"
-                      onChange={handleVideoFilesUpload}
-                      className="w-full text-[13px] text-[#555] file:mr-3 file:py-1.5 file:px-3 file:rounded-[8px] file:border-0 file:text-[13px] file:font-medium file:bg-[#FF825A] file:text-white hover:file:opacity-90 cursor-pointer"
-                    />
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        multiple
+                        accept="video/*"
+                        onChange={handleVideoFilesUpload}
+                        className="sr-only"
+                      />
+                      <div className="w-full px-4 py-2.5 border-2 border-dashed border-[#DDD] rounded-[10px] text-center text-[13px] text-[#555] hover:border-[#FF825A] hover:bg-[#FFF8F0] transition-colors cursor-pointer">
+                        <span className="font-medium text-[#FF825A]">Choose videos</span> or drag & drop
+                      </div>
+                    </label>
                   </div>
                 </div>
 

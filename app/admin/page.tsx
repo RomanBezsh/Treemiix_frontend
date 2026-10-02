@@ -8,6 +8,7 @@ import AdminProductsManager, { ProductItem } from "@/components/admin/AdminProdu
 import AdminUsersManager, { UserItem } from "@/components/admin/AdminUsersManager";
 import AdminOrdersManager, { OrderItem } from "@/components/admin/AdminOrdersManager";
 import AdminCategoriesManager, { CategoryItem } from "@/components/admin/AdminCategoriesManager";
+import { isAdminSession } from "@/lib/adminAuth";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
 
@@ -16,11 +17,12 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<"dashboard" | "products" | "users" | "orders" | "categories">("dashboard");
   const [isApiConnected, setIsApiConnected] = useState(false);
   const [apiLoading, setApiLoading] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   // Initial empty states (no hardcoded mock data)
   const [categories, setCategories] = useState<CategoryItem[]>([]);
 
-  const [sellers, setSellers] = useState<any[]>([]);
+  const [sellers, setSellers] = useState<{ id: string; storeName: string }[]>([]);
 
   const [products, setProducts] = useState<ProductItem[]>([]);
 
@@ -33,6 +35,12 @@ export default function AdminPage() {
   // Fetch data from live Render backend API
   useEffect(() => {
     async function fetchBackendData() {
+      if (!isAdminSession()) {
+        router.replace(localStorage.getItem("token") ? "/" : "/auth");
+        return;
+      }
+      setIsAuthorized(true);
+
       setApiLoading(true);
       let connected = false;
 
@@ -43,7 +51,7 @@ export default function AdminPage() {
       };
 
       try {
-        const prodRes = await fetch(`${API_BASE_URL}/products`, { headers });
+        const prodRes = await fetch(`${API_BASE_URL}/products?isActive=true`, { headers });
         if (prodRes.ok) {
           const data = await prodRes.json();
           if (Array.isArray(data) && data.length > 0) {
@@ -112,7 +120,7 @@ export default function AdminPage() {
     }
 
     fetchBackendData();
-  }, []);
+  }, [router]);
 
   // Handlers for Products
   const getHeaders = () => {
@@ -169,33 +177,8 @@ export default function AdminPage() {
     }
 
     const created = await res.json();
-    
-    let createdGalleries: any[] = [];
-    // Save images to gallery if provided
-    if (newProd.images && newProd.images.length > 0) {
-      for (let i = 0; i < newProd.images.length; i++) {
-        try {
-          const galRes = await fetch(`${API_BASE_URL}/productgalleries`, {
-            method: "POST",
-            headers: getHeaders(),
-            body: JSON.stringify({
-              productId: created.id,
-              path: newProd.images[i],
-              sortOrder: i,
-              isMain: i === 0
-            })
-          });
-          if (galRes.ok) {
-            const galData = await galRes.json();
-            createdGalleries.push(galData);
-          }
-        } catch {
-          // ignore
-        }
-      }
-    }
 
-    let createdVideos: any[] = [];
+    const createdVideos: { path: string }[] = [];
     // Save videos if provided
     if (newProd.videos && newProd.videos.length > 0) {
       for (let i = 0; i < newProd.videos.length; i++) {
@@ -222,7 +205,7 @@ export default function AdminPage() {
 
     setProducts((current) => [{ 
       ...created, 
-      galleries: createdGalleries.length > 0 ? createdGalleries : (newProd.images?.map((p, idx) => ({ id: `g-${idx}`, path: p, isMain: idx === 0 })) || []),
+      galleries: newProd.images?.map((p, idx) => ({ id: `g-${idx}`, path: p, isMain: idx === 0 })) || [],
       videos: createdVideos.length > 0 ? createdVideos.map(v => v.path) : newProd.videos,
       imageUrl: newProd.imageUrl, 
       images: newProd.images 
@@ -244,9 +227,14 @@ export default function AdminPage() {
 
   const handleDeleteProduct = async (id: string) => {
     try {
-      await fetch(`${API_BASE_URL}/products/${id}`, { method: "DELETE", headers: getHeaders() });
+      const res = await fetch(`${API_BASE_URL}/products/${id}`, { method: "DELETE", headers: getHeaders() });
+      if (!res.ok) {
+        alert(`Failed to delete product (HTTP ${res.status}).`);
+        return;
+      }
     } catch {
-      // Fallback local delete
+      alert("Failed to delete product: network error.");
+      return;
     }
     setProducts(products.filter((p) => p.id !== id));
   };
@@ -322,6 +310,10 @@ export default function AdminPage() {
   };
 
   const totalRevenue = orders.reduce((acc, o) => acc + (o.totalAmount || 100), 0);
+
+  if (!isAuthorized) {
+    return null;
+  }
 
   return (
     <div className="w-full min-h-screen bg-[#EFEFEF] py-8 px-4 sm:px-8 lg:px-16 font-[var(--font-roboto)]">
