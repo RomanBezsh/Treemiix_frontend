@@ -5,6 +5,7 @@ interface RecentlyViewedCardProps {
   id: string;
   title: string;
   imageSrc: string;
+  rating?: number;
   onClick?: () => void;
 }
 
@@ -12,6 +13,7 @@ const RecentlyViewedCard = ({
   id,
   title,
   imageSrc,
+  rating = 0,
   onClick,
 }: RecentlyViewedCardProps) => {
   const router = useRouter();
@@ -41,6 +43,16 @@ const RecentlyViewedCard = ({
       <p className="absolute w-[199px] h-[36px] left-[25px] top-[189px] font-sans text-[18px] leading-[120%] text-[#333333] line-clamp-2">
         {title}
       </p>
+      <div className="absolute left-[25px] top-[229px] flex gap-[2px]">
+        {Array.from({ length: 5 }, (_, index) => (
+          <img
+            key={index}
+            src={index < rating ? "/common/star_filled.svg" : "/common/star_empty.svg"}
+            alt={index < rating ? "Filled star" : "Empty star"}
+            className="w-[14px] h-[14px]"
+          />
+        ))}
+      </div>
     </div>
   );
 };

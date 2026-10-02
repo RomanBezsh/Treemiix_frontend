@@ -13,13 +13,14 @@ type CategoryQuadItem = {
   title: string;
   imageSrc: string;
   href: string;
+  rating?: number;
 };
 
 export const nikeSaleItems: CategoryQuadItem[] = [
-  { id: "nike-1", title: "Air Max 270", imageSrc: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80", href: "/catalog/nike/air-max-270" },
-  { id: "nike-2", title: "Revolution 6", imageSrc: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400&q=80", href: "/catalog/nike/revolution-6" },
-  { id: "nike-3", title: "Court Vision Low", imageSrc: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&q=80", href: "/catalog/nike/court-vision" },
-  { id: "nike-4", title: "Air Force 1 '07", imageSrc: "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=400&q=80", href: "/catalog/nike/air-force-1" },
+  { id: "nike-1", title: "Air Max 270", imageSrc: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80", href: "/catalog/nike/air-max-270", rating: 5 },
+  { id: "nike-2", title: "Revolution 6", imageSrc: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400&q=80", href: "/catalog/nike/revolution-6", rating: 4 },
+  { id: "nike-3", title: "Court Vision Low", imageSrc: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&q=80", href: "/catalog/nike/court-vision", rating: 4 },
+  { id: "nike-4", title: "Air Force 1 '07", imageSrc: "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=400&q=80", href: "/catalog/nike/air-force-1", rating: 3 },
 ];
 
 export const popularProductsData: HorizontalProductCardProps[] = [

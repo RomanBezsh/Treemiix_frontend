@@ -6,6 +6,7 @@ interface QuadItem {
   title: string;
   imageSrc: string;
   href: string;
+  rating?: number;
 }
 
 interface CategoryQuadCardProps {
@@ -37,6 +38,7 @@ const CategoryQuadCard = ({ title, moreHref, items }: CategoryQuadCardProps) => 
             title={item.title}
             imageSrc={item.imageSrc}
             href={item.href}
+            rating={item.rating}
           />
         ))}
       </div>
@@ -44,7 +46,7 @@ const CategoryQuadCard = ({ title, moreHref, items }: CategoryQuadCardProps) => 
   );
 }
 
-const CategoryQuadItem = ({ title, imageSrc, href }: Omit<QuadItem, "id">) => {
+const CategoryQuadItem = ({ title, imageSrc, href, rating = 0 }: Omit<QuadItem, "id">) => {
   return (
     <Link
       href={href}
@@ -54,6 +56,18 @@ const CategoryQuadItem = ({ title, imageSrc, href }: Omit<QuadItem, "id">) => {
       <span className="text-[12px] font-light text-[#333333] line-clamp-1 mb-2">
         {title}
       </span>
+
+      {/* Рейтинг */}
+      <div className="flex gap-[2px] mb-2">
+        {Array.from({ length: 5 }, (_, index) => (
+          <img
+            key={index}
+            src={index < rating ? "/common/star_filled.svg" : "/common/star_empty.svg"}
+            alt={index < rating ? "Filled star" : "Empty star"}
+            className="w-[12px] h-[12px]"
+          />
+        ))}
+      </div>
 
       {/* Обертка для картинки */}
       <div className="relative w-full flex-1 overflow-hidden flex items-center justify-center p-1">

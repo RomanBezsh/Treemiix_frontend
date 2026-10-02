@@ -16,12 +16,17 @@ interface Product {
   title: string;
   imageSrc: string;
   price: number;
+  rating?: number;
 }
 
 const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const products = items.length > 0 ? items : [{ id: 'default', title, imageSrc, price: 13 }];
   const activeProduct = products[activeIndex] ?? products[0];
+
+  const isGuid = (id: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+  const productHref = isGuid(activeProduct.id) ? `/product/${activeProduct.id}` : href;
 
   const showPrevious = () => {
     setActiveIndex((currentIndex) => (currentIndex - 1 + products.length) % products.length);
@@ -55,7 +60,7 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
         </button>
 
         <Link
-          href={href}
+          href={productHref}
           className="relative flex items-center justify-center w-[208px] h-[255px]"
         >
           <Image
@@ -84,6 +89,15 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
       </div >
       <div>
         <p className="text-[18px] text-[#333333]">{activeProduct.title}</p>
+        <div className="flex flex-row gap-1.5 mt-1.5 mb-1.5">
+          {Array.from({ length: 5 }, (_, index) => (
+            <img
+              key={index}
+              src={index < (activeProduct.rating ?? 0) ? "/common/star_filled.svg" : "/common/star_empty.svg"}
+              alt={index < (activeProduct.rating ?? 0) ? "Filled star" : "Empty star"}
+            />
+          ))}
+        </div>
         <p className="text-4xl font-light text-[#2D2D2D]">
           <span className="text-[18px] inline-block align-top font-light">$</span>
           {activeProduct.price.toFixed(2)}
