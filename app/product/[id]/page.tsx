@@ -80,6 +80,30 @@ export default function ProductDetailPage() {
       .then(async (productData) => {
         setProduct(productData);
 
+        try {
+          const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+          const imageUrl = productData.imageUrl || (productData.images && productData.images[0]) || (productData.galleries && productData.galleries[0]?.path) || "";
+          const newItem = {
+            id: productData.id,
+            title: productData.name,
+            imageSrc: imageUrl,
+          };
+          await fetch("/api/recently-viewed", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify({ product: newItem }),
+          });
+          const existing = JSON.parse(localStorage.getItem("recentlyViewedProducts") || "[]");
+          const filtered = existing.filter((item: any) => String(item.id) !== String(productData.id));
+          const updated = [newItem, ...filtered].slice(0, 20);
+          localStorage.setItem("recentlyViewedProducts", JSON.stringify(updated));
+        } catch (e) {
+          console.error("Failed to save recently viewed", e);
+        }
+
         const videoRes = await fetch(
           `/api/videos?query=${encodeURIComponent(
             productData.name,
@@ -134,11 +158,11 @@ return (
 
     <VideoCarousel videos={videos} />
 
-    <ProductQnASection />
+    <ProductQnASection productId={product.id} />
 
     <ReviewFilterChips />
 
-    <ProductReviewsSection />
+    <ProductReviewsSection productId={product.id} />
   </main>
 );
 }

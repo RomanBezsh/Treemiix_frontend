@@ -2,9 +2,27 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { MouseEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { MouseEvent, useEffect, useState } from "react";
 
 import RatingsDropdown from "./RatingsDropdown";
+
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://treemiix-backend.onrender.com/api";
+
+interface RatingBreakdownItem {
+  stars: number;
+  percentage: number;
+}
+
+const zeroBreakdown: RatingBreakdownItem[] = [
+  { stars: 5, percentage: 0 },
+  { stars: 4, percentage: 0 },
+  { stars: 3, percentage: 0 },
+  { stars: 2, percentage: 0 },
+  { stars: 1, percentage: 0 },
+];
 
 interface ProductMainSectionProps {
   product: any;
@@ -13,6 +31,138 @@ interface ProductMainSectionProps {
 const ProductMainSection = ({
   product,
 }: ProductMainSectionProps) => {
+  const router = useRouter();
+  const [reviewsCount, setReviewsCount] = useState(0);
+  const [avgRating, setAvgRating] = useState<number | null>(null);
+  const [ratingBreakdown, setRatingBreakdown] =
+    useState<RatingBreakdownItem[]>(zeroBreakdown);
+
+  useEffect(() => {
+    if (!product?.id) return;
+
+    fetch(`${API_BASE_URL}/productreviews/byproduct/${product.id}`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        const list: { rating: number }[] = Array.isArray(data) ? data : [];
+        setReviewsCount(list.length);
+
+        if (list.length === 0) {
+          setAvgRating(null);
+          setRatingBreakdown(zeroBreakdown);
+          return;
+        }
+
+        const total = list.reduce(
+          (sum, r) => sum + (Number(r.rating) || 0),
+          0,
+        );
+        setAvgRating(total / list.length);
+
+        setRatingBreakdown(
+          [5, 4, 3, 2, 1].map((stars) => {
+            const count = list.filter(
+              (r) => Number(r.rating) === stars,
+            ).length;
+            return {
+              stars,
+              percentage: Math.round((count / list.length) * 100),
+            };
+          }),
+        );
+      })
+      .catch(() => {
+        setReviewsCount(0);
+        setAvgRating(null);
+        setRatingBreakdown(zeroBreakdown);
+      });
+  }, [product?.id]);
+
+  const handleAddToCart = async (
+    quantity: number,
+  ): Promise<boolean> => {
+    const token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("token")
+        : null;
+
+    if (!token) {
+      router.push("/auth");
+      return false;
+    }
+
+    try {
+      let cartId: string | null = null;
+      const authHeaders = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const cartRes = await fetch(
+        `${API_BASE_URL}/carts/my`,
+        { headers: authHeaders },
+      );
+
+      if (cartRes.status === 401) {
+        router.push("/auth");
+        return false;
+      }
+
+      if (cartRes.ok) {
+        const cart = await cartRes.json();
+        cartId = cart?.id || null;
+      } else if (cartRes.status === 404) {
+        const createRes = await fetch(
+          `${API_BASE_URL}/carts`,
+          {
+            method: "POST",
+            headers: authHeaders,
+          },
+        );
+        if (createRes.status === 401) {
+          router.push("/auth");
+          return false;
+        }
+        if (createRes.ok) {
+          const created = await createRes.json();
+          cartId = created?.id || null;
+        }
+      }
+
+      if (!cartId) return false;
+
+      const addRes = await fetch(
+        `${API_BASE_URL}/cartitems`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            cartId,
+            productId: product.id,
+            quantity,
+          }),
+        },
+      );
+
+      if (addRes.status === 401) {
+        router.push("/auth");
+        return false;
+      }
+
+      if (addRes.ok) {
+        window.dispatchEvent(
+          new CustomEvent("cart-updated"),
+        );
+      }
+
+      return addRes.ok;
+    } catch (e) {
+      console.error("Error adding to cart", e);
+      return false;
+    }
+  };
+
   const imagesList =
     product.galleries && product.galleries.length > 0
       ? product.galleries.map((g: any) => g.path)
@@ -71,8 +221,9 @@ const ProductMainSection = ({
             "Treemiix Official Store"
           }
           platform={product.binding || "N/A"}
-          rating={product.rating || 4}
-          ratingsCount={0}
+          rating={avgRating ?? (product.rating || 4)}
+          ratingsCount={reviewsCount}
+          ratingBreakdown={ratingBreakdown}
           inStock={product.stock > 0}
           price={product.price}
           installmentText="Pay monthly or pay over time with Treemiix credit"
@@ -89,6 +240,7 @@ const ProductMainSection = ({
           deliveryDateText="Tomorrow, Sep 18"
           orderWithinText="10 hrs 30 mins"
           isSecureTransaction={true}
+          onAddToCart={handleAddToCart}
         />
       </div>
     </section>
@@ -463,6 +615,7 @@ interface ProductInfoProps {
   platform?: string;
   rating: number;
   ratingsCount: number;
+  ratingBreakdown?: RatingBreakdownItem[];
   inStock: boolean;
   price: number;
   originalPrice?: number;
@@ -478,6 +631,7 @@ const ProductInfo = ({
   platform,
   rating,
   ratingsCount,
+  ratingBreakdown,
   inStock,
   price,
   installmentText,
@@ -530,7 +684,7 @@ const ProductInfo = ({
               { length: 5 },
               (_, index) => {
                 const isFilled =
-                  index < rating;
+                  index < Math.floor(rating);
 
                 return (
                   <Image
@@ -562,6 +716,7 @@ const ProductInfo = ({
           <RatingsDropdown
             rating={rating}
             ratingsCount={ratingsCount}
+            ratingBreakdown={ratingBreakdown}
             isOpen={isRatingsOpen}
           />
         </div>
@@ -629,7 +784,9 @@ interface ProductBuyBoxProps {
   locationText?: string;
   initialQuantity?: number;
   maxQuantity?: number;
-  onAddToCart?: (quantity: number) => void;
+  onAddToCart?: (
+    quantity: number,
+  ) => Promise<boolean> | boolean;
   onBuyNow?: (quantity: number) => void;
   isSecureTransaction?: boolean;
 }
@@ -641,8 +798,27 @@ const ProductBuyBox = ({
   deliveryDateText,
   orderWithinText,
   isSecureTransaction,
+  onAddToCart,
 }: ProductBuyBoxProps) => {
-  const [quantity] = useState<number>(1);
+  const [quantity, setQuantity] = useState<number>(1);
+  const [adding, setAdding] = useState(false);
+  const [added, setAdded] = useState(false);
+  const totalPrice = (price * quantity).toFixed(2);
+
+  const decreaseQuantity = () => setQuantity((prev) => Math.max(1, prev - 1));
+  const increaseQuantity = () => setQuantity((prev) => prev + 1);
+
+  const handleAddToCart = async () => {
+    if (!onAddToCart || adding) return;
+
+    setAdding(true);
+    const success = await onAddToCart(quantity);
+    setAdding(false);
+
+    if (success) {
+      setAdded(true);
+    }
+  };
 
   return (
     <div
@@ -659,7 +835,7 @@ const ProductBuyBox = ({
       "
     >
       <span className="mb-[22px] text-[30px] text-[#DE3A3A] sm:text-4xl">
-        $ {price}
+        $ {totalPrice}
       </span>
 
       {/* Shipping */}
@@ -717,6 +893,7 @@ const ProductBuyBox = ({
           <button
             type="button"
             aria-label="Decrease quantity"
+            onClick={decreaseQuantity}
             className="
               flex h-[28px] w-[28px]
               items-center justify-center
@@ -739,6 +916,7 @@ const ProductBuyBox = ({
           <button
             type="button"
             aria-label="Increase quantity"
+            onClick={increaseQuantity}
             className="
               flex h-[28px] w-[28px]
               items-center justify-center
@@ -759,6 +937,8 @@ const ProductBuyBox = ({
       {/* First action */}
       <button
         type="button"
+        onClick={handleAddToCart}
+        disabled={adding}
         className="
           mb-[6px] min-h-[46px] w-full
           rounded-[20px]
@@ -776,7 +956,7 @@ const ProductBuyBox = ({
       >
         <div className="flex min-h-[42px] w-full items-center justify-center rounded-[18px] bg-white px-[12px]">
           <span className="bg-[linear-gradient(144.29deg,#FFDB5A_-0.18%,#FF825A_101.85%)] bg-clip-text font-medium text-transparent">
-            Buy Now
+            {added ? "Added to Cart" : "Add to Cart"}
           </span>
         </div>
       </button>
@@ -784,6 +964,8 @@ const ProductBuyBox = ({
       {/* Second action */}
       <button
         type="button"
+        onClick={handleAddToCart}
+        disabled={adding}
         className="
           mb-[24px] min-h-[46px] w-full
           rounded-[20px]
@@ -799,7 +981,7 @@ const ProductBuyBox = ({
           sm:text-lg
         "
       >
-        Buy Now
+        {added ? "Added to Cart" : "Buy Now"}
       </button>
 
       {isSecureTransaction && (

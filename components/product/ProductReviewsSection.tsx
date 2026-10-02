@@ -6,6 +6,7 @@ import {
   FormEvent,
   useRef,
   useState,
+  useEffect,
 } from "react";
 
 interface Review {
@@ -18,95 +19,126 @@ interface Review {
   imageUrl?: string;
   comment: string;
   mediaNames?: string[];
+  mediaPaths?: string[];
 }
+
+const parseMediaPaths = (raw: unknown): string[] | undefined => {
+  if (!raw) return undefined;
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === "string") {
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+  return undefined;
+};
 
 interface ReviewCardProps {
   review: Review;
 }
 
-const ProductReviewsSection = () => {
+const API_BASE_URL = typeof window !== "undefined" ? (process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com").replace(/\/api$/, "").replace(/\/$/, "") : "https://treemiix-backend.onrender.com";
+
+const ProductReviewsSection = ({ productId = "default" }: { productId?: string }) => {
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const mockReview: Review = {
-    id: 1,
-    userName: "AAAA",
-    date: "August 30, 2017",
-    rating: 5,
-    title: "Definitely WORTH IT!!!",
-    isVerifiedPurchase: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
-    comment: "Great product! Highly recommended.",
-  };
-
-  const [reviews, setReviews] = useState<Review[]>([
-    mockReview,
-  ]);
-
-  const handleMediaChange = (
-    event: ChangeEvent<HTMLInputElement>,
-  ) => {
-    if (!event.target.files) {
-      return;
+  // Функция для обработки выбора файлов
+  const handleMediaChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setMediaFiles(Array.from(event.target.files));
     }
-
-    const newFiles = Array.from(event.target.files);
-
-    setMediaFiles((current) => [
-      ...current,
-      ...newFiles,
-    ]);
   };
 
+  // Функция для удаления файла из списка
   const removeMedia = (index: number) => {
-    setMediaFiles((current) =>
-      current.filter(
-        (_, fileIndex) => fileIndex !== index,
-      ),
-    );
+    setMediaFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const submitReview = (
-    event: FormEvent<HTMLFormElement>,
-  ) => {
+  // Загрузка отзывов с бэкенда
+  useEffect(() => {
+    async function fetchReviews() {
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/productreviews/byproduct/${productId}`);
+            if (res.ok) {
+                const data = await res.json();
+                setReviews(data.map((r: any) => ({
+                    id: r.id,
+                    userName: r.user?.firstName || "User",
+                    date: new Date(r.createdAt).toLocaleDateString(),
+                    rating: r.rating,
+                    title: "Review",
+                    isVerifiedPurchase: true,
+                    comment: r.text,
+                    imageUrl: r.productGallery?.path ? `${API_BASE_URL}${r.productGallery.path}` : undefined,
+                    mediaPaths: parseMediaPaths(r.mediaPaths)
+                })));
+            }
+        } catch (e) { console.error("Error fetching reviews", e); }
+    }
+    fetchReviews();
+  }, [productId]);
+
+  const submitReview = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!reviewText.trim() || rating === 0) return;
 
-    const value = reviewText.trim();
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-    if (!value || rating === 0) {
-      return;
-    }
+    try {
+        // Сначала загружаем медиафайлы на бэкенд (wwwroot/media)
+        const mediaPaths: string[] = [];
+        for (const file of mediaFiles) {
+            const formData = new FormData();
+            formData.append("file", file);
+            const uploadRes = await fetch(`${API_BASE_URL}/api/upload/media`, {
+                method: "POST",
+                headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                body: formData,
+            });
+            if (!uploadRes.ok) {
+                throw new Error(`Failed to upload file: ${file.name}`);
+            }
+            const uploadJson = await uploadRes.json();
+            mediaPaths.push(uploadJson.path);
+        }
 
-    const newReview: Review = {
-      id: `review-${Date.now()}`,
-      userName: "You",
-      date: "just now",
-      rating,
-      title: "My review",
-      isVerifiedPurchase: true,
-      comment: value,
-      mediaNames: mediaFiles.map((file) => file.name),
-    };
+        const res = await fetch(`${API_BASE_URL}/api/productreviews`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+            body: JSON.stringify({ productId, text: reviewText.trim(), rating, mediaPaths, productGalleryId: null, productVideoId: null }),
+        });
+        if (res.ok) {
+            // Перезагружаем список
+            const refetchRes = await fetch(`${API_BASE_URL}/api/productreviews/byproduct/${productId}`);
+            if (refetchRes.ok) {
+                const data = await refetchRes.json();
+                setReviews(data.map((r: any) => ({
+                    id: r.id,
+                    userName: r.user?.firstName || "User",
+                    date: new Date(r.createdAt).toLocaleDateString(),
+                    rating: r.rating,
+                    title: "Review",
+                    isVerifiedPurchase: true,
+                    comment: r.text,
+                    imageUrl: r.productGallery?.path ? `${API_BASE_URL}${r.productGallery.path}` : undefined,
+                    mediaPaths: parseMediaPaths(r.mediaPaths)
+                })));
+            }
+        }
+    } catch (e) { console.error("Error submitting review", e); }
 
-    setReviews((current) => [
-      newReview,
-      ...current,
-    ]);
-
-    setRating(0);
-    setHoveredRating(0);
-    setReviewText("");
-    setMediaFiles([]);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    setReviewText(""); setRating(0); setMediaFiles([]);
   };
+
 
   return (
     <section
@@ -640,27 +672,41 @@ const ReviewCard = ({
         </p>
       </div>
 
-      {/* Media names */}
-      {review.mediaNames &&
-        review.mediaNames.length > 0 && (
-          <div className="flex flex-wrap gap-[8px]">
-            {review.mediaNames.map((name, index) => (
-              <span
-                key={`${name}-${index}`}
-                className="
-                  max-w-full truncate
-                  rounded-[16px]
-                  bg-[#F8F8F8]
-                  px-[12px] py-[7px]
-                  text-[12px] text-[#777777]
-                  sm:rounded-full
-                  sm:px-[14px]
-                  sm:text-[13px]
-                "
-              >
-                {name}
-              </span>
-            ))}
+      {/* Review media */}
+      {review.mediaPaths &&
+        review.mediaPaths.length > 0 && (
+          <div className="flex flex-wrap gap-[12px]">
+            {review.mediaPaths.map((path, index) => {
+              const src = path.startsWith("http") ? path : `${API_BASE_URL}${path}`;
+              const isVideo = /\.(mp4|webm|mov|avi)(\?.*)?$/i.test(path);
+
+              return isVideo ? (
+                <video
+                  key={`${path}-${index}`}
+                  src={src}
+                  controls
+                  className="
+                    max-h-[220px] w-auto max-w-full
+                    rounded-[16px]
+                    sm:rounded-[20px]
+                  "
+                />
+              ) : (
+                <Image
+                  key={`${path}-${index}`}
+                  src={src}
+                  alt={`Review media ${index + 1}`}
+                  width={320}
+                  height={320}
+                  className="
+                    h-auto max-h-[220px] w-auto
+                    rounded-[16px]
+                    object-cover
+                    sm:rounded-[20px]
+                  "
+                />
+              );
+            })}
           </div>
         )}
 

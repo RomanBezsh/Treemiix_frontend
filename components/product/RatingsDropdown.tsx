@@ -3,24 +3,31 @@
 import Image from "next/image";
 import Link from "next/link";
 
+interface RatingBreakdownItem {
+  stars: number;
+  percentage: number;
+}
+
 interface RatingsDropdownProps {
   rating: number;
   ratingsCount: number;
   isOpen: boolean;
+  ratingBreakdown?: RatingBreakdownItem[];
 }
 
-const ratingData = [
-  { stars: 5, percentage: 77 },
-  { stars: 4, percentage: 12 },
-  { stars: 3, percentage: 4 },
-  { stars: 2, percentage: 2 },
-  { stars: 1, percentage: 4 },
+const zeroBreakdown: RatingBreakdownItem[] = [
+  { stars: 5, percentage: 0 },
+  { stars: 4, percentage: 0 },
+  { stars: 3, percentage: 0 },
+  { stars: 2, percentage: 0 },
+  { stars: 1, percentage: 0 },
 ];
 
 export default function RatingsDropdown({
   rating,
   ratingsCount,
   isOpen,
+  ratingBreakdown = zeroBreakdown,
 }: RatingsDropdownProps) {
   if (!isOpen) return null;
 
@@ -46,7 +53,7 @@ export default function RatingsDropdown({
           })}
         </div>
         <div className="bg-[#F8F8F8] shadow-[0px_2px_4px_rgba(0,0,0,0.2)] rounded-[20px] px-4 py-1 text-[18px] text-[#333333]">
-          4.6/5
+          {rating.toFixed(1)}/5
         </div>
       </div>
 
@@ -55,7 +62,7 @@ export default function RatingsDropdown({
       </div>
 
       <div className="flex flex-col gap-3 mb-8">
-        {ratingData.map((data) => (
+        {ratingBreakdown.map((data) => (
           <div key={data.stars} className="flex items-center gap-3">
             <div className="w-[11px] text-[18px] text-[#333333] leading-none">
               {data.stars}
