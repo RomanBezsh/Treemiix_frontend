@@ -17,6 +17,14 @@ const validatePassword = (password: string): boolean => {
 export default function AuthForm() {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
+  const [step, setStep] = useState<"form" | "confirm">("form");
+  const [pendingEmail, setPendingEmail] = useState("");
+  const [registerAuth, setRegisterAuth] = useState<{
+    token?: string;
+    user?: { role?: string; firstName?: string; lastName?: string };
+  } | null>(null);
+  const [confirmationCode, setConfirmationCode] = useState<string | null>(null);
+  const [codeInput, setCodeInput] = useState("");
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -30,6 +38,7 @@ export default function AuthForm() {
     email?: string;
     password?: string;
     terms?: string;
+    code?: string;
   }>({});
 
   const [serverError, setServerError] = useState<string | null>(null);
@@ -53,12 +62,93 @@ export default function AuthForm() {
 
   const handleTabSwitch = (toLogin: boolean) => {
     setIsLogin(toLogin);
+    setStep("form");
+    setCodeInput("");
     setErrors({});
     setServerError(null);
   };
 
+  const handleBackToForm = () => {
+    setStep("form");
+    setCodeInput("");
+    setErrors({});
+    setServerError(null);
+  };
+
+  const handleResend = async () => {
+    setServerError(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/resend-code`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: pendingEmail }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setServerError(data.message || "Unable to resend the code.");
+        return;
+      }
+      setConfirmationCode(data.code || null);
+    } catch {
+      setServerError("Network error. Please try again.");
+    }
+  };
+
+  const handleConfirmCode = async () => {
+    const code = codeInput.trim();
+    if (!/^\d{6}$/.test(code)) {
+      setErrors({ code: "Enter the 6-digit code." });
+      return;
+    }
+
+    setErrors({});
+    setServerError(null);
+    setIsLoading(true);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/confirm-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: pendingEmail, code }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setServerError(data.message || "Invalid confirmation code.");
+        return;
+      }
+
+      const auth = registerAuth || {};
+      if (auth.token) {
+        localStorage.setItem("token", auth.token);
+      } else {
+        localStorage.setItem("token", "success-auth-token");
+      }
+      localStorage.setItem("userRole", auth.user?.role || "User");
+      localStorage.setItem("userEmail", pendingEmail);
+      localStorage.setItem(
+        "userFirstName",
+        formData.firstName || auth.user?.firstName || ""
+      );
+      localStorage.setItem(
+        "userLastName",
+        formData.lastName || auth.user?.lastName || ""
+      );
+
+      router.push("/account");
+    } catch {
+      setServerError("Network error. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (step === "confirm") {
+      await handleConfirmCode();
+      return;
+    }
 
     const newErrors: typeof errors = {};
 
@@ -116,7 +206,31 @@ export default function AuthForm() {
           router.push("/account");
           return;
         }
+        if (
+          isLogin &&
+          typeof data.message === "string" &&
+          data.message.includes("not confirmed")
+        ) {
+          setPendingEmail(formData.email);
+          setRegisterAuth(null);
+          setConfirmationCode(null);
+          setCodeInput("");
+          setStep("confirm");
+          setServerError(
+            "Your email is not confirmed. Enter the code or request a new one."
+          );
+          return;
+        }
         throw new Error(data.message || (isLogin ? "Invalid email or password." : "Registration failed."));
+      }
+
+      if (!isLogin && data.requiresEmailConfirmation) {
+        setPendingEmail(formData.email);
+        setRegisterAuth(data);
+        setConfirmationCode(data.confirmationCode || null);
+        setCodeInput("");
+        setStep("confirm");
+        return;
       }
 
       if (data.token) {
@@ -173,89 +287,159 @@ export default function AuthForm() {
         </div>
       )}
 
-      {!isLogin && (
+      {step === "confirm" ? (
         <>
-          <input
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleInputChange}
-            className="w-101.5 h-16.5 p-3.75 mt-8 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
-            type="text"
-            placeholder="First name"
-            required
-          />
+          <div className="mt-6">
+            <h3 className="text-lg font-medium text-[#333333]">Confirm your email</h3>
+            <p className="text-[13px] text-[#555555] mt-2">
+              We sent a 6-digit code to{" "}
+              <span className="font-medium">{pendingEmail}</span>. Enter it below
+              to finish signing up.
+            </p>
+            {confirmationCode && (
+              <div className="mt-3 p-3 bg-[#EEF3F9] border border-[#C9D8EC] text-[#3B587C] text-xs rounded-[10px]">
+                Demo mode (email delivery is not configured yet): your code is{" "}
+                <span className="font-mono font-bold tracking-widest">
+                  {confirmationCode}
+                </span>
+              </div>
+            )}
+          </div>
 
           <input
-            name="lastName"
-            value={formData.lastName}
+            name="code"
+            value={codeInput}
+            onChange={(e) => {
+              setCodeInput(e.target.value.replace(/\D/g, "").slice(0, 6));
+              if (errors.code) {
+                setErrors((prev) => ({ ...prev, code: undefined }));
+              }
+              if (serverError) setServerError(null);
+            }}
+            className="w-101.5 h-16.5 p-3.75 mt-5 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)] text-center text-[20px] tracking-[0.4em]"
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
+            placeholder="123456"
+            required
+          />
+          {errors.code && (
+            <span className="text-red-500 text-xs mt-1 pl-2">{errors.code}</span>
+          )}
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="bg-[#7C9BC0] w-101.5 h-15 mt-8 text-[20px] text-white font-medium rounded-[10px] shadow-[0_2px_4px_0_#00000033] hover:opacity-95 disabled:opacity-50"
+          >
+            {isLoading ? "Verifying..." : "Verify code"}
+          </button>
+
+          <div className="flex justify-between items-center mt-4 w-full text-[14px]">
+            <button
+              type="button"
+              onClick={handleBackToForm}
+              className="text-[#7C9BC0] cursor-pointer hover:underline"
+            >
+              ← Back
+            </button>
+            <button
+              type="button"
+              onClick={handleResend}
+              className="text-[#E9852A] cursor-pointer hover:underline"
+            >
+              Resend code
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          {!isLogin && (
+            <>
+              <input
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
+                className="w-101.5 h-16.5 p-3.75 mt-8 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
+                type="text"
+                placeholder="First name"
+                required
+              />
+
+              <input
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+                className="w-101.5 h-16.5 p-3.75 mt-5 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
+                type="text"
+                placeholder="Last name"
+                required
+              />
+            </>
+          )}
+
+          <input
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            className={`w-101.5 h-16.5 p-3.75 mt-${isLogin ? "12" : "5"} rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]`}
+            type="email"
+            placeholder="Email"
+            required
+          />
+          {errors.email && (
+            <span className="text-red-500 text-xs mt-1 pl-2">{errors.email}</span>
+          )}
+
+          <input
+            name="password"
+            value={formData.password}
             onChange={handleInputChange}
             className="w-101.5 h-16.5 p-3.75 mt-5 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
-            type="text"
-            placeholder="Last name"
+            type="password"
+            placeholder="Password"
             required
           />
+          {errors.password && (
+            <span className="text-red-500 text-xs mt-1 pl-2">{errors.password}</span>
+          )}
+
+          {isLogin && (
+            <div className="flex justify-end mt-2.5 w-full">
+              <a className="text-[14px] text-[#E9852A] cursor-pointer">Forgot your password?</a>
+            </div>
+          )}
+
+          <div className="flex items-center pl-8 mt-5 gap-4">
+            <input
+              type="checkbox"
+              id="terms"
+              name="agreeTerms"
+              checked={formData.agreeTerms}
+              onChange={handleInputChange}
+              className="w-4 h-4 border-2 rounded-2xl border-gray-300 text-[#7C9BC0] focus:ring-[#7C9BC0] cursor-pointer"
+            />
+            <label htmlFor="terms" className="text-[14px] text-[#333333] select-none cursor-pointer">
+              I agree with{" "}
+              <a href="#" className="text-[#7C9BC0]">Terms and Service</a>
+              {" "}and{" "}
+              <a href="#" className="text-[#7C9BC0]">Privacy Policy</a>
+            </label>
+          </div>
+          {errors.terms && (
+            <span className="text-red-500 text-xs mt-1 pl-8">{errors.terms}</span>
+          )}
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="bg-[#7C9BC0] w-101.5 h-15 mt-10 text-[20px] text-white font-medium rounded-[10px] shadow-[0_2px_4px_0_#00000033] hover:opacity-95 disabled:opacity-50"
+          >
+            {isLoading ? "Processing..." : isLogin ? "Log in" : "Sign up"}
+          </button>
         </>
       )}
-
-      <input
-        name="email"
-        value={formData.email}
-        onChange={handleInputChange}
-        className={`w-101.5 h-16.5 p-3.75 mt-${isLogin ? "12" : "5"} rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]`}
-        type="email"
-        placeholder="Email"
-        required
-      />
-      {errors.email && (
-        <span className="text-red-500 text-xs mt-1 pl-2">{errors.email}</span>
-      )}
-
-      <input
-        name="password"
-        value={formData.password}
-        onChange={handleInputChange}
-        className="w-101.5 h-16.5 p-3.75 mt-5 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
-        type="password"
-        placeholder="Password"
-        required
-      />
-      {errors.password && (
-        <span className="text-red-500 text-xs mt-1 pl-2">{errors.password}</span>
-      )}
-
-      {isLogin && (
-        <div className="flex justify-end mt-2.5 w-full">
-          <a className="text-[14px] text-[#E9852A] cursor-pointer">Forgot your password?</a>
-        </div>
-      )}
-
-      <div className="flex items-center pl-8 mt-5 gap-4">
-        <input
-          type="checkbox"
-          id="terms"
-          name="agreeTerms"
-          checked={formData.agreeTerms}
-          onChange={handleInputChange}
-          className="w-4 h-4 border-2 rounded-2xl border-gray-300 text-[#7C9BC0] focus:ring-[#7C9BC0] cursor-pointer"
-        />
-        <label htmlFor="terms" className="text-[14px] text-[#333333] select-none cursor-pointer">
-          I agree with{" "}
-          <a href="#" className="text-[#7C9BC0]">Terms and Service</a>
-          {" "}and{" "}
-          <a href="#" className="text-[#7C9BC0]">Privacy Policy</a>
-        </label>
-      </div>
-      {errors.terms && (
-        <span className="text-red-500 text-xs mt-1 pl-8">{errors.terms}</span>
-      )}
-
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="bg-[#7C9BC0] w-101.5 h-15 mt-10 text-[20px] text-white font-medium rounded-[10px] shadow-[0_2px_4px_0_#00000033] hover:opacity-95 disabled:opacity-50"
-      >
-        {isLoading ? "Processing..." : isLogin ? "Log in" : "Sign up"}
-      </button>
     </form>
   );
 }
