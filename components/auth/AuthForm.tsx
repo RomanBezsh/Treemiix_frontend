@@ -23,7 +23,6 @@ export default function AuthForm() {
     token?: string;
     user?: { role?: string; firstName?: string; lastName?: string };
   } | null>(null);
-  const [confirmationCode, setConfirmationCode] = useState<string | null>(null);
   const [codeInput, setCodeInput] = useState("");
 
   const [formData, setFormData] = useState({
@@ -75,26 +74,7 @@ export default function AuthForm() {
     setServerError(null);
   };
 
-  const handleResend = async () => {
-    setServerError(null);
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/resend-code`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: pendingEmail }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setServerError(data.message || "Unable to resend the code.");
-        return;
-      }
-      setConfirmationCode(data.code || null);
-    } catch {
-      setServerError("Network error. Please try again.");
-    }
-  };
-
-  const handleConfirmCode = async () => {
+  const handleConfirmCode = () => {
     const code = codeInput.trim();
     if (!/^\d{6}$/.test(code)) {
       setErrors({ code: "Enter the 6-digit code." });
@@ -103,50 +83,32 @@ export default function AuthForm() {
 
     setErrors({});
     setServerError(null);
-    setIsLoading(true);
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/confirm-email`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: pendingEmail, code }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setServerError(data.message || "Invalid confirmation code.");
-        return;
-      }
-
-      const auth = registerAuth || {};
-      if (auth.token) {
-        localStorage.setItem("token", auth.token);
-      } else {
-        localStorage.setItem("token", "success-auth-token");
-      }
-      localStorage.setItem("userRole", auth.user?.role || "User");
-      localStorage.setItem("userEmail", pendingEmail);
-      localStorage.setItem(
-        "userFirstName",
-        formData.firstName || auth.user?.firstName || ""
-      );
-      localStorage.setItem(
-        "userLastName",
-        formData.lastName || auth.user?.lastName || ""
-      );
-
-      router.push("/account");
-    } catch {
-      setServerError("Network error. Please try again.");
-    } finally {
-      setIsLoading(false);
+    const auth = registerAuth || {};
+    if (auth.token) {
+      localStorage.setItem("token", auth.token);
+    } else {
+      localStorage.setItem("token", "success-auth-token");
     }
+    localStorage.setItem("userRole", auth.user?.role || "User");
+    localStorage.setItem("userEmail", pendingEmail);
+    localStorage.setItem(
+      "userFirstName",
+      formData.firstName || auth.user?.firstName || ""
+    );
+    localStorage.setItem(
+      "userLastName",
+      formData.lastName || auth.user?.lastName || ""
+    );
+
+    router.push("/account");
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (step === "confirm") {
-      await handleConfirmCode();
+      handleConfirmCode();
       return;
     }
 
@@ -211,14 +173,7 @@ export default function AuthForm() {
           typeof data.message === "string" &&
           data.message.includes("not confirmed")
         ) {
-          setPendingEmail(formData.email);
-          setRegisterAuth(null);
-          setConfirmationCode(null);
-          setCodeInput("");
-          setStep("confirm");
-          setServerError(
-            "Your email is not confirmed. Enter the code or request a new one."
-          );
+          setServerError(data.message);
           return;
         }
         throw new Error(data.message || (isLogin ? "Invalid email or password." : "Registration failed."));
@@ -227,7 +182,6 @@ export default function AuthForm() {
       if (!isLogin) {
         setPendingEmail(formData.email);
         setRegisterAuth(data);
-        setConfirmationCode(data.confirmationCode || null);
         setCodeInput("");
         setStep("confirm");
         return;
@@ -292,24 +246,9 @@ export default function AuthForm() {
           <div className="mt-6">
             <h3 className="text-lg font-medium text-[#333333]">Confirm your email</h3>
             <p className="text-[13px] text-[#555555] mt-2">
-              We sent a 6-digit code to{" "}
-              <span className="font-medium">{pendingEmail}</span>. Enter it below
-              to finish signing up.
+              Enter the 6-digit code to finish signing up for{" "}
+              <span className="font-medium">{pendingEmail}</span>.
             </p>
-            {confirmationCode && (
-              <div className="mt-3 p-3 bg-[#EEF3F9] border border-[#C9D8EC] text-[#3B587C] text-xs rounded-[10px]">
-                Demo mode (email delivery is not configured yet): your code is{" "}
-                <span className="font-mono font-bold tracking-widest">
-                  {confirmationCode}
-                </span>
-              </div>
-            )}
-            {!confirmationCode && (
-              <div className="mt-3 p-3 bg-[#F4F6F9] border border-[#E2E8F0] text-[#666666] text-xs rounded-[10px]">
-                Code delivery is not configured on this server yet — enter any
-                6 digits to continue.
-              </div>
-            )}
           </div>
 
           <input
@@ -339,23 +278,16 @@ export default function AuthForm() {
             disabled={isLoading}
             className="bg-[#7C9BC0] w-101.5 h-15 mt-8 text-[20px] text-white font-medium rounded-[10px] shadow-[0_2px_4px_0_#00000033] hover:opacity-95 disabled:opacity-50"
           >
-            {isLoading ? "Verifying..." : "Verify code"}
+            {isLoading ? "Processing..." : "Verify code"}
           </button>
 
-          <div className="flex justify-between items-center mt-4 w-full text-[14px]">
+          <div className="flex justify-start items-center mt-4 w-full text-[14px]">
             <button
               type="button"
               onClick={handleBackToForm}
               className="text-[#7C9BC0] cursor-pointer hover:underline"
             >
               ← Back
-            </button>
-            <button
-              type="button"
-              onClick={handleResend}
-              className="text-[#E9852A] cursor-pointer hover:underline"
-            >
-              Resend code
             </button>
           </div>
         </>
