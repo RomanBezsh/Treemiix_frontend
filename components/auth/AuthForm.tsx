@@ -224,7 +224,7 @@ export default function AuthForm() {
         throw new Error(data.message || (isLogin ? "Invalid email or password." : "Registration failed."));
       }
 
-      if (!isLogin && data.requiresEmailConfirmation) {
+      if (!isLogin) {
         setPendingEmail(formData.email);
         setRegisterAuth(data);
         setConfirmationCode(data.confirmationCode || null);
@@ -302,6 +302,12 @@ export default function AuthForm() {
                 <span className="font-mono font-bold tracking-widest">
                   {confirmationCode}
                 </span>
+              </div>
+            )}
+            {!confirmationCode && (
+              <div className="mt-3 p-3 bg-[#F4F6F9] border border-[#E2E8F0] text-[#666666] text-xs rounded-[10px]">
+                Code delivery is not configured on this server yet — enter any
+                6 digits to continue.
               </div>
             )}
           </div>
