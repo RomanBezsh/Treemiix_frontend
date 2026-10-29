@@ -11,7 +11,7 @@ const recommended = [
 
 export default function RecommendedDeals() {
   return (
-    <section className="deals-fade-up deals-delay-2 w-full">
+    <section className="tm-fade-up tm-delay-2 w-full">
       {/* Categories title */}
       <h2 className="text-[18px] font-medium leading-[130%] text-[#333333]">
         Categories
@@ -23,11 +23,11 @@ export default function RecommendedDeals() {
           <article
             key={item.id}
             className="
-              deals-scale-in
+              tm-scale-in
               group rounded-[12px] bg-[#F8F8F8] p-[10px]
               shadow-[0_1px_3px_rgba(0,0,0,0.08)]
               transition-all duration-300 ease-out
-              hover:-translate-y-[5px]
+              hover:-translate-y-[4px]
               hover:shadow-[0_8px_18px_rgba(0,0,0,0.11)]
             "
             style={{

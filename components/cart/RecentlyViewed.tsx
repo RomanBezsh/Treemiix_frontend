@@ -151,7 +151,7 @@ export default function RecentlyViewed({
   };
 
   return (
-    <div className="cart-fade-up cart-delay-2">
+    <div className="tm-fade-up tm-delay-2">
       <section
         className="
           w-full rounded-[16px] bg-[#F8F8F8]
@@ -254,7 +254,7 @@ export default function RecentlyViewed({
                     hover:bg-[#6F90B7]
                     hover:shadow-[0_6px_14px_rgba(124,155,192,0.28)]
                     active:translate-y-0
-                    active:scale-[0.96]
+                    active:scale-[0.97]
                   "
                 >
                   {addingId === item.id

@@ -26,14 +26,14 @@ export default function AccountGiftCard() {
         <div className="mt-[18px] flex flex-wrap items-center gap-[16px]">
           <Link
             href="/gift-cards/reload"
-            className="flex h-[44px] min-w-[180px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[26px] text-[14px] font-medium text-white"
+            className="tm-press flex h-[44px] min-w-[180px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[26px] text-[14px] font-medium text-white"
           >
             Reload Your Balance
           </Link>
 
           <Link
             href="/gift-cards/redeem"
-            className="flex h-[44px] min-w-[180px] items-center justify-center rounded-[22px] border border-[#D6D6D6] bg-[#EEEEEE] px-[26px] text-[14px] font-medium text-[#777777]"
+            className="tm-press flex h-[44px] min-w-[180px] items-center justify-center rounded-[22px] border border-[#D6D6D6] bg-[#EEEEEE] px-[26px] text-[14px] font-medium text-[#777777]"
           >
             Redeem a Gift Card
           </Link>
@@ -62,7 +62,7 @@ export default function AccountGiftCard() {
         {/* Save */}
         <button
           type="button"
-          className="absolute bottom-[36px] right-[44px] flex h-[44px] min-w-[120px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[28px] text-[14px] font-medium text-white"
+          className="tm-press absolute bottom-[36px] right-[44px] flex h-[44px] min-w-[120px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[28px] text-[14px] font-medium text-white"
         >
           Save
         </button>

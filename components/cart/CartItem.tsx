@@ -229,7 +229,7 @@ export default function CartItem({
 
             <span
               key={quantity}
-              className="cart-scale-in flex h-[26px] flex-1 items-center justify-center text-[16px] font-normal text-[#333333]"
+              className="tm-scale-in flex h-[26px] flex-1 items-center justify-center text-[16px] font-normal text-[#333333]"
             >
               {quantity}
             </span>

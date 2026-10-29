@@ -46,12 +46,12 @@ export default function CardTypesGrid() {
         <div
           key={card.title}
           className={`
-            gift-fade-up
-            ${index === 0 ? "gift-delay-1" : ""}
-            ${index === 1 ? "gift-delay-2" : ""}
-            ${index === 2 ? "gift-delay-3" : ""}
-            ${index === 3 ? "gift-delay-4" : ""}
-            ${index === 4 ? "gift-delay-5" : ""}
+            tm-fade-up
+            ${index === 0 ? "tm-delay-1" : ""}
+            ${index === 1 ? "tm-delay-2" : ""}
+            ${index === 2 ? "tm-delay-3" : ""}
+            ${index === 3 ? "tm-delay-4" : ""}
+            ${index === 4 ? "tm-delay-5" : ""}
             ${card.gridClassName}
           `}
         >
@@ -60,7 +60,7 @@ export default function CardTypesGrid() {
             className="
               group block
               transition-transform duration-300 ease-out
-              hover:-translate-y-[5px]
+              hover:-translate-y-[4px]
             "
           >
             {/* Card image */}

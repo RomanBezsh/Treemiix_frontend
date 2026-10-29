@@ -24,12 +24,11 @@ export default function HelpCard({
         px-[28px]
         shadow-[0_2px_6px_rgba(0,0,0,0.08)]
         transition-all duration-250 ease-out
-        hover:-translate-y-[5px]
-        hover:scale-[1.015]
+        hover:-translate-y-[4px]
         hover:bg-[#7C9BC0]
         hover:shadow-[0_10px_22px_rgba(0,0,0,0.12)]
         active:translate-y-0
-        active:scale-[0.98]
+        active:scale-[0.97]
       "
     >
       {/* Card icon */}

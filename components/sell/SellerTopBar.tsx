@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function SellerTopBar() {
   return (
     <section className="w-full bg-[#F8F8F8CC] font-[var(--font-roboto)]">
-      <div className="sell-fade-down mx-auto flex min-h-[76px] w-full max-w-[1440px] items-center justify-between gap-[20px] px-[20px] sm:px-[32px] lg:min-h-[96px] lg:px-[80px]">
+      <div className="tm-fade-down mx-auto flex min-h-[76px] w-full max-w-[1440px] items-center justify-between gap-[20px] px-[20px] sm:px-[32px] lg:min-h-[96px] lg:px-[80px]">
         <h1 className="text-[24px] font-black leading-[130%] text-[#333333]/80 sm:text-[30px] lg:text-[40px] lg:leading-[150%]">
           Sell on TreeMiix
         </h1>
@@ -17,8 +17,7 @@ export default function SellerTopBar() {
             px-[22px]
             text-[17px] font-medium leading-[120%] text-white
             transition-all duration-200 ease-out
-            hover:-translate-y-[3px]
-            hover:scale-[1.025]
+            hover:-translate-y-[2px]
             hover:shadow-[0_8px_18px_rgba(255,130,90,0.28)]
             active:translate-y-0
             active:scale-[0.97]

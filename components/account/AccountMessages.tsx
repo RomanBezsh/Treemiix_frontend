@@ -44,7 +44,7 @@ export default function AccountMessages() {
         <div className="flex items-center gap-[28px]">
           <button
             type="button"
-            className="flex h-[36px] min-w-[96px] items-center justify-center rounded-[18px] bg-[#7C9BC0] px-[20px] text-[12px] font-medium text-white"
+            className="tm-press flex h-[36px] min-w-[96px] items-center justify-center rounded-[18px] bg-[#7C9BC0] px-[20px] text-[12px] font-medium text-white"
           >
             Back
           </button>

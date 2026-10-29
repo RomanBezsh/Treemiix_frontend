@@ -218,7 +218,7 @@ export default function AuthForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col bg-[#F8F8F8] w-125.5 h-min-143.5 h-max-190.25 rounded-[50px] px-12 pt-13.75 pb-15 font-normal shadow-[0_2px_4px_0_#00000033]"
+      className="tm-scale-in flex flex-col bg-[#F8F8F8] w-125.5 h-min-143.5 h-max-190.25 rounded-[50px] px-12 pt-13.75 pb-15 font-normal shadow-[0_2px_4px_0_#00000033]"
     >
       <div className="flex row gap-7.75">
         <h2
@@ -276,7 +276,7 @@ export default function AuthForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-[#7C9BC0] w-101.5 h-15 mt-8 text-[20px] text-white font-medium rounded-[10px] shadow-[0_2px_4px_0_#00000033] hover:opacity-95 disabled:opacity-50"
+            className="tm-press bg-[#7C9BC0] w-101.5 h-15 mt-8 text-[20px] text-white font-medium rounded-[10px] shadow-[0_2px_4px_0_#00000033] hover:opacity-95 disabled:opacity-50"
           >
             {isLoading ? "Processing..." : "Verify code"}
           </button>
@@ -372,7 +372,7 @@ export default function AuthForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-[#7C9BC0] w-101.5 h-15 mt-10 text-[20px] text-white font-medium rounded-[10px] shadow-[0_2px_4px_0_#00000033] hover:opacity-95 disabled:opacity-50"
+            className="tm-press bg-[#7C9BC0] w-101.5 h-15 mt-10 text-[20px] text-white font-medium rounded-[10px] shadow-[0_2px_4px_0_#00000033] hover:opacity-95 disabled:opacity-50"
           >
             {isLoading ? "Processing..." : isLogin ? "Log in" : "Sign up"}
           </button>

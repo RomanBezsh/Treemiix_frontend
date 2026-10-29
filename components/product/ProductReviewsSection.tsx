@@ -487,7 +487,7 @@ const ProductReviewsSection = ({ productId = "default" }: { productId?: string }
               text-[12px] text-[#7C9BC0]
               shadow-[0_2px_4px_#00000033]
               transition-all duration-200
-              hover:-translate-y-[1px]
+              hover:-translate-y-[2px]
               sm:px-4 sm:text-sm
             "
           >
@@ -504,7 +504,7 @@ const ProductReviewsSection = ({ productId = "default" }: { productId?: string }
               text-[12px] text-[#B3B3B3]
               shadow-[0_2px_4px_#00000033]
               transition-all duration-200
-              hover:-translate-y-[1px]
+              hover:-translate-y-[2px]
               sm:px-4 sm:text-sm
             "
           >

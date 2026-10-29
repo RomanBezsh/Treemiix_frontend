@@ -25,17 +25,17 @@ export default function SellerAdvantages() {
             <div
               key={advantage.title}
               className={`
-                sell-fade-up
-                ${index === 0 ? "sell-delay-1" : ""}
-                ${index === 1 ? "sell-delay-2" : ""}
-                ${index === 2 ? "sell-delay-3" : ""}
+                tm-fade-up
+                ${index === 0 ? "tm-delay-1" : ""}
+                ${index === 1 ? "tm-delay-2" : ""}
+                ${index === 2 ? "tm-delay-3" : ""}
               `}
             >
               <div
                 className="
                   group flex items-center justify-center
                   transition-transform duration-300 ease-out
-                  hover:-translate-y-[6px]
+                  hover:-translate-y-[4px]
                 "
               >
                 <Image

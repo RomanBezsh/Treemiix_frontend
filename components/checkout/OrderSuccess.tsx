@@ -16,7 +16,7 @@ export default function OrderSuccess() {
   {/* My Orders */}
   <Link
     href="/account/orders"
-    className="
+    className="tm-press 
       flex h-[56px] w-full items-center justify-center
       rounded-[26.85px] bg-[#7C9BC0]
       text-[18px] font-medium leading-[120%] text-white
@@ -30,7 +30,7 @@ export default function OrderSuccess() {
   {/* Continue shopping */}
   <Link
     href="/"
-    className="
+    className="tm-press 
       flex h-[56px] w-full items-center justify-center
       rounded-[26.85px] bg-[#EEEEEE]
       text-[18px] font-medium leading-[120%] text-[#828282]/50

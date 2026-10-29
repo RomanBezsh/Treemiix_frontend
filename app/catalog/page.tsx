@@ -355,7 +355,7 @@ function CatalogContent() {
             ) : filteredProducts.length === 0 ? (
             <div className="py-20 text-center text-[18px] text-[#777]">No products matching current filters.</div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 mb-10">
+            <div className="tm-fade-up tm-delay-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 mb-10">
               {filteredProducts.map((p) => {
                 const img = p.imageUrl || p.images?.[0] || "";
                 const hasDiscount = Boolean(p.oldCost && p.oldCost > p.price);

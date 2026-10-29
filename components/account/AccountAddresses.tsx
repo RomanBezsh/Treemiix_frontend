@@ -90,7 +90,7 @@ export default function AccountAddresses() {
           <button
             type="button"
             onClick={() => setMode("form")}
-            className="absolute bottom-[24px] right-[40px] flex h-[44px] min-w-[150px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[28px] text-[14px] font-medium text-white"
+            className="tm-press absolute bottom-[24px] right-[40px] flex h-[44px] min-w-[150px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[28px] text-[14px] font-medium text-white"
           >
             Add Address
           </button>
@@ -173,7 +173,7 @@ export default function AccountAddresses() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex h-[44px] min-w-[120px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[28px] text-[14px] font-medium text-white hover:opacity-95 disabled:opacity-50"
+                className="tm-press flex h-[44px] min-w-[120px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[28px] text-[14px] font-medium text-white hover:opacity-95 disabled:opacity-50"
               >
                 {submitting ? "Saving to API..." : "Save Address"}
               </button>
@@ -197,7 +197,7 @@ export default function AccountAddresses() {
           <button
             type="button"
             onClick={() => setMode("form")}
-            className="absolute left-[300px] top-[62px] flex h-[30px] min-w-[80px] items-center justify-center rounded-[15px] border border-[#D3D3D3] bg-white px-[18px] text-[11px] font-normal text-[#555555]"
+            className="tm-press absolute left-[300px] top-[62px] flex h-[30px] min-w-[80px] items-center justify-center rounded-[15px] border border-[#D3D3D3] bg-white px-[18px] text-[11px] font-normal text-[#555555]"
           >
             Edit
           </button>
@@ -208,7 +208,7 @@ export default function AccountAddresses() {
               setForm(initialForm);
               setMode("form");
             }}
-            className="absolute bottom-[38px] right-[44px] flex h-[44px] min-w-[150px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[28px] text-[14px] font-medium text-white"
+            className="tm-press absolute bottom-[38px] right-[44px] flex h-[44px] min-w-[150px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[28px] text-[14px] font-medium text-white"
           >
             Add New Address
           </button>

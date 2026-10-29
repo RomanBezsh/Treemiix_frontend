@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function GiftCardsBanner() {
   return (
-    <section className="gift-scale-in gift-delay-1 w-full">
+    <section className="tm-scale-in tm-delay-1 w-full">
       <div
         className="
           overflow-hidden

@@ -222,7 +222,7 @@ export default function AccountDetails() {
             <button
               type="submit"
               disabled={saving}
-              className="flex h-[48px] min-w-[130px] items-center justify-center rounded-[24px] bg-[#7C9BC0] px-[32px] text-[16px] font-medium text-white hover:opacity-95 disabled:opacity-50"
+              className="tm-press flex h-[48px] min-w-[130px] items-center justify-center rounded-[24px] bg-[#7C9BC0] px-[32px] text-[16px] font-medium text-white hover:opacity-95 disabled:opacity-50"
             >
               {saving ? "Saving..." : "Save"}
             </button>

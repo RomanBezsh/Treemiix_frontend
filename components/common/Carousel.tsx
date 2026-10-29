@@ -22,13 +22,18 @@ interface ProductCarouselSectionProps {
   href?: string;
   children: ReactNode;
   width?: string;
+  itemClassName?: string; // overrides default item widths
 }
+
+const DEFAULT_ITEM_WIDTH =
+  "w-[88%] sm:w-[calc(50%-8px)] lg:w-[calc(33.333%-14px)] xl:w-[calc(25%-15px)] 2xl:w-[calc(20%-16px)]";
 
 const Carousel = ({
   title,
   href,
   children,
   width = "max-w-[1480px]",
+  itemClassName = DEFAULT_ITEM_WIDTH,
 }: ProductCarouselSectionProps) => {
   const scrollRef =
     useRef<HTMLDivElement>(null);
@@ -195,21 +200,10 @@ const Carousel = ({
               (child, index) => (
                 <div
                   key={index}
-                  className="
-                    min-w-0 shrink-0 snap-start
-
-                    w-[88%]
-
-                    sm:w-[calc(50%-8px)]
-
-                    lg:w-[calc(33.333%-14px)]
-
-                    xl:w-[calc(25%-15px)]
-
-                    2xl:w-[calc(20%-16px)]
-
-                    [&>*]:w-full
-                  "
+                  className={cn(
+                    "min-w-0 shrink-0 snap-start [&>*]:w-full",
+                    itemClassName,
+                  )}
                 >
                   {child}
                 </div>

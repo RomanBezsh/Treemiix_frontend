@@ -20,7 +20,7 @@ export default function CartSummary({ items }: CartSummaryProps) {
   );
 
   return (
-    <div className="cart-fade-right cart-delay-1">
+    <div className="tm-fade-right tm-delay-1">
       <aside
         className="
           w-full rounded-[16px] bg-[#F8F8F8]
@@ -71,7 +71,7 @@ export default function CartSummary({ items }: CartSummaryProps) {
                   hover:bg-[#6F90B7]
                   hover:shadow-[0_7px_16px_rgba(124,155,192,0.28)]
                   active:translate-y-0
-                  active:scale-[0.98]
+                  active:scale-[0.97]
                 `
                 : "pointer-events-none bg-[#B7C4D3]"
             }

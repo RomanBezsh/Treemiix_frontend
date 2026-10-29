@@ -33,7 +33,7 @@ export default function CheckoutSummary({
 
       <Link
         href={href}
-        className="mt-[20px] flex min-h-[48px] w-full items-center justify-center rounded-[20px] bg-[#7C9BC0] px-[24px] text-center text-[20px] font-medium leading-[120%] text-white"
+        className="tm-press mt-[20px] flex min-h-[48px] w-full items-center justify-center rounded-[20px] bg-[#7C9BC0] px-[24px] text-center text-[20px] font-medium leading-[120%] text-white"
       >
         {buttonText}
       </Link>

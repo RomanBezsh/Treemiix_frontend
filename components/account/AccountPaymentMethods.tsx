@@ -52,7 +52,7 @@ export default function AccountPaymentMethods() {
           <button
             type="button"
             onClick={() => setMode("form")}
-            className="absolute bottom-[24px] right-[40px] flex h-[44px] min-w-[220px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[28px] text-[14px] font-medium text-white"
+            className="tm-press absolute bottom-[24px] right-[40px] flex h-[44px] min-w-[220px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[28px] text-[14px] font-medium text-white"
           >
             Add Payment Methods
           </button>
@@ -139,7 +139,7 @@ export default function AccountPaymentMethods() {
             <div className="mt-auto flex justify-end pt-[40px]">
               <button
                 type="submit"
-                className="flex h-[44px] min-w-[120px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[28px] text-[14px] font-medium text-white"
+                className="tm-press flex h-[44px] min-w-[120px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[28px] text-[14px] font-medium text-white"
               >
                 Save
               </button>
@@ -164,7 +164,7 @@ export default function AccountPaymentMethods() {
           <button
             type="button"
             onClick={() => setMode("form")}
-            className="absolute left-[280px] top-[62px] flex h-[30px] min-w-[80px] items-center justify-center rounded-[15px] border border-[#D3D3D3] bg-white px-[18px] text-[11px] font-normal text-[#555555]"
+            className="tm-press absolute left-[280px] top-[62px] flex h-[30px] min-w-[80px] items-center justify-center rounded-[15px] border border-[#D3D3D3] bg-white px-[18px] text-[11px] font-normal text-[#555555]"
           >
             Edit
           </button>
@@ -175,7 +175,7 @@ export default function AccountPaymentMethods() {
               setForm(initialForm);
               setMode("form");
             }}
-            className="absolute bottom-[38px] right-[44px] flex h-[44px] min-w-[220px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[28px] text-[14px] font-medium text-white"
+            className="tm-press absolute bottom-[38px] right-[44px] flex h-[44px] min-w-[220px] items-center justify-center rounded-[22px] bg-[#7C9BC0] px-[28px] text-[14px] font-medium text-white"
           >
             Add Payment Methods
           </button>

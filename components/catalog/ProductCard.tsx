@@ -39,7 +39,7 @@ const ProductCard = ({
 
   return (
     <div
-      className="flex flex-col items-center w-full max-w-[271px] h-[460px] bg-[#F8F8F8] rounded-[10px] px-4.5 pt-3 cursor-pointer"
+      className="tm-lift flex flex-col items-center w-full max-w-[271px] h-[460px] bg-[#F8F8F8] rounded-[10px] px-4.5 pt-3 cursor-pointer"
       onClick={handleClick}
     >
       <div className="flex flex-row w-full items-center justify-between mb-8.25">

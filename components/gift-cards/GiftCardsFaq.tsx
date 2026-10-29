@@ -32,7 +32,7 @@ export default function GiftCardsFaq() {
   };
 
   return (
-    <section className="gift-fade-up w-full font-[var(--font-roboto)]">
+    <section className="tm-fade-up w-full font-[var(--font-roboto)]">
       <h2 className="mb-[18px] text-[24px] font-normal leading-[150%] text-[#333333]">
         Frequently asked questions about TreeMiix.com gift cards
       </h2>
@@ -55,7 +55,7 @@ export default function GiftCardsFaq() {
                   ${
                     isOpen
                       ? "shadow-[0_5px_14px_rgba(0,0,0,0.08)]"
-                      : "hover:-translate-y-[1px] hover:shadow-[0_4px_10px_rgba(0,0,0,0.08)]"
+                      : "hover:-translate-y-[2px] hover:shadow-[0_4px_10px_rgba(0,0,0,0.08)]"
                   }
                 `}
               >
@@ -109,7 +109,7 @@ export default function GiftCardsFaq() {
                   hover:-translate-y-[2px]
                   hover:shadow-[0_5px_12px_rgba(0,0,0,0.10)]
                   active:translate-y-0
-                  active:scale-[0.96]
+                  active:scale-[0.97]
                 "
               >
                 <Image

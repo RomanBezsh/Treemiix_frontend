@@ -24,7 +24,7 @@ export default function WishlistProductCard({
   onSelect,
 }: WishlistProductCardProps) {
   return (
-    <article className="relative flex h-full w-full flex-col rounded-[10px] bg-[#F3F3F3] px-[12px] pb-[14px] pt-[12px] font-[var(--font-roboto)]">
+    <article className="tm-lift relative flex h-full w-full flex-col rounded-[10px] bg-[#F3F3F3] px-[12px] pb-[14px] pt-[12px] font-[var(--font-roboto)]">
       {/* Checkbox */}
       <button
         type="button"

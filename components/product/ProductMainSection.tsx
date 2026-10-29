@@ -195,6 +195,7 @@ const ProductMainSection = ({
   return (
     <section
       className="
+        tm-fade-up
         mb-[70px] grid w-full max-w-[1690px]
         grid-cols-1 gap-[30px]
         px-[16px]
@@ -950,7 +951,7 @@ const ProductBuyBox = ({
           hover:-translate-y-[2px]
           hover:shadow-[0_6px_14px_rgba(255,130,90,0.18)]
           active:translate-y-0
-          active:scale-[0.98]
+          active:scale-[0.97]
           sm:text-lg
         "
       >
@@ -977,7 +978,7 @@ const ProductBuyBox = ({
           hover:-translate-y-[2px]
           hover:shadow-[0_6px_14px_rgba(255,130,90,0.22)]
           active:translate-y-0
-          active:scale-[0.98]
+          active:scale-[0.97]
           sm:text-lg
         "
       >

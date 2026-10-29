@@ -28,7 +28,7 @@ export default function CartItemsList({
 }: CartItemsListProps) {
   if (items.length === 0) {
     return (
-      <div className="cart-scale-in flex min-h-[160px] w-full items-center justify-center rounded-[14px] bg-[#F8F8F8]">
+      <div className="tm-scale-in flex min-h-[160px] w-full items-center justify-center rounded-[14px] bg-[#F8F8F8]">
         <p className="text-[16px] font-normal leading-[150%] text-[#333333]">
           Your shopping cart is empty.
         </p>
@@ -42,7 +42,7 @@ export default function CartItemsList({
       {items.map((item, index) => (
         <div
           key={item.id}
-          className="cart-fade-up"
+          className="tm-fade-up"
           style={{
             animationDelay: `${index * 100}ms`,
           }}

@@ -13,12 +13,12 @@ export default function SellerBenefits() {
     <section className="w-full bg-white font-[var(--font-roboto)]">
       <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center gap-[44px] px-[20px] py-[60px] sm:px-[32px] lg:flex-row lg:gap-[70px] lg:px-[80px] lg:py-[100px]">
         {/* Sales chart animation */}
-        <div className="sell-fade-left w-full max-w-[320px] shrink-0 lg:w-[380px] lg:max-w-none">
+        <div className="tm-fade-left w-full max-w-[320px] shrink-0 lg:w-[380px] lg:max-w-none">
           <div
             className="
               group flex w-full items-center justify-center
               transition-transform duration-300 ease-out
-              hover:-translate-y-[5px]
+              hover:-translate-y-[4px]
             "
           >
             <Image
@@ -37,7 +37,7 @@ export default function SellerBenefits() {
         </div>
 
         {/* Benefits content */}
-        <div className="sell-fade-right sell-delay-1 flex min-w-0 flex-1 flex-col items-start">
+        <div className="tm-fade-right tm-delay-1 flex min-w-0 flex-1 flex-col items-start">
           <h2 className="text-[34px] font-black leading-[120%] text-[#333333]/80 sm:text-[42px] lg:text-[60px] lg:leading-[130%]">
             Over $50K in potential benefits
           </h2>

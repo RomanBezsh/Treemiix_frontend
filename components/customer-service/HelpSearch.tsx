@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function HelpSearch() {
   return (
-    <section className="help-fade-up help-delay-2 mt-[38px]">
+    <section className="tm-fade-up tm-delay-2 mt-[38px]">
       {/* Search section title */}
       <h2 className="mb-[12px] text-[14px] font-medium leading-[130%] text-[#222222]">
         Search the help library

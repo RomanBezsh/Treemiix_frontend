@@ -20,7 +20,7 @@ export default function GiftCardsNavigation() {
       aria-label="Gift cards navigation"
       className="w-full bg-[#F8F8F8] font-[var(--font-roboto)]"
     >
-      <div className="gift-fade-down mx-auto flex w-full max-w-[1600px] flex-wrap items-center justify-center gap-x-[18px] gap-y-[8px] px-[14px] py-[10px] sm:gap-x-[24px] sm:px-[24px] lg:min-h-[52px] lg:flex-nowrap lg:justify-between lg:gap-[24px] lg:px-[40px] lg:py-0">
+      <div className="tm-fade-down mx-auto flex w-full max-w-[1600px] flex-wrap items-center justify-center gap-x-[18px] gap-y-[8px] px-[14px] py-[10px] sm:gap-x-[24px] sm:px-[24px] lg:min-h-[52px] lg:flex-nowrap lg:justify-between lg:gap-[24px] lg:px-[40px] lg:py-0">
         {navigationLinks.map((link) => (
           <Link
             key={link.title}
@@ -34,7 +34,7 @@ export default function GiftCardsNavigation() {
               after:-translate-x-1/2
               after:bg-[#7E8CBD]
               after:transition-all after:duration-200
-              hover:-translate-y-[1px]
+              hover:-translate-y-[2px]
               hover:text-[#5F6F9B]
               hover:after:w-full
               sm:text-[14px]

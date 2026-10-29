@@ -10,10 +10,10 @@ interface PopularCategoriesSectionProps {
 
 const PopularCategoriesSection = ({ href, items }: PopularCategoriesSectionProps) => {
   return (
-    <div className="flex flex-col w-213.25  h-158.75">
-      <div className="flex flex-row justify-between items-center mb-7">
-        <h2 className="text-2xl font-semibold text-[#333333]">Most popular categories of the week</h2>
-        <Link className="flex flex-row items-center" href={href}>
+    <div className="flex w-full min-w-0 flex-col 2xl:h-158.75 2xl:w-213.25">
+      <div className="mb-4 flex flex-row items-center justify-between gap-3 sm:mb-7">
+        <h2 className="text-[20px] font-semibold text-[#333333] sm:text-2xl">Most popular categories of the week</h2>
+        <Link className="flex shrink-0 flex-row items-center" href={href}>
           <span className="text-[#333333] text-[13px] mr-2.25">More</span>
           <Image
             src="/home/vector.svg"
@@ -23,7 +23,7 @@ const PopularCategoriesSection = ({ href, items }: PopularCategoriesSectionProps
           />
         </Link>
       </div>
-      <div className="flex flex-row gap-4.75">
+      <div className="grid grid-cols-3 gap-2.5 sm:gap-4 2xl:flex 2xl:flex-row 2xl:gap-4.75">
         {items.map((item) => (
           <PopularCategoryTile key={item.category} {...item} />
         ))}

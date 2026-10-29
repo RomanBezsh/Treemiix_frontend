@@ -322,7 +322,7 @@ const VideoCarousel = ({
             hover:-translate-y-[2px]
             hover:shadow-[0_6px_14px_rgba(124,155,192,0.25)]
             active:translate-y-0
-            active:scale-[0.98]
+            active:scale-[0.97]
             sm:w-fit
             sm:min-w-[199px]
             sm:text-lg

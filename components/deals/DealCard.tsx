@@ -18,12 +18,12 @@ export default function DealCard({
   return (
     <article
       className="
-        deals-scale-in
+        tm-scale-in
         group relative flex h-full flex-col
         rounded-[12px] bg-[#F8F8F8] p-[12px]
         shadow-[0_1px_3px_rgba(0,0,0,0.08)]
         transition-all duration-300 ease-out
-        hover:-translate-y-[5px]
+        hover:-translate-y-[4px]
         hover:shadow-[0_10px_22px_rgba(0,0,0,0.12)]
       "
     >

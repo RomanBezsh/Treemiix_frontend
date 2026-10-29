@@ -63,11 +63,10 @@ export default function AccountDropdown({
             py-2 text-[18px] font-medium text-white
             shadow-[0px_2px_4px_rgba(0,0,0,0.2)]
             transition-all duration-200 ease-out
-            hover:-translate-y-[1px]
-            hover:scale-[1.02]
+            hover:-translate-y-[2px]
             hover:shadow-[0_5px_10px_rgba(0,0,0,0.18)]
             active:translate-y-0
-            active:scale-[0.98]
+            active:scale-[0.97]
           "
         >
           Sign in

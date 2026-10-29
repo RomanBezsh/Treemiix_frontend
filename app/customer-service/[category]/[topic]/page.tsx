@@ -102,7 +102,7 @@ export default function CustomerServiceTopicPage() {
                 <Link
                   key={action.title}
                   href={action.href}
-                  className="flex min-h-[48px] min-w-[240px] items-center justify-center rounded-[24px] bg-[#7C9BC0] px-[28px] py-[10px] text-center text-[16px] font-medium leading-[130%] text-white"
+                  className="tm-press flex min-h-[48px] min-w-[240px] items-center justify-center rounded-[24px] bg-[#7C9BC0] px-[28px] py-[10px] text-center text-[16px] font-medium leading-[130%] text-white"
                 >
                   {action.title}
                 </Link>

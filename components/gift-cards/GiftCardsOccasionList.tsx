@@ -14,17 +14,17 @@ export default function GiftCardsOccasionList() {
         <div
           key={occasion}
           className={`
-            gift-fade-up
+            tm-fade-up
             ${
               index === 0
-                ? "gift-delay-1"
+                ? "tm-delay-1"
                 : index === 1
-                  ? "gift-delay-2"
+                  ? "tm-delay-2"
                   : index === 2
-                    ? "gift-delay-3"
+                    ? "tm-delay-3"
                     : index === 3
-                      ? "gift-delay-4"
-                      : "gift-delay-5"
+                      ? "tm-delay-4"
+                      : "tm-delay-5"
             }
             lg:flex-1
           `}
@@ -38,8 +38,7 @@ export default function GiftCardsOccasionList() {
               px-[14px]
               text-center text-[16px] font-medium leading-[130%] text-white
               transition-all duration-200 ease-out
-              hover:-translate-y-[3px]
-              hover:scale-[1.02]
+              hover:-translate-y-[2px]
               hover:shadow-[0_7px_16px_rgba(126,140,189,0.22)]
               active:translate-y-0
               active:scale-[0.97]
@@ -57,7 +56,7 @@ export default function GiftCardsOccasionList() {
         </div>
       ))}
 
-      <div className="gift-fade-up gift-delay-5">
+      <div className="tm-fade-up tm-delay-5">
         <button
           type="button"
           aria-label="Show more occasions"
@@ -67,12 +66,12 @@ export default function GiftCardsOccasionList() {
             border border-[#E6E6E6] bg-[#F8F8F8]
             text-[28px] font-light leading-none text-[#7E8CBD]
             transition-all duration-200 ease-out
-            hover:-translate-y-[3px]
+            hover:-translate-y-[2px]
             hover:rotate-90
             hover:bg-[#F1F1F5]
             hover:shadow-[0_6px_14px_rgba(0,0,0,0.10)]
             active:translate-y-0
-            active:scale-[0.95]
+            active:scale-[0.97]
             sm:h-[58px]
             lg:h-[64px]
             lg:w-[64px]

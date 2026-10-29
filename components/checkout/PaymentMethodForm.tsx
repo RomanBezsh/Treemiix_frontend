@@ -58,7 +58,7 @@ export default function PaymentMethodForm() {
 
           <button
             type="button"
-            className="mt-[14px] flex min-h-[48px] w-full items-center justify-center rounded-[20px] bg-[#7C9BC0] px-[24px] py-[12px] text-[16px] font-medium leading-[120%] text-white sm:w-fit sm:px-[45px] sm:text-[20px]"
+            className="tm-press mt-[14px] flex min-h-[48px] w-full items-center justify-center rounded-[20px] bg-[#7C9BC0] px-[24px] py-[12px] text-[16px] font-medium leading-[120%] text-white sm:w-fit sm:px-[45px] sm:text-[20px]"
           >
             Add a credit or debit card
           </button>
@@ -139,7 +139,7 @@ export default function PaymentMethodForm() {
 
         <button
           type="button"
-          className="mt-[14px] flex min-h-[48px] w-full items-center justify-center rounded-[20px] bg-[#7C9BC0] px-[24px] py-[12px] text-[16px] font-medium leading-[120%] text-white sm:w-fit sm:px-[45px] sm:text-[20px]"
+          className="tm-press mt-[14px] flex min-h-[48px] w-full items-center justify-center rounded-[20px] bg-[#7C9BC0] px-[24px] py-[12px] text-[16px] font-medium leading-[120%] text-white sm:w-fit sm:px-[45px] sm:text-[20px]"
         >
           Add a personal checking account
         </button>

@@ -9,7 +9,7 @@ export default function HelpCardsGrid() {
       {helpCards.map((card, index) => (
         <div
           key={card.slug}
-          className="help-fade-up"
+          className="tm-fade-up"
           style={{
             animationDelay: `${index * 90}ms`,
           }}

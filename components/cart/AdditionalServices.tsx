@@ -18,7 +18,7 @@ export default function AdditionalServices({
   onToggleService,
 }: AdditionalServicesProps) {
   return (
-    <div className="cart-scale-in mt-[10px] flex max-w-[760px] flex-col gap-[12px]">
+    <div className="tm-scale-in mt-[10px] flex max-w-[760px] flex-col gap-[12px]">
       {/* Additional service options */}
       {services.map((service) => {
         const isSelected = selectedServiceIds.includes(service.id);

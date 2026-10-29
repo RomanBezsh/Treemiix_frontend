@@ -77,7 +77,7 @@ export default function DealsSidebar() {
     "w-fit transition-all duration-200 ease-out hover:translate-x-[3px] hover:text-[#496B94]";
 
   return (
-    <aside className="deals-fade-left w-full font-[var(--font-roboto)] lg:w-[280px] lg:shrink-0">
+    <aside className="tm-fade-left w-full font-[var(--font-roboto)] lg:w-[280px] lg:shrink-0">
       {/* Top navigation */}
       <div className="border-b border-[#E5E5E5] pb-[16px]">
         <button
@@ -232,11 +232,11 @@ export default function DealsSidebar() {
                 px-[12px]
                 text-[12px] font-medium text-white
                 transition-all duration-200 ease-out
-                hover:-translate-y-[1px]
+                hover:-translate-y-[2px]
                 hover:scale-[1.04]
                 hover:shadow-[0_4px_10px_rgba(255,130,90,0.22)]
                 active:translate-y-0
-                active:scale-[0.95]
+                active:scale-[0.97]
               "
             >
               GO

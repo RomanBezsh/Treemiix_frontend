@@ -78,7 +78,7 @@ export default function Footer() {
               hover:bg-[#F7B475]
               hover:shadow-[0_6px_14px_rgba(0,0,0,0.14)]
               active:translate-y-0
-              active:scale-[0.98]
+              active:scale-[0.97]
             "
           >
             Sign in

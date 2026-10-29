@@ -50,7 +50,7 @@ export default function DealsToolbar() {
     "Featured";
 
   return (
-    <div className="deals-fade-down deals-delay-1 flex w-full flex-col gap-[14px] sm:flex-row sm:items-center sm:justify-between">
+    <div className="tm-fade-down tm-delay-1 flex w-full flex-col gap-[14px] sm:flex-row sm:items-center sm:justify-between">
       {/* Selected filters */}
       <div className="flex flex-wrap items-center gap-[10px]">
         {/* Selected count */}

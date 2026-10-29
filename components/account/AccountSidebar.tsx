@@ -135,7 +135,7 @@ export default function AccountSidebar() {
         <div className="mt-auto px-[24px] pb-[30px] pt-[40px] xl:px-[28px] xl:pb-[36px]">
           <button
             type="button"
-            className="flex h-[46px] w-full items-center justify-center rounded-[24px] bg-[#7C9BC0] px-[20px] text-[14px] font-medium text-white xl:text-[16px]"
+            className="tm-press flex h-[46px] w-full items-center justify-center rounded-[24px] bg-[#7C9BC0] px-[20px] text-[14px] font-medium text-white xl:text-[16px]"
           >
             Delete Account
           </button>

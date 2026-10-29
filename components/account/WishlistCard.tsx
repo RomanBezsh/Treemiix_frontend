@@ -125,7 +125,7 @@ export default function WishlistCard() {
         <button
           type="button"
           onClick={selectAll}
-          className="flex h-[32px] items-center justify-center rounded-[16px] border border-[#7C9BC0] bg-white px-[20px] text-[12px] font-normal text-[#333333]"
+          className="tm-press flex h-[32px] items-center justify-center rounded-[16px] border border-[#7C9BC0] bg-white px-[20px] text-[12px] font-normal text-[#333333]"
         >
           {allSelected ? "Unselect all items" : "Select all items"}
         </button>
@@ -133,7 +133,7 @@ export default function WishlistCard() {
         <button
           type="button"
           onClick={deleteSelected}
-          className="flex h-[32px] items-center justify-center rounded-[16px] border border-[#7C9BC0] bg-white px-[20px] text-[12px] font-normal text-[#333333]"
+          className="tm-press flex h-[32px] items-center justify-center rounded-[16px] border border-[#7C9BC0] bg-white px-[20px] text-[12px] font-normal text-[#333333]"
         >
           Delete
         </button>
@@ -176,7 +176,7 @@ export default function WishlistCard() {
             {/* Buy */}
             <button
               type="button"
-              className="mt-[14px] flex h-[56px] w-full items-center justify-center rounded-[18px] bg-[linear-gradient(90deg,#FFDB5A_0%,#FF825A_100%)] text-[26px] font-medium leading-[120%] text-white shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
+              className="tm-press mt-[14px] flex h-[56px] w-full items-center justify-center rounded-[18px] bg-[linear-gradient(90deg,#FFDB5A_0%,#FF825A_100%)] text-[26px] font-medium leading-[120%] text-white shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
             >
               Buy
             </button>

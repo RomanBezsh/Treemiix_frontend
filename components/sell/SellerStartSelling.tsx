@@ -5,7 +5,7 @@ export default function SellerStartSelling() {
     <section className="w-full bg-white font-[var(--font-roboto)]">
       <div className="mx-auto w-full max-w-[1440px] px-[12px] pb-[56px] pt-[16px] sm:px-[24px] sm:pb-[70px] lg:px-[80px] lg:pb-[100px] lg:pt-[40px]">
         {/* Entrance animation */}
-        <div className="sell-fade-up">
+        <div className="tm-fade-up">
           {/* Gradient border */}
           <div
             className="
@@ -43,8 +43,7 @@ export default function SellerStartSelling() {
                   px-[22px]
                   text-[16px] font-medium leading-[120%] text-white
                   transition-all duration-200 ease-out
-                  hover:-translate-y-[3px]
-                  hover:scale-[1.025]
+                  hover:-translate-y-[2px]
                   hover:shadow-[0_8px_18px_rgba(255,130,90,0.28)]
                   active:translate-y-0
                   active:scale-[0.97]
