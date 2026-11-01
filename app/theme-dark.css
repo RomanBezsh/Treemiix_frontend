@@ -1,0 +1,383 @@
+/* =========================================================
+   Dark theme
+   Enabled by the "dark" class on <html> (see ThemeToggle and the script in app/layout.tsx).
+   Instead of adding dark: to every component, the site's light palette is mapped here
+   to dark tokens. New code can also use Tailwind dark: utilities.
+   Wrap an element in .tm-light to keep its original light colors (e.g. a white button on a photo banner).
+   Generated rules below — edit the tokens to retune the theme.
+   ========================================================= */
+
+
+
+html.dark {
+  color-scheme: dark;
+  --background: #14161d;
+  --foreground: #e6e8ef;
+  --tm-page: #14161d;
+  --tm-surface: #1d2029;
+  --tm-surface-2: #282c38;
+  --tm-text: #e6e8ef;
+  --tm-text-2: #b5bacb;
+  --tm-text-3: #8f95a8;
+  --tm-text-4: #6c7183;
+  --tm-accent: #8fb3dc;
+  --tm-accent-2: #aeb7d6;
+  --tm-border: #2f3342;
+}
+
+/* Single-color dark icons: show them light on dark backgrounds */
+html.dark img[src*="vector.svg"],
+html.dark img[src*="product/location.svg"],
+html.dark img[src*="product/lock.svg"] {
+  filter: invert(1) brightness(0.9);
+}
+
+/* Home hero photo has a white bottom edge: fade it into the dark page */
+html.dark img[src*="background/main.jpg"] {
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  filter: brightness(0.72) saturate(0.9);
+}
+
+/* Sell page illustrations are SVGs with a baked-in white card: invert lightness, keep hues */
+html.dark img[src*="/sell/sell-more.svg"],
+html.dark img[src*="/sell/scale-fba.svg"],
+html.dark img[src*="/sell/make-money.svg"] {
+  filter: invert(0.88) hue-rotate(180deg) saturate(1.2);
+}
+
+/* Sell page hero: the light lavender photo is replaced by a dark gradient in the same hues */
+html.dark .tm-seller-hero {
+  background-image:
+    radial-gradient(55% 75% at 12% 8%, rgba(106, 125, 190, 0.38) 0%, transparent 70%),
+    radial-gradient(45% 65% at 88% 0%, rgba(135, 97, 141, 0.36) 0%, transparent 70%),
+    linear-gradient(180deg, #1c2034 0%, var(--tm-page) 100%);
+}
+
+/* Auth page photo: dim it so the dark form does not sit on a bright background */
+html.dark .tm-auth-bg {
+  background-image: linear-gradient(rgba(20, 22, 29, 0.6), rgba(20, 22, 29, 0.6)), url("/background/auth.jpg");
+}
+
+/* Soft outline instead of drop shadows, which are invisible on dark backgrounds */
+html.dark .tm-lift:hover {
+  box-shadow: 0 0 0 1px var(--tm-border), 0 10px 22px rgba(0, 0, 0, 0.45);
+}
+
+html.dark .bg-white:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#FFFFFF\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#FFF\]:not(.tm-light, .tm-light *) {
+  background-color: var(--tm-page);
+}
+
+html.dark .hover\:bg-white:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#FFFFFF\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#FFF\]:hover:not(.tm-light, .tm-light *) {
+  background-color: var(--tm-page);
+}
+
+html.dark .bg-\[\#F8F8F8\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#FAFAFA\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#F3F3F3\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#F7F7F7\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#F5F5F5\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#F4F6F9\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#F0F2F5\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#F1F1F5\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#F1F1F1\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#F0F2F2\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#F8F8F8CC\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#FFF8F0\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#EFEFEF33\]:not(.tm-light, .tm-light *) {
+  background-color: var(--tm-surface);
+}
+
+html.dark .hover\:bg-\[\#F8F8F8\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#FAFAFA\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#F3F3F3\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#F7F7F7\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#F5F5F5\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#F4F6F9\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#F0F2F5\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#F1F1F5\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#F1F1F1\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#F0F2F2\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#F8F8F8CC\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#FFF8F0\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#EFEFEF33\]:hover:not(.tm-light, .tm-light *) {
+  background-color: var(--tm-surface);
+}
+
+html.dark .bg-\[\#EEEEEE\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#EFEFEF\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#E8E8E8\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#E3E6E6\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#E3E3E3\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#D6D6D6\]:not(.tm-light, .tm-light *),
+html.dark .bg-\[\#EEE\]:not(.tm-light, .tm-light *) {
+  background-color: var(--tm-surface-2);
+}
+
+html.dark .hover\:bg-\[\#EEEEEE\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#EFEFEF\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#E8E8E8\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#E3E6E6\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#E3E3E3\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#D6D6D6\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:bg-\[\#EEE\]:hover:not(.tm-light, .tm-light *) {
+  background-color: var(--tm-surface-2);
+}
+
+html.dark .bg-black:not(.tm-light, .tm-light *) {
+  background-color: var(--tm-page);
+}
+
+html.dark .bg-gray-100:not(.tm-light, .tm-light *),
+html.dark .bg-gray-200:not(.tm-light, .tm-light *) {
+  background-color: var(--tm-surface-2);
+}
+
+html.dark .text-\[\#333333\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#333\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#222222\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#222\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#2D2D2D\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#111111\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#111\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#171717\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#000000\]:not(.tm-light, .tm-light *) {
+  color: var(--tm-text);
+}
+
+html.dark .hover\:text-\[\#333333\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#333\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#222222\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#222\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#2D2D2D\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#111111\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#111\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#171717\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#000000\]:hover:not(.tm-light, .tm-light *) {
+  color: var(--tm-text);
+}
+
+html.dark .group:hover .group-hover\:text-\[\#333333\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#333\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#222222\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#222\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#2D2D2D\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#111111\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#111\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#171717\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#000000\]:not(.tm-light, .tm-light *) {
+  color: var(--tm-text);
+}
+
+html.dark .text-\[\#555\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#555555\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#565959\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#666\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#666666\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#444444\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#444\]:not(.tm-light, .tm-light *) {
+  color: var(--tm-text-2);
+}
+
+html.dark .hover\:text-\[\#555\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#555555\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#565959\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#666\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#666666\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#444444\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#444\]:hover:not(.tm-light, .tm-light *) {
+  color: var(--tm-text-2);
+}
+
+html.dark .group:hover .group-hover\:text-\[\#555\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#555555\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#565959\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#666\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#666666\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#444444\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#444\]:not(.tm-light, .tm-light *) {
+  color: var(--tm-text-2);
+}
+
+html.dark .text-\[\#777\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#777777\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#828282\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#888\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#888888\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#8A8A8A\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#999999\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#999\]:not(.tm-light, .tm-light *) {
+  color: var(--tm-text-3);
+}
+
+html.dark .hover\:text-\[\#777\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#777777\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#828282\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#888\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#888888\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#8A8A8A\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#999999\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#999\]:hover:not(.tm-light, .tm-light *) {
+  color: var(--tm-text-3);
+}
+
+html.dark .group:hover .group-hover\:text-\[\#777\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#777777\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#828282\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#888\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#888888\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#8A8A8A\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#999999\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#999\]:not(.tm-light, .tm-light *) {
+  color: var(--tm-text-3);
+}
+
+html.dark .text-\[\#B3B3B3\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#AAAAAA\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#A0A0A0\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#BBBBBB\]:not(.tm-light, .tm-light *),
+html.dark .text-\[\#9A9A9A\]:not(.tm-light, .tm-light *) {
+  color: var(--tm-text-4);
+}
+
+html.dark .hover\:text-\[\#B3B3B3\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#AAAAAA\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#A0A0A0\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#BBBBBB\]:hover:not(.tm-light, .tm-light *),
+html.dark .hover\:text-\[\#9A9A9A\]:hover:not(.tm-light, .tm-light *) {
+  color: var(--tm-text-4);
+}
+
+html.dark .group:hover .group-hover\:text-\[\#B3B3B3\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#AAAAAA\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#A0A0A0\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#BBBBBB\]:not(.tm-light, .tm-light *),
+html.dark .group:hover .group-hover\:text-\[\#9A9A9A\]:not(.tm-light, .tm-light *) {
+  color: var(--tm-text-4);
+}
+
+html.dark .text-\[\#496B94\]:not(.tm-light, .tm-light *) {
+  color: var(--tm-accent);
+}
+
+html.dark .hover\:text-\[\#496B94\]:hover:not(.tm-light, .tm-light *) {
+  color: var(--tm-accent);
+}
+
+html.dark .group:hover .group-hover\:text-\[\#496B94\]:not(.tm-light, .tm-light *) {
+  color: var(--tm-accent);
+}
+
+html.dark .text-\[\#49516D\]:not(.tm-light, .tm-light *) {
+  color: var(--tm-accent-2);
+}
+
+html.dark .hover\:text-\[\#49516D\]:hover:not(.tm-light, .tm-light *) {
+  color: var(--tm-accent-2);
+}
+
+html.dark .group:hover .group-hover\:text-\[\#49516D\]:not(.tm-light, .tm-light *) {
+  color: var(--tm-accent-2);
+}
+
+html.dark .text-black:not(.tm-light, .tm-light *),
+html.dark .text-gray-800:not(.tm-light, .tm-light *) {
+  color: var(--tm-text);
+}
+
+html.dark .text-\[\#333333\]\/80:not(.tm-light, .tm-light *) {
+  color: color-mix(in srgb, var(--tm-text) 80%, transparent);
+}
+
+html.dark .text-\[\#828282\]\/50:not(.tm-light, .tm-light *) {
+  color: color-mix(in srgb, var(--tm-text-3) 50%, transparent);
+}
+
+html.dark .border-\[\#E5E5E5\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#DDD\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#DDDDDD\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#EFEFEF\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#E0E0E0\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#D6D6D6\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#EEEEEE\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#EEE\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#E2E8F0\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#E3E3E3\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#E1E1E1\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#D5D9D9\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#D3D3D3\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#F8F8F8\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#D9D9D9\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#E6E6E6\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#CCCCCC\]:not(.tm-light, .tm-light *),
+html.dark .border-\[\#CCC\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#E5E5E5\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#DDD\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#DDDDDD\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#EFEFEF\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#E0E0E0\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#D6D6D6\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#EEEEEE\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#EEE\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#E2E8F0\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#E3E3E3\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#E1E1E1\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#D5D9D9\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#D3D3D3\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#F8F8F8\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#D9D9D9\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#E6E6E6\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#CCCCCC\]:not(.tm-light, .tm-light *),
+html.dark .border-t-\[\#CCC\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#E5E5E5\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#DDD\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#DDDDDD\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#EFEFEF\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#E0E0E0\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#D6D6D6\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#EEEEEE\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#EEE\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#E2E8F0\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#E3E3E3\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#E1E1E1\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#D5D9D9\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#D3D3D3\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#F8F8F8\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#D9D9D9\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#E6E6E6\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#CCCCCC\]:not(.tm-light, .tm-light *),
+html.dark .border-b-\[\#CCC\]:not(.tm-light, .tm-light *) {
+  border-color: var(--tm-border);
+}
+
+html.dark .divide-\[\#E5E5E5\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#DDD\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#DDDDDD\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#EFEFEF\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#E0E0E0\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#D6D6D6\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#EEEEEE\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#EEE\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#E2E8F0\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#E3E3E3\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#E1E1E1\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#D5D9D9\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#D3D3D3\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#F8F8F8\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#D9D9D9\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#E6E6E6\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#CCCCCC\] > *:not(.tm-light, .tm-light *),
+html.dark .divide-\[\#CCC\] > *:not(.tm-light, .tm-light *) {
+  border-color: var(--tm-border);
+}
+
+html.dark .placeholder\:text-\[\#999999\]:not(.tm-light, .tm-light *)::placeholder,
+html.dark .placeholder\:text-\[\#B3B3B3\]:not(.tm-light, .tm-light *)::placeholder,
+html.dark .placeholder\:text-\[\#AAAAAA\]:not(.tm-light, .tm-light *)::placeholder,
+html.dark .placeholder\:text-\[\#A0A0A0\]:not(.tm-light, .tm-light *)::placeholder,
+html.dark .placeholder\:text-\[\#888888\]:not(.tm-light, .tm-light *)::placeholder {
+  color: var(--tm-text-4);
+}

@@ -1,32 +1,26 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { SORT_OPTIONS, type DealsSort } from "./dealsFilters";
 
-const initialFilters = ["Razer", "Last 30 days"];
+export interface ActiveFilterChip {
+  key: string;
+  label: string;
+  onRemove: () => void;
+}
 
-const sortOptions = [
-  { value: "Featured", label: "Featured" },
-  { value: "PriceLow", label: "Price: Low to High" },
-  { value: "PriceHigh", label: "Price: High to Low" },
-  { value: "Rating", label: "Avg. Customer Review" },
-];
+interface DealsToolbarProps {
+  count: number;
+  chips: ActiveFilterChip[];
+  onReset: () => void;
+  sort: DealsSort;
+  onSortChange: (sort: DealsSort) => void;
+}
 
-export default function DealsToolbar() {
-  const [filters, setFilters] = useState(initialFilters);
-  const [sort, setSort] = useState("Featured");
+export default function DealsToolbar({ count, chips, onReset, sort, onSortChange }: DealsToolbarProps) {
   const [isSortOpen, setIsSortOpen] = useState(false);
 
   const sortRef = useRef<HTMLDivElement>(null);
-
-  const removeFilter = (filter: string) => {
-    setFilters((current) =>
-      current.filter((item) => item !== filter),
-    );
-  };
-
-  const resetFilters = () => {
-    setFilters([]);
-  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -46,8 +40,8 @@ export default function DealsToolbar() {
   }, []);
 
   const selectedSort =
-    sortOptions.find((option) => option.value === sort)?.label ??
-    "Featured";
+    SORT_OPTIONS.find((option) => option.value === sort)?.label ??
+    "Recommended";
 
   return (
     <div className="tm-fade-down tm-delay-1 flex w-full flex-col gap-[14px] sm:flex-row sm:items-center sm:justify-between">
@@ -56,19 +50,21 @@ export default function DealsToolbar() {
         {/* Selected count */}
         <div className="flex items-baseline gap-[5px] text-[#333333]">
           <span className="text-[24px] font-normal leading-[130%]">
-            26
+            {count}
           </span>
 
           <span className="text-[18px] font-normal leading-[130%]">
-            Item selected
+            {count === 1 ? "deal" : "deals"}
           </span>
         </div>
 
         {/* Reset */}
         <button
           type="button"
-          onClick={resetFilters}
+          onClick={onReset}
+          disabled={chips.length === 0}
           className="
+            disabled:cursor-default disabled:opacity-50
             flex h-[40px] items-center justify-center
             rounded-[51px]
             bg-[#B3B3B3]/40
@@ -87,11 +83,12 @@ export default function DealsToolbar() {
         </button>
 
         {/* Active filters */}
-        {filters.map((filter) => (
+        {chips.map((chip) => (
           <button
-            key={filter}
+            key={chip.key}
             type="button"
-            onClick={() => removeFilter(filter)}
+            onClick={chip.onRemove}
+            aria-label={`Remove filter ${chip.label}`}
             className="
               group flex h-[40px] items-center justify-center gap-[10px]
               rounded-[51px]
@@ -108,7 +105,7 @@ export default function DealsToolbar() {
               active:scale-[0.97]
             "
           >
-            <span>{filter}</span>
+            <span>{chip.label}</span>
 
             <span
               aria-hidden="true"
@@ -182,14 +179,14 @@ export default function DealsToolbar() {
             }
           `}
         >
-          {sortOptions.map((option) => (
+          {SORT_OPTIONS.map((option) => (
             <button
               key={option.value}
               type="button"
               role="option"
               aria-selected={sort === option.value}
               onClick={() => {
-                setSort(option.value);
+                onSortChange(option.value);
                 setIsSortOpen(false);
               }}
               className={`block w-full px-[18px] py-[10px] text-left text-[14px] leading-[130%] transition-all duration-150 hover:translate-x-[2px] hover:bg-[#F5F5F5] ${

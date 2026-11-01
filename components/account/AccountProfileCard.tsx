@@ -1,6 +1,11 @@
+"use client";
+
 import Image from "next/image";
+import { getFullName, useAuthUser } from "@/lib/useAuthUser";
 
 export default function AccountProfileCard() {
+  const user = useAuthUser();
+
   return (
     <div className="flex w-full items-center gap-[14px] rounded-[20px] bg-[#F8F8F8] px-[20px] py-[16px] shadow-[0_2px_5px_rgba(0,0,0,0.08)]">
       {/* Avatar */}
@@ -18,11 +23,11 @@ export default function AccountProfileCard() {
       {/* User info */}
       <div className="min-w-0">
         <p className="truncate text-[16px] font-medium leading-[130%] text-[#333333]">
-          Peter Marzo
+          {user ? getFullName(user) : "Guest"}
         </p>
 
         <p className="mt-[2px] truncate text-[13px] font-normal leading-[130%] text-[#555555]">
-          LeiLeimai@gmail.com
+          {user ? user.email : "Sign in to see your account"}
         </p>
       </div>
     </div>

@@ -221,6 +221,7 @@ const ProductMainSection = ({
             product.seller?.storeName ||
             "Treemiix Official Store"
           }
+          storeHref={product.sellerId ? `/seller/${product.sellerId}` : undefined}
           platform={product.binding || "N/A"}
           rating={avgRating ?? (product.rating || 4)}
           ratingsCount={reviewsCount}

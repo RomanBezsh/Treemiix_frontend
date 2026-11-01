@@ -7,7 +7,9 @@ import { useEffect, useRef, useState } from "react";
 
 import AccountDropdown from "./AccountDropdown";
 import AllCategoriesDropdown from "./AllCategoriesDropdown";
+import ThemeToggle from "@/components/common/ThemeToggle/ThemeToggle";
 import { clearAuthSession } from "@/lib/authSession";
+import { getDisplayName, useAuthUser } from "@/lib/useAuthUser";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -29,7 +31,15 @@ export default function Header() {
     useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [searchValue, setSearchValue] = useState("");
+  const user = useAuthUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleSignOut = () => {
+    clearAuthSession();
+    setCartCount(0);
+    setIsMenuOpen(false);
+    router.push("/");
+  };
   const [menuPathname, setMenuPathname] = useState(pathname);
 
   // Close the mobile menu after navigation
@@ -155,7 +165,7 @@ export default function Header() {
   return (
     <header className="w-full font-[var(--font-roboto)] text-white">
       {/* Top header */}
-      <div className="bg-[#49516D]">
+      <div className="bg-[#49516D] transition-colors duration-300 dark:border-b dark:border-[#2A2E3B] dark:bg-[#1A1D27]">
         <div className="mx-auto flex min-h-[72px] w-full max-w-[1920px] flex-wrap items-center gap-x-[12px] gap-y-[10px] px-[14px] py-[10px] sm:px-[20px] md:flex-nowrap md:gap-[14px] lg:gap-[28px] lg:px-[40px] xl:px-[80px] 2xl:px-[120px]">
           {/* Mobile menu button */}
           <button
@@ -261,10 +271,10 @@ export default function Header() {
               }
               className="
                 hidden h-full w-[78px] shrink-0 items-center justify-center
-                rounded-[26px] bg-[#9EA5B8]
+                rounded-[26px] bg-[#9EA5B8] dark:bg-[#3A4057]
                 text-[16px] font-medium text-white
                 transition-all duration-200 ease-out
-                hover:bg-[#AAB1C3]
+                hover:bg-[#AAB1C3] dark:hover:bg-[#454B64]
                 active:scale-[0.97]
                 sm:flex
                 lg:w-[88px] lg:text-[18px]
@@ -345,8 +355,8 @@ export default function Header() {
                 active:scale-[0.97]
               "
             >
-              <span className="text-[14px] font-medium text-white">
-                Hello, Sign in
+              <span className="max-w-[140px] truncate text-[14px] font-medium text-white">
+                {user ? `Hello, ${getDisplayName(user)}` : "Hello, Sign in"}
               </span>
 
               <span className="text-[14px] font-medium text-white">
@@ -357,13 +367,15 @@ export default function Header() {
             <AccountDropdown
               isOpen={isAccountDropdownOpen}
               onClose={() => setIsAccountDropdownOpen(false)}
+              user={user}
+              onSignOut={handleSignOut}
             />
           </div>
 
           {/* Mobile account */}
           <Link
-            href="/account"
-            aria-label="Open account"
+            href={user ? "/account" : "/auth"}
+            aria-label={user ? "Open account" : "Sign in"}
             className="
               group ml-auto flex h-[42px] w-[42px] shrink-0
               items-center justify-center
@@ -415,6 +427,9 @@ export default function Header() {
             </span>
           </Link>
 
+          {/* Theme */}
+          <ThemeToggle />
+
           {/* Cart */}
           <Link
             href="/cart"
@@ -422,10 +437,10 @@ export default function Header() {
             className="
               group relative flex h-[42px] w-[42px] shrink-0
               items-center justify-center
-              rounded-[12px] bg-[#9EA5B8]
+              rounded-[12px] bg-[#9EA5B8] dark:bg-[#3A4057]
               transition-all duration-200 ease-out
               hover:-translate-y-[2px]
-              hover:bg-[#A9B0C1]
+              hover:bg-[#A9B0C1] dark:hover:bg-[#454B64]
               hover:shadow-[0_5px_12px_rgba(0,0,0,0.18)]
               active:translate-y-0
               active:scale-[0.94]
@@ -469,7 +484,7 @@ export default function Header() {
       </div>
 
       {/* Bottom navigation */}
-      <div className="hidden bg-[#9EA5B8] md:block">
+      <div className="hidden bg-[#9EA5B8] transition-colors duration-300 dark:border-b dark:border-[#2A2E3B] dark:bg-[#232735] md:block">
         <div className="mx-auto flex min-h-[42px] w-full max-w-[1920px] items-center gap-[20px] px-[14px] sm:px-[20px] lg:px-[40px] xl:px-[80px] 2xl:px-[120px]">
           {/* Menu */}
           <button
@@ -536,7 +551,7 @@ export default function Header() {
         >
           <nav
             aria-label="Menu"
-            className="flex h-full w-[82%] max-w-[320px] flex-col overflow-y-auto bg-[#49516D] shadow-[4px_0_20px_rgba(0,0,0,0.25)]"
+            className="flex h-full w-[82%] max-w-[320px] flex-col overflow-y-auto bg-[#49516D] dark:bg-[#1A1D27] shadow-[4px_0_20px_rgba(0,0,0,0.25)]"
           >
             <div className="flex items-center justify-between px-[20px] py-[16px]">
               <Link href="/" onClick={() => setIsMenuOpen(false)} aria-label="Go to home page">
@@ -585,6 +600,35 @@ export default function Header() {
                 </li>
               ))}
             </ul>
+
+            <div className="border-t border-white/15 py-[8px]">
+              <ThemeToggle variant="row" />
+            </div>
+
+            <div className="mt-auto border-t border-white/15 px-[20px] py-[16px]">
+              {user ? (
+                <div className="flex flex-col gap-[10px]">
+                  <p className="truncate text-[14px] text-white/80">
+                    Signed in as <span className="font-medium text-white">{getDisplayName(user)}</span>
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="tm-press flex h-[42px] items-center justify-center rounded-[21px] border-2 border-white/80 text-[15px] font-medium text-white hover:bg-white/10"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/auth"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="tm-press flex h-[42px] items-center justify-center rounded-[21px] bg-[linear-gradient(90deg,#FFDB5A_0%,#FF825A_100%)] text-[15px] font-medium text-white"
+                >
+                  Sign in
+                </Link>
+              )}
+            </div>
           </nav>
         </div>
       )}

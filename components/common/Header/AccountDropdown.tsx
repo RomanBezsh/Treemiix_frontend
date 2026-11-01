@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { getDisplayName, type AuthUser } from "@/lib/useAuthUser";
 
 const yourLists = [
   "Create a List",
@@ -26,11 +27,15 @@ const yourAccount = [
 interface AccountDropdownProps {
   isOpen: boolean;
   onClose: () => void;
+  user: AuthUser | null;
+  onSignOut: () => void;
 }
 
 export default function AccountDropdown({
   isOpen,
   onClose,
+  user,
+  onSignOut,
 }: AccountDropdownProps) {
   return (
     <div
@@ -51,7 +56,28 @@ export default function AccountDropdown({
       {/* Pointer */}
       <div className="absolute -top-[10px] right-[190px] h-[10px] w-[20px] bg-[#F8F8F8] [clip-path:polygon(50%_0%,0%_100%,100%_100%)]" />
 
-      {/* Sign in */}
+      {/* Signed in: greeting + sign out */}
+      {user ? (
+        <div className="flex flex-col items-center gap-1 text-center">
+          <p className="text-[16px] font-medium text-[#333333]">
+            Hello, {getDisplayName(user)}
+          </p>
+          {user.email && (
+            <p className="max-w-full truncate text-[12px] text-[#828282]">{user.email}</p>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              onSignOut();
+            }}
+            className="tm-press mt-2 flex w-[204px] items-center justify-center rounded-[20px] border-2 border-[#7C9BC0] py-[6px] text-[16px] font-medium text-[#7C9BC0] hover:bg-[#7C9BC0]/10"
+          >
+            Sign out
+          </button>
+        </div>
+      ) : (
+      /* Guest: sign in */
       <div className="flex flex-col items-center gap-2">
         <Link
           href="/auth"
@@ -87,6 +113,7 @@ export default function AccountDropdown({
           </span>
         </Link>
       </div>
+      )}
 
       <hr className="my-4 border-[#EFEFEF]" />
 

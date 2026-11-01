@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 
+/* Tailwind dark: utilities follow the "dark" class on <html> (theme toggle), not the OS setting */
+@custom-variant dark (&:where(.dark, .dark *));
+
 
 @layer utilities {
   .thumb-style::-webkit-slider-thumb {
@@ -23,9 +26,12 @@
   }
 }
 
+/* Light theme by default, regardless of the browser/OS theme.
+   The dark theme is opt-in via the toggle in the header (app/theme-dark.css) */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -35,12 +41,6 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 body {
   background: var(--background);

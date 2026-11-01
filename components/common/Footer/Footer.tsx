@@ -1,4 +1,5 @@
 import Link from "next/link";
+import FooterSignInPrompt from "./FooterSignInPrompt";
 
 const desktopFooterSections = [
   {
@@ -59,66 +60,27 @@ const mobileFooterLinks = [
 export default function Footer() {
   return (
     <footer className="w-full font-[var(--font-roboto)]">
-      {/* Recommendations */}
-      <section className="hidden border-y border-[#D5D9D9] bg-white py-[26px] md:block">
-        <div className="mx-auto flex flex-col items-center">
-          <p className="mb-[10px] text-center text-[14px] font-normal leading-[130%] text-[#565959]">
-            See personalized recommendations
-          </p>
-
-          <Link
-            href="/auth"
-            className="
-              flex h-[48px] w-[386px] items-center justify-center
-              rounded-[49px] bg-[#F5AD69]
-              text-center text-[24px] font-light leading-[130%] text-white
-              transition-all duration-200 ease-out
-              hover:-translate-y-[2px]
-              hover:scale-[1.01]
-              hover:bg-[#F7B475]
-              hover:shadow-[0_6px_14px_rgba(0,0,0,0.14)]
-              active:translate-y-0
-              active:scale-[0.97]
-            "
-          >
-            Sign in
-          </Link>
-
-          <p className="mt-[8px] text-center text-[14px] font-medium leading-[130%] text-[#333333]">
-            New Customer?{" "}
-            <Link
-              href="/auth"
-              className="
-                text-[#FFA95A]
-                transition-colors duration-200
-                hover:text-[#F28C35]
-                hover:underline
-              "
-            >
-              Start here.
-            </Link>
-          </p>
-        </div>
-      </section>
+      {/* Recommendations (hidden for signed-in users) */}
+      <FooterSignInPrompt />
 
       {/* Back to top */}
       <a
         href="#top"
         className="
           flex h-[42px] w-full items-center justify-center
-          bg-[#49516D]
+          bg-[#49516D] dark:bg-[#232735]
           text-[20px] font-semibold text-white
           transition-all duration-200 ease-out
-          hover:bg-[#555E7D]
+          hover:bg-[#555E7D] dark:hover:bg-[#2C3142]
           hover:tracking-[0.4px]
-          active:bg-[#414861]
+          active:bg-[#414861] dark:active:bg-[#1E2230]
         "
       >
         Back to top
       </a>
 
       {/* Mobile footer */}
-      <div className="bg-[#626B88] px-[26px] pb-[52px] pt-[28px] md:hidden">
+      <div className="bg-[#626B88] px-[26px] pb-[52px] pt-[28px] dark:bg-[#1A1D27] md:hidden">
         <nav
           aria-label="Mobile footer navigation"
           className="grid grid-cols-2 gap-x-[24px] gap-y-[20px]"
@@ -142,7 +104,7 @@ export default function Footer() {
       </div>
 
       {/* Desktop footer */}
-      <div className="hidden bg-[#626B88] px-4 pb-[70px] pt-[42px] md:block">
+      <div className="hidden bg-[#626B88] px-4 pb-[70px] pt-[42px] dark:bg-[#1A1D27] md:block">
         <div className="mx-auto grid max-w-[1280px] grid-cols-4 gap-[80px]">
           {desktopFooterSections.map((section) => (
             <div key={section.title}>

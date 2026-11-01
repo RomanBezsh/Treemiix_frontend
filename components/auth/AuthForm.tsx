@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { notifyAuthChanged } from "@/lib/authSession";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
 
@@ -12,6 +13,25 @@ const isValidEmail = (email: string): boolean => {
 
 const validatePassword = (password: string): boolean => {
   return /[\d\W_]/.test(password);
+};
+
+// Backend (ASP.NET) limits from RegisterRequest validation
+const MIN_PASSWORD_LENGTH = 6;
+const MIN_NAME_LENGTH = 2;
+
+// Turns an error response into readable text: { message } or ASP.NET { title, errors: { Field: [...] } }
+const getErrorMessage = (data: unknown, fallback: string): string => {
+  if (!data || typeof data !== "object") return fallback;
+  const body = data as { message?: unknown; title?: unknown; errors?: unknown };
+  if (typeof body.message === "string" && body.message) return body.message;
+  if (body.errors && typeof body.errors === "object") {
+    const messages = Object.values(body.errors as Record<string, unknown>)
+      .flat()
+      .filter((item): item is string => typeof item === "string");
+    if (messages.length > 0) return messages.join(" ");
+  }
+  if (typeof body.title === "string" && body.title) return body.title;
+  return fallback;
 };
 
 export default function AuthForm() {
@@ -34,6 +54,8 @@ export default function AuthForm() {
   });
 
   const [errors, setErrors] = useState<{
+    firstName?: string;
+    lastName?: string;
     email?: string;
     password?: string;
     terms?: string;
@@ -101,6 +123,7 @@ export default function AuthForm() {
       formData.lastName || auth.user?.lastName || ""
     );
 
+    notifyAuthChanged();
     router.push("/account");
   };
 
@@ -118,7 +141,18 @@ export default function AuthForm() {
       newErrors.email = "Please enter a valid email address.";
     }
 
-    if (!validatePassword(formData.password)) {
+    if (!isLogin) {
+      if (formData.firstName.trim().length < MIN_NAME_LENGTH) {
+        newErrors.firstName = `First name must be at least ${MIN_NAME_LENGTH} characters.`;
+      }
+      if (formData.lastName.trim().length < MIN_NAME_LENGTH) {
+        newErrors.lastName = `Last name must be at least ${MIN_NAME_LENGTH} characters.`;
+      }
+    }
+
+    if (!isLogin && formData.password.length < MIN_PASSWORD_LENGTH) {
+      newErrors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`;
+    } else if (!validatePassword(formData.password)) {
       newErrors.password = "Password must contain at least one number or special character.";
     }
 
@@ -140,8 +174,8 @@ export default function AuthForm() {
       const payload = isLogin
         ? { email: formData.email, password: formData.password }
         : {
-            firstName: formData.firstName || "User",
-            lastName: formData.lastName || "Treemiix",
+            firstName: formData.firstName.trim(),
+            lastName: formData.lastName.trim(),
             email: formData.email,
             password: formData.password,
           };
@@ -160,23 +194,16 @@ export default function AuthForm() {
       }
 
       if (!res.ok) {
-        // If 500 Internal Server Error (e.g. database uninitialized on Render), fallback gracefully
-        if (res.status === 500) {
-          console.warn("Backend returned 500. Falling back to local offline session.");
-          localStorage.setItem("token", "mock-offline-token-500");
-          localStorage.setItem("userEmail", formData.email);
-          router.push("/account");
+        // The server answered with an error (wrong password, email taken, server failure):
+        // show it and stay on the form instead of creating a fake session
+        if (res.status >= 500) {
+          setServerError("Server error. Please try again in a minute.");
           return;
         }
-        if (
-          isLogin &&
-          typeof data.message === "string" &&
-          data.message.includes("not confirmed")
-        ) {
-          setServerError(data.message);
-          return;
-        }
-        throw new Error(data.message || (isLogin ? "Invalid email or password." : "Registration failed."));
+        setServerError(
+          getErrorMessage(data, isLogin ? "Invalid email or password." : "Registration failed.")
+        );
+        return;
       }
 
       if (!isLogin) {
@@ -203,13 +230,12 @@ export default function AuthForm() {
         localStorage.setItem("userLastName", data.user.lastName || "");
       }
 
+      notifyAuthChanged();
       router.push("/account");
-    } catch (err: any) {
-      // Fallback for network error / Render server wake-up issue so user is never blocked
-      console.warn("Network or Server error encountered, entering offline fallback session:", err);
-      localStorage.setItem("token", "offline-fallback-token");
-      localStorage.setItem("userEmail", formData.email);
-      router.push("/account");
+    } catch (err) {
+      // The request did not reach the server (no network, or Render is still waking up)
+      console.warn("Auth request failed:", err);
+      setServerError("Can't reach the server. It may be waking up, please try again in 30 seconds.");
     } finally {
       setIsLoading(false);
     }
@@ -304,6 +330,9 @@ export default function AuthForm() {
                 placeholder="First name"
                 required
               />
+              {errors.firstName && (
+                <span className="text-red-500 text-xs mt-1 pl-2">{errors.firstName}</span>
+              )}
 
               <input
                 name="lastName"
@@ -314,6 +343,9 @@ export default function AuthForm() {
                 placeholder="Last name"
                 required
               />
+              {errors.lastName && (
+                <span className="text-red-500 text-xs mt-1 pl-2">{errors.lastName}</span>
+              )}
             </>
           )}
 

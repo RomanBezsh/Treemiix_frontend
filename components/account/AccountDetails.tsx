@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect, FormEvent } from "react";
+import { notifyAuthChanged } from "@/lib/authSession";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
 
@@ -32,6 +33,11 @@ export default function AccountDetails() {
               setFirstName(data.user.firstName || "");
               setLastName(data.user.lastName || "");
               setEmail(data.user.email || "");
+              // Keep the profile card and header greeting in sync with the backend profile
+              if (data.user.firstName) localStorage.setItem("userFirstName", data.user.firstName);
+              if (data.user.lastName) localStorage.setItem("userLastName", data.user.lastName);
+              if (data.user.email) localStorage.setItem("userEmail", data.user.email);
+              notifyAuthChanged();
             } else {
               // Fallback to localStorage
               setFirstName(localStorage.getItem("userFirstName") || "");
@@ -64,6 +70,7 @@ export default function AccountDetails() {
       localStorage.setItem("userFirstName", firstName);
       localStorage.setItem("userLastName", lastName);
       localStorage.setItem("userPhone", phone);
+      notifyAuthChanged();
 
       // Attempt live backend update if token exists
       const token = localStorage.getItem("token");
