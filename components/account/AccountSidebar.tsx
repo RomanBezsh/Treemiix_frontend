@@ -12,6 +12,12 @@ const menuItems = [
     href: "/account",
   },
   {
+    key: "seller",
+    title: "Seller Center",
+    icon: "/common/account_icon.svg",
+    href: "/sell/apply",
+  },
+  {
     key: "lists",
     title: "Your Lists",
     icon: "/account/account_your_lists_icon.svg",

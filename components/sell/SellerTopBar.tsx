@@ -9,7 +9,7 @@ export default function SellerTopBar() {
         </h1>
 
         <Link
-          href="/auth"
+          href="/sell/apply"
           className="
             flex h-[46px] shrink-0 items-center justify-center
             rounded-[12px]

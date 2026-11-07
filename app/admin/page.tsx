@@ -2,19 +2,20 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { LayoutDashboard, Package, Users, ShoppingBag, Tag, Plus, User, CheckCircle, Zap } from "lucide-react";
+import { LayoutDashboard, Package, Users, ShoppingBag, Tag, Plus, User, CheckCircle, Zap, Store } from "lucide-react";
 import AdminDashboardStats from "@/components/admin/AdminDashboardStats";
 import AdminProductsManager, { ProductItem } from "@/components/admin/AdminProductsManager";
 import AdminUsersManager, { UserItem } from "@/components/admin/AdminUsersManager";
 import AdminOrdersManager, { OrderItem } from "@/components/admin/AdminOrdersManager";
 import AdminCategoriesManager, { CategoryItem } from "@/components/admin/AdminCategoriesManager";
+import AdminSellersManager from "@/components/admin/AdminSellersManager";
 import { isAdminSession } from "@/lib/adminAuth";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
 
 export default function AdminPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"dashboard" | "products" | "users" | "orders" | "categories">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "products" | "sellers" | "users" | "orders" | "categories">("dashboard");
   const [isApiConnected, setIsApiConnected] = useState(false);
   const [apiLoading, setApiLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -339,6 +340,7 @@ export default function AdminPage() {
             {[
               { id: "dashboard", label: "Dashboard & Stats", icon: <LayoutDashboard size={18} /> },
               { id: "products", label: "Products & Media", icon: <Package size={18} /> },
+              { id: "sellers", label: "Sellers", icon: <Store size={18} /> },
               { id: "users", label: "Users", icon: <Users size={18} /> },
               { id: "orders", label: "Orders", icon: <ShoppingBag size={18} /> },
               { id: "categories", label: "Categories", icon: <Tag size={18} /> },
@@ -381,6 +383,14 @@ export default function AdminPage() {
                     <Plus size={24} className="mb-2 text-[#49516D]" />
                     <div className="font-semibold text-[15px] text-[#333]">Manage Products</div>
                     <div className="text-[12px] text-[#777]">Add, edit or remove store products</div>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("sellers")}
+                    className="p-4 rounded-[14px] bg-white border border-[#DDD] text-left hover:bg-[#F0F2F5] transition"
+                  >
+                    <Store size={24} className="mb-2 text-[#49516D]" />
+                    <div className="font-semibold text-[15px] text-[#333]">Manage Sellers</div>
+                    <div className="text-[12px] text-[#777]">Review applications and subscriptions</div>
                   </button>
                   <button
                     onClick={() => setActiveTab("users")}
@@ -439,6 +449,8 @@ export default function AdminPage() {
             } }
           />
         )}
+
+        {activeTab === "sellers" && <AdminSellersManager />}
 
         {activeTab === "users" && (
           <AdminUsersManager

@@ -10,6 +10,7 @@ const yourLists = [
 ];
 
 const yourAccount = [
+  { title: "Seller Center", href: "/sell/apply" },
   { title: "Account", href: "/account" },
   { title: "Orders", href: "/account/orders" },
   { title: "Recommendations", href: "/account" },

@@ -2,8 +2,40 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { saveAuthSession } from "@/lib/authSession";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
+
+interface AuthUser {
+  id?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  role?: string;
+}
+
+interface AuthResponse {
+  token?: string;
+  refreshToken?: string;
+  emailConfirmationRequired?: boolean;
+  user?: AuthUser;
+  message?: string;
+}
+
+function getNextPath(): string {
+  if (typeof window === "undefined") return "/account";
+
+  const next = new URLSearchParams(window.location.search).get("next");
+  if (next && next.startsWith("/") && !next.startsWith("//")) {
+    return next;
+  }
+
+  return "/account";
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "Something went wrong. Please try again.";
+}
 
 const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9]{2,}$/i;
@@ -19,10 +51,6 @@ export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
   const [step, setStep] = useState<"form" | "confirm">("form");
   const [pendingEmail, setPendingEmail] = useState("");
-  const [registerAuth, setRegisterAuth] = useState<{
-    token?: string;
-    user?: { role?: string; firstName?: string; lastName?: string };
-  } | null>(null);
   const [codeInput, setCodeInput] = useState("");
 
   const [formData, setFormData] = useState({
@@ -74,7 +102,22 @@ export default function AuthForm() {
     setServerError(null);
   };
 
-  const handleConfirmCode = () => {
+  const persistSession = (data: AuthResponse, fallbackEmail: string) => {
+    if (!data.token) {
+      throw new Error("The server did not return an access token.");
+    }
+
+    saveAuthSession({
+      token: data.token,
+      refreshToken: data.refreshToken,
+      userRole: data.user?.role || "User",
+      userEmail: data.user?.email || fallbackEmail,
+      userFirstName: data.user?.firstName ?? formData.firstName,
+      userLastName: data.user?.lastName ?? formData.lastName,
+    });
+  };
+
+  const handleConfirmCode = async () => {
     const code = codeInput.trim();
     if (!/^\d{6}$/.test(code)) {
       setErrors({ code: "Enter the 6-digit code." });
@@ -83,32 +126,64 @@ export default function AuthForm() {
 
     setErrors({});
     setServerError(null);
+    setIsLoading(true);
 
-    const auth = registerAuth || {};
-    if (auth.token) {
-      localStorage.setItem("token", auth.token);
-    } else {
-      localStorage.setItem("token", "success-auth-token");
+    try {
+      const confirmRes = await fetch(`${API_BASE_URL}/auth/confirm-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: pendingEmail, code }),
+      });
+
+      let confirmData: { message?: string } = {};
+      try {
+        confirmData = await confirmRes.json();
+      } catch {
+        confirmData = {};
+      }
+
+      if (!confirmRes.ok) {
+        throw new Error(
+          confirmData.message || "The code is invalid or has expired.",
+        );
+      }
+
+      // Confirmation does not return tokens, so sign in with the password
+      // the user just entered and store the real JWT.
+      const loginRes = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: pendingEmail,
+          password: formData.password,
+        }),
+      });
+
+      let loginData: AuthResponse = {};
+      try {
+        loginData = await loginRes.json();
+      } catch {
+        loginData = {};
+      }
+
+      if (!loginRes.ok) {
+        throw new Error(loginData.message || "Could not sign in after confirmation.");
+      }
+
+      persistSession(loginData, pendingEmail);
+      router.push(getNextPath());
+    } catch (error) {
+      setServerError(errorMessage(error));
+    } finally {
+      setIsLoading(false);
     }
-    localStorage.setItem("userRole", auth.user?.role || "User");
-    localStorage.setItem("userEmail", pendingEmail);
-    localStorage.setItem(
-      "userFirstName",
-      formData.firstName || auth.user?.firstName || ""
-    );
-    localStorage.setItem(
-      "userLastName",
-      formData.lastName || auth.user?.lastName || ""
-    );
-
-    router.push("/account");
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (step === "confirm") {
-      handleConfirmCode();
+      await handleConfirmCode();
       return;
     }
 
@@ -152,7 +227,7 @@ export default function AuthForm() {
         body: JSON.stringify(payload),
       });
 
-      let data;
+      let data: AuthResponse = {};
       try {
         data = await res.json();
       } catch {
@@ -160,56 +235,47 @@ export default function AuthForm() {
       }
 
       if (!res.ok) {
-        // If 500 Internal Server Error (e.g. database uninitialized on Render), fallback gracefully
         if (res.status === 500) {
-          console.warn("Backend returned 500. Falling back to local offline session.");
-          localStorage.setItem("token", "mock-offline-token-500");
-          localStorage.setItem("userEmail", formData.email);
-          router.push("/account");
-          return;
+          throw new Error(
+            "The server is waking up. Please wait about 30 seconds and try again.",
+          );
         }
         if (
           isLogin &&
           typeof data.message === "string" &&
-          data.message.includes("not confirmed")
+          data.message.toLowerCase().includes("not confirmed")
         ) {
-          setServerError(data.message);
+          setServerError(
+            `${data.message} Check your inbox for the 6-digit code, or sign up again to request a new one.`,
+          );
           return;
         }
-        throw new Error(data.message || (isLogin ? "Invalid email or password." : "Registration failed."));
+        throw new Error(
+          data.message ||
+            (isLogin ? "Invalid email or password." : "Registration failed."),
+        );
       }
 
       if (!isLogin) {
         setPendingEmail(formData.email);
-        setRegisterAuth(data);
+
+        // When email confirmation is disabled the API returns tokens right
+        // away; do not ask for a code that was never sent.
+        if (!data.emailConfirmationRequired && data.token) {
+          persistSession(data, formData.email);
+          router.push(getNextPath());
+          return;
+        }
+
         setCodeInput("");
         setStep("confirm");
         return;
       }
 
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-      } else {
-        localStorage.setItem("token", "success-auth-token");
-      }
-      localStorage.setItem("userRole", data.user?.role || "User");
-      localStorage.setItem("userEmail", formData.email);
-      // Сохраняем имя и фамилию для AccountDetails
-      if (!isLogin) {
-        localStorage.setItem("userFirstName", formData.firstName);
-        localStorage.setItem("userLastName", formData.lastName);
-      } else if (data.user) {
-        localStorage.setItem("userFirstName", data.user.firstName || "");
-        localStorage.setItem("userLastName", data.user.lastName || "");
-      }
-
-      router.push("/account");
-    } catch (err: any) {
-      // Fallback for network error / Render server wake-up issue so user is never blocked
-      console.warn("Network or Server error encountered, entering offline fallback session:", err);
-      localStorage.setItem("token", "offline-fallback-token");
-      localStorage.setItem("userEmail", formData.email);
-      router.push("/account");
+      persistSession(data, formData.email);
+      router.push(getNextPath());
+    } catch (error) {
+      setServerError(errorMessage(error));
     } finally {
       setIsLoading(false);
     }
