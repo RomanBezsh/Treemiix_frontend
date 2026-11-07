@@ -43,18 +43,7 @@ const VideoCarousel = ({
     videos.length > 0 &&
     typeof videos[0] === "object"
       ? videos
-      : Array.from(
-          { length: 5 },
-          (_, index) => ({
-            id: index.toString(),
-            title:
-              "Customer Review: Definitely WORTH IT!!!",
-            channelTitle: "Kendratiy",
-            thumbnail: "",
-            url: "",
-            duration: "4:55",
-          }),
-        );
+      : [];
 
   const totalVideos = displayVideos.length;
 
