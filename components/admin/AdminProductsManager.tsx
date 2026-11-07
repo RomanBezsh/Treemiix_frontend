@@ -201,9 +201,23 @@ export default function AdminProductsManager({
   };
 
   // Handle file uploads for images
+  const MAX_IMAGE_KB = 500;
+  const MAX_IMAGE_BYTES = MAX_IMAGE_KB * 1024;
+
   const handleImageFilesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const uploaded = await uploadMediaFiles(Array.from(e.target.files));
+      const files = Array.from(e.target.files);
+      const oversized = files.filter((f) => f.size > MAX_IMAGE_BYTES);
+      if (oversized.length > 0) {
+        alert(
+          `Каждое изображение не должно превышать ${MAX_IMAGE_KB} КБ. ` +
+          `Слишком большие файлы: ${oversized.map((f) => f.name).join(", ")}. ` +
+          `Рекомендуемый размер: 600×600 пикселей, JPEG, до 500 КБ.`
+        );
+        e.target.value = "";
+        return;
+      }
+      const uploaded = await uploadMediaFiles(files);
       if (uploaded.length > 0) setImageList((prev) => [...prev, ...uploaded]);
       e.target.value = "";
     }
@@ -545,6 +559,9 @@ export default function AdminProductsManager({
                       <div className="w-full px-4 py-2.5 border-2 border-dashed border-[#DDD] rounded-[10px] text-center text-[13px] text-[#555] hover:border-[#FF825A] hover:bg-[#FFF8F0] transition-colors cursor-pointer">
                         <span className="font-medium text-[#FF825A]">Choose images</span> or drag & drop
                       </div>
+                      <p className="text-[11px] text-[#888] mt-1 text-center">
+                        Max {MAX_IMAGE_KB} KB per file. Recommended: 600×600 px, JPEG.
+                      </p>
                     </label>
                   </div>
                 </div>
