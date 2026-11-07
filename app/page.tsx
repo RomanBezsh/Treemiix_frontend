@@ -17,6 +17,7 @@ import { getApi } from "@/components/api/useApi";
 import {
   popularCategoriesData,
   popularProductsData,
+  carouselCardProducts,
 } from "@/data/mockData";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
@@ -130,25 +131,35 @@ export default function Home() {
     const catProducts = displayProducts.filter((p) => p.categoryId === cat.id && (p.imageUrl || p.images?.[0]));
     const targetProduct = catProducts.length > 0 
       ? catProducts[catIndex % catProducts.length]
-      : displayProducts[catIndex % Math.max(displayProducts.length, 1)];
+      : (displayProducts.length > 0 ? displayProducts[catIndex % displayProducts.length] : null);
     
     const isGuid = (id: unknown) =>
       typeof id === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 
+    const fallbackImage = popularCategoriesData[catIndex]?.imageSrc || FALLBACK_IMAGE;
+    
     return {
       category: cat.name || cat.title || "Category",
       href: isGuid(cat.id) ? `/catalog?category=${cat.id}` : "/catalog",
-      imageSrc: targetProduct?.imageUrl || targetProduct?.images?.[0] || FALLBACK_IMAGE
+      imageSrc: targetProduct?.imageUrl || targetProduct?.images?.[0] || fallbackImage
     };
   });
 
-  const cardItems = displayProducts.map((p) => ({
-    id: p.id || p.title,
-    title: p.name || p.title,
-    imageSrc: p.imageUrl || p.images?.[0] || p.imageSrc || "",
-    price: p.price,
-    rating: p.rating || 0,
-  }));
+  const cardItems = displayProducts.length > 0
+    ? displayProducts.map((p) => ({
+        id: p.id || p.title,
+        title: p.name || p.title,
+        imageSrc: p.imageUrl || p.images?.[0] || p.imageSrc || "",
+        price: p.price,
+        rating: p.rating || 0,
+      }))
+    : carouselCardProducts.map((p) => ({
+        id: p.id,
+        title: p.title,
+        imageSrc: p.imageSrc,
+        price: p.price,
+        rating: 0,
+      }));
 
   // Products with real discounts (up to 20) for the "Sales" carousel
   const saleCardItems = displayProducts
@@ -166,9 +177,16 @@ export default function Home() {
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 
   const carouselTitles = ["Trending Now", "Fresh Picks", "Best Sellers"];
-  const carouselGroups = [0, 1, 2].map((groupIndex) =>
-    cardItems.filter((_, index) => index % 3 === groupIndex).slice(0, 4)
-  );
+  const carouselGroups = [0, 1, 2].map((groupIndex) => {
+    const group = cardItems.filter((_, index) => index % 3 === groupIndex).slice(0, 4);
+    // Если в группе нет товаров с картинками, подставляем из mock-данных
+    if (group.length === 0 || group.every((i) => !i.imageSrc)) {
+      return popularProductsData
+        .slice(groupIndex * 3, (groupIndex + 1) * 3)
+        .map((p) => ({ id: p.title, title: p.title, imageSrc: p.imageSrc, price: p.price, rating: 0 }));
+    }
+    return group;
+  });
 
   type QuadCardItem = {
     id: string;
@@ -194,14 +212,23 @@ export default function Home() {
     /nike|pegasus|air|revolution|court|force|shoe|sneaker|max/i,
     /tablet|microphone|headset|smart|tv|razer|mouse|gadget/i,
   ];
-  const quadRealPool: QuadCardItem[] = cardItems.map((p) => ({
-    ...p,
-    href: isGuid(String(p.id)) ? `/product/${p.id}` : "/catalog",
-  }));
-  const quadGroups: QuadCardItem[][] = quadMatchers.map((matcher) => {
+  const quadRealPool: QuadCardItem[] = cardItems.length > 0
+    ? cardItems.map((p) => ({
+        ...p,
+        href: isGuid(String(p.id)) ? `/product/${p.id}` : "/catalog",
+      }))
+    : carouselCardProducts.map((p) => ({
+        id: p.id,
+        title: p.title,
+        imageSrc: p.imageSrc,
+        price: p.price,
+        rating: 0,
+        href: "/catalog",
+      }));
+  const quadGroups: QuadCardItem[][] = quadMatchers.map((matcher, matcherIndex) => {
     if (quadRealPool.length === 0) return [];
     const matchIndex = quadRealPool.findIndex((item) => matcher.test(item.title));
-    const start = matchIndex >= 0 ? matchIndex : 0;
+    const start = matchIndex >= 0 ? matchIndex : matcherIndex % quadRealPool.length;
     const size = Math.min(4, quadRealPool.length);
     return Array.from({ length: size }, (_, offset) => quadRealPool[(start + offset) % quadRealPool.length]);
   });
@@ -267,24 +294,24 @@ export default function Home() {
         <div className="flex flex-row gap-5 justify-between mb-10">
           <CarouselCard
             title="Backend Products"
-            imageSrc={cardItems[0]?.imageSrc || FALLBACK_IMAGE}
+            imageSrc={cardItems[0]?.imageSrc || carouselCardProducts[0]?.imageSrc || FALLBACK_IMAGE}
             href="/catalog"
             items={cardItems.slice(0, 4)}
           />
           <CategoryCard
             title={categories[0]?.name || "Category 1"}
-            imageSrc="https://cdn.new-brz.net/app/public/models/MPXV3ZP-A/large/w/231110080013512834.webp"
+            imageSrc={popularCategoriesData[0]?.imageSrc || carouselCardProducts[1]?.imageSrc || FALLBACK_IMAGE}
             href={categories[0]?.id ? `/catalog?category=${categories[0].id}` : "/catalog"}
           />
           <CarouselCard
             title="Backend Products"
-            imageSrc={cardItems[1]?.imageSrc || FALLBACK_IMAGE}
+            imageSrc={cardItems[1]?.imageSrc || carouselCardProducts[2]?.imageSrc || FALLBACK_IMAGE}
             href="/catalog"
             items={cardItems.slice(0, 4)}
           />
           <CategoryCard
             title={categories[1]?.name || "Category 2"}
-            imageSrc="https://cdn.new-brz.net/app/public/models/MPXV3ZP-A/large/w/231110080013512834.webp"
+            imageSrc={popularCategoriesData[1]?.imageSrc || carouselCardProducts[3]?.imageSrc || FALLBACK_IMAGE}
             href={categories[1]?.id ? `/catalog?category=${categories[1].id}` : "/catalog"}
           />
         </div>
