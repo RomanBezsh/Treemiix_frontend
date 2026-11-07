@@ -24,8 +24,8 @@ const HorizontalProductCard = ({ imageSrc, title, price, rating = 0, isLastItem 
         />
       </div>
       <div className="flex flex-col mt-4 gap-3 w-full">
-        <h3 className="text-[14px] sm:text-[18px] text-[#333333] font-medium leading-tight line-clamp-1 webkit-line-clamp-1 overflow-hidden">{title}</h3>
-        <div className="flex flex-row gap-1.5 mt-1">
+        <h3 className="text-[13px] sm:text-[15px] text-[#333333] font-medium leading-tight line-clamp-1 overflow-hidden">{title}</h3>
+        <div className="flex flex-row gap-1 mt-1">
           {Array.from({ length: 5 }, (_, index) => (
             <img
               key={index}
@@ -35,8 +35,8 @@ const HorizontalProductCard = ({ imageSrc, title, price, rating = 0, isLastItem 
             />
           ))}
         </div>
-        <h3 className="text-2xl sm:text-4xl font-light">
-          <span className="text-[14px] sm:text-[18px] inline-block align-top font-light">$</span>
+        <h3 className="text-lg sm:text-2xl font-light">
+          <span className="text-[13px] sm:text-[16px] inline-block align-top font-light">$</span>
           {price.toFixed(2)}
         </h3>
       </div>
