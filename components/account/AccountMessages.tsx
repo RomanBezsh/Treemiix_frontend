@@ -9,7 +9,7 @@ const messages = [
   {
     id: 1,
     sender: "user" as const,
-    name: "Peter Marzo",
+    name: typeof window !== "undefined" ? (localStorage.getItem("userFirstName") || "Пользователь") : "Пользователь",
     time: "11:30 02/16",
     text: "Hello, I ordered a phone case from you. He came, but not the one I wanted. Can I make a return or exchange? I am attaching a photo. I 1 wanted, but 2 were sent",
   },

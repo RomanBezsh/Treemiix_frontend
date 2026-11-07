@@ -156,7 +156,13 @@ export default function AccountPaymentMethods() {
           </h2>
 
           <div className="mt-[10px] text-[12px] font-normal leading-[150%] text-[#777777]">
-            <p>Peter Marzo</p>
+            {(() => {
+              if (typeof window === "undefined") return <p>Пользователь</p>;
+              const firstName = localStorage.getItem("userFirstName") || "";
+              const lastName = localStorage.getItem("userLastName") || "";
+              const name = (firstName || lastName ? `${firstName} ${lastName}`.trim() : "Пользователь").trim();
+              return <p key="name">{name}</p>;
+            })()}
             <p>Credit Card Visa (2949)</p>
             <p>Exp 10/2025</p>
           </div>
