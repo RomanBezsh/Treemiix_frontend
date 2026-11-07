@@ -37,7 +37,7 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
   };
 
   return (
-    <div className="flex flex-col w-92 h-115 rounded-[20px] justify-between pt-6 pb-2.75 px-7.5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033]">
+    <div className="flex flex-col w-92 h-115 rounded-[20px] justify-between pt-6 pb-2.75 px-7.5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] product-card-enter animate-fade-in-up hover-lift">
 
       <div className="flex flex-row justify-between items-center mb-3.5">
         <h2 className="text-[24px] font-semibold">{title}</h2>
@@ -48,14 +48,24 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
           type="button"
           onClick={showPrevious}
           aria-label="Previous product"
-          className="flex justify-center items-center -ml-7  border-0 w-19 h-19 shadow-[0_2px_4px_0px_#00000033] rounded-[20px]"
+          className="
+            carousel-btn
+            flex justify-center items-center -ml-7
+            border-0 w-[48px] h-[48px]
+            rounded-[50%]
+            bg-white
+            shadow-[0_4px_12px_rgba(0,0,0,0.15)]
+            hover:shadow-[0_8px_24px_rgba(0,0,0,0.25)]
+            transition-all duration-300
+            --rotate: -180deg
+          "
         >
           <Image
             src="/home/carousel_chewron.svg"
             alt="carousel_chewron"
-            width={17 * 2}
-            height={37 * 2}
-            className="rotate-180"
+            width={34}
+            height={74}
+            className="rotate-180 transition-transform duration-300 hover:scale-110"
           />
         </button>
 
@@ -76,14 +86,23 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
           type="button"
           onClick={showNext}
           aria-label="Next product"
-          className="flex justify-center items-center -mr-7 border-0 w-19 h-19 shadow-[0_2px_4px_0px_#00000033] rounded-[20px]"
+          className="
+            carousel-btn
+            flex justify-center items-center -mr-7
+            border-0 w-[48px] h-[48px]
+            rounded-[50%]
+            bg-white
+            shadow-[0_4px_12px_rgba(0,0,0,0.15)]
+            hover:shadow-[0_8px_24px_rgba(0,0,0,0.25)]
+            transition-all duration-300
+          "
         >
           <Image
             src="/home/carousel_chewron.svg"
             alt="carousel_chewron"
-            width={17 * 2}
-            height={37 * 2}
-
+            width={34}
+            height={74}
+            className="transition-transform duration-300 hover:scale-110"
           />
         </button>
       </div >

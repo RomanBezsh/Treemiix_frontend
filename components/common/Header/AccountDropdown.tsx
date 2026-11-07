@@ -2,6 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { clearAuthSession } from "@/lib/authSession";
 
 const yourLists = [
   "Create a List",
@@ -35,6 +37,21 @@ export default function AccountDropdown({
   onClose,
   isAuthenticated = false,
 }: AccountDropdownProps) {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    clearAuthSession();
+    onClose();
+    router.push("/");
+    window.dispatchEvent(new Event("cart-updated"));
+  };
+
+  const userFirstName =
+    typeof window !== "undefined"
+      ? localStorage.getItem("userFirstName") ||
+        localStorage.getItem("userEmail") ||
+        "Customer"
+      : "Customer";
   return (
     <div
       aria-hidden={!isOpen}
@@ -54,7 +71,36 @@ export default function AccountDropdown({
       {/* Pointer */}
       <div className="absolute -top-[10px] right-[190px] h-[10px] w-[20px] bg-[#F8F8F8] [clip-path:polygon(50%_0%,0%_100%,100%_100%)]" />
 
-      {!isAuthenticated && (
+      {isAuthenticated ? (
+        <>
+          {/* User greeting & Sign out */}
+          <div className="flex flex-col items-center gap-2 py-3">
+            <span className="text-[14px] font-medium text-[#333333]">
+              Hello, {userFirstName}
+            </span>
+            <button
+              onClick={handleLogout}
+              className="
+                flex w-[204px] items-center justify-center
+                rounded-[20px]
+                bg-gradient-to-br from-[#FFDB5A] to-[#FF825A]
+                py-2 text-[18px] font-medium text-white
+                shadow-[0px_2px_4px_rgba(0,0,0,0.2)]
+                transition-all duration-200 ease-out
+                hover:-translate-y-[1px]
+                hover:scale-[1.02]
+                hover:shadow-[0_5px_10px_rgba(0,0,0,0.18)]
+                active:translate-y-0
+                active:scale-[0.98]
+              "
+            >
+              Sign out
+            </button>
+          </div>
+
+          <hr className="my-4 border-[#EFEFEF]" />
+        </>
+      ) : (
         <>
           {/* Sign in */}
           <div className="flex flex-col items-center gap-2">

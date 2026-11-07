@@ -293,13 +293,30 @@ export default function Header() {
                 active:scale-[0.98]
               "
             >
-              <span className="text-[14px] font-medium text-white">
-                Hello, Sign in
-              </span>
+              {isAuthenticated ? (
+                <>
+                  <span className="text-[14px] font-medium text-white">
+                    Hello,
+                  </span>
+                  <span className="text-[14px] font-medium text-white">
+                    {typeof window !== "undefined"
+                      ? localStorage.getItem("userFirstName") ||
+                        localStorage.getItem("userEmail") ||
+                        "Customer"
+                      : "Customer"}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="text-[14px] font-medium text-white">
+                    Hello, Sign in
+                  </span>
 
-              <span className="text-[14px] font-medium text-white">
-                Account
-              </span>
+                  <span className="text-[14px] font-medium text-white">
+                    Account
+                  </span>
+                </>
+              )}
             </button>
 
             <AccountDropdown
