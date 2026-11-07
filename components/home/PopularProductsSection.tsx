@@ -7,32 +7,28 @@ interface PopularProductsSectionProps {
   items: HorizontalProductCardProps[];
 }
 
-
-
-
-
 const PopularProductsSection = ({ href, items }: PopularProductsSectionProps) => {
   return (
-    <div className="flex flex-col w-164.75 h-158.75">
-      <div className="flex flex-row justify-between items-center mb-7">
-        <h2 className="text-2xl font-semibold text-[#333333]">Popular</h2>
+    <div className="flex flex-col w-full max-w-[240px] sm:w-[280px] gap-4">
+      <div className="flex flex-row justify-between items-center mb-3">
+        <h2 className="text-[18px] sm:text-2xl font-semibold text-[#333333]">Popular</h2>
         <Link className="flex flex-row items-center" href={href}>
-          <span className="text-[#333333] text-[13px] mr-2.25">More</span>
+          <span className="text-[#333333] text-[12px] sm:text-[13px] mr-2">More</span>
           <Image
             src="/home/vector.svg"
             alt="vector"
-            width={22}
-            height={8}
+            width={18}
+            height={6}
           />
         </Link>
       </div>
-      <div className="flex flex-col gap-5 ">
+      <div className="flex flex-col gap-4 sm:gap-5">
         {items.map((item, index) => (
           <HorizontalProductCard key={index} {...item} />
         ))}
       </div>
     </div>
   );
-}
+};
 
 export default PopularProductsSection;

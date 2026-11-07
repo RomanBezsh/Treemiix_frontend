@@ -27,6 +27,7 @@ export default function Header() {
   const [isAllDropdownOpen, setIsAllDropdownOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] =
     useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [searchValue, setSearchValue] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -440,11 +441,13 @@ export default function Header() {
           <button
             type="button"
             aria-label="Open navigation menu"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="
               group flex shrink-0 items-center justify-center
               transition-transform duration-200 ease-out
               hover:scale-[1.08]
               active:scale-[0.92]
+              lg:hidden
             "
           >
             <Image
@@ -488,6 +491,98 @@ export default function Header() {
           </nav>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-[#49516D] border-t border-white/10">
+          <div className="mx-auto px-[14px] sm:px-[20px] lg:px-[40px] py-[20px]">
+            <div className="flex flex-col gap-[16px]">
+              {navigationLinks.map((link) => (
+                <Link
+                  key={link.title}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="
+                    flex items-center justify-between py-[14px] px-[4px]
+                    text-[16px] font-medium text-white
+                    border-b border-white/10 last:border-b-0
+                    hover:bg-white/10 transition-colors
+                  "
+                >
+                  {link.title}
+                  <Image
+                    src="/home/vector.svg"
+                    alt="arrow"
+                    width={16}
+                    height={6}
+                    className="transition-transform duration-200"
+                  />
+                </Link>
+              ))}
+              <div className="pt-[16px] border-t border-white/10">
+                {isAuthenticated ? (
+                  <div className="flex flex-col gap-[12px]">
+                    <Link
+                      href="/account"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-[12px] py-[12px] text-[15px] font-medium text-white hover:bg-white/10 transition-colors rounded-[12px]"
+                    >
+                      <span>Account</span>
+                    </Link>
+                    <Link
+                      href="/account/orders"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-[12px] py-[12px] text-[15px] font-medium text-white hover:bg-white/10 transition-colors rounded-[12px]"
+                    >
+                      <span>Returns & Orders</span>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        clearAuthSession();
+                        setIsMobileMenuOpen(false);
+                        router.push("/");
+                        window.dispatchEvent(new Event("cart-updated"));
+                      }}
+                      className="flex items-center gap-[12px] py-[12px] text-[15px] font-medium text-white hover:bg-white/10 transition-colors rounded-[12px]"
+                    >
+                      <span>Sign out</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-[12px]">
+                    <Link
+                      href="/auth"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="
+                        flex w-full items-center justify-center py-[14px] px-[4px]
+                        rounded-[14px]
+                        bg-gradient-to-br from-[#FFDB5A] to-[#FF825A]
+                        text-[16px] font-medium text-white
+                        shadow-[0px_2px_4px_rgba(0,0,0,0.2)]
+                        hover:-translate-y-[1px]
+                        hover:scale-[1.02]
+                        hover:shadow-[0_5px_10px_rgba(0,0,0,0.18)]
+                        active:translate-y-0
+                        active:scale-[0.98]
+                        transition-all duration-200 ease-out
+                      "
+                    >
+                      Sign in
+                    </Link>
+                    <Link
+                      href="/auth"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="text-[12px] text-[#828282] text-center hover:text-[#555555] transition-colors"
+                    >
+                      New customer? <span className="text-[#496B94]">Start here.</span>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

@@ -56,7 +56,7 @@ const Select = ({
     };
 
     return (
-        <div className="border-t-2 border-t-[#EFEFEF] w-61 pt-4.5">
+        <div className="border-t-2 border-t-[#EFEFEF] w-full max-w-[280px] pt-4.5 sm:w-[280px]">
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full flex flex-row items-center justify-between"
@@ -275,7 +275,7 @@ const PriceRange: React.FC<PriceRangeProps> = ({
     const maxPercent = ((maxValue - minLimit) / (maxLimit - minLimit)) * 100;
 
     return (
-        <div className="flex w-57.5 flex-col gap-4.5 pt-3">
+        <div className="flex w-full max-w-[280px] flex-col gap-4.5 pt-3 sm:w-[280px]">
             <div className="flex flex-row items-center gap-1.75">
                 <div className="flex h-6.5 w-17.5 items-center justify-center rounded-[31px] bg-[#D6D6D6]/20 shadow-[inset_-4px_4px_6px_rgba(0,0,0,0.2)]">
                     <input

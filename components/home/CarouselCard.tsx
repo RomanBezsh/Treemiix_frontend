@@ -37,11 +37,11 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
   };
 
   return (
-    <div className="flex flex-col w-92 h-115 rounded-[20px] justify-between pt-6 pb-2.75 px-7.5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] product-card-enter animate-fade-in-up hover-lift">
+    <div className="flex flex-col w-full max-w-[280px] min-h-[320px] rounded-[20px] justify-between pt-5 px-5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] product-card-enter animate-fade-in-up hover-lift sm:w-[320px] sm:min-h-[360px] lg:w-[360px] lg:min-h-[400px]">
 
-      <div className="flex flex-row justify-between items-center mb-3.5">
-        <h2 className="text-[24px] font-semibold">{title}</h2>
-      </div >
+      <div className="flex flex-row justify-between items-center mb-3">
+        <h2 className="text-[18px] sm:text-[24px] font-semibold">{title}</h2>
+      </div>
       <div className="flex flex-row justify-between items-center">
 
         <button
@@ -50,8 +50,8 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
           aria-label="Previous product"
           className="
             carousel-btn
-            flex justify-center items-center -ml-7
-            border-0 w-[48px] h-[48px]
+            flex justify-center items-center -ml-3
+            border-0 w-[40px] h-[40px] sm:w-[48px] sm:h-[48px]
             rounded-[50%]
             bg-white
             shadow-[0_4px_12px_rgba(0,0,0,0.15)]
@@ -63,21 +63,21 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
           <Image
             src="/home/carousel_chewron.svg"
             alt="carousel_chewron"
-            width={34}
-            height={74}
+            width={28}
+            height={56}
             className="rotate-180 transition-transform duration-300 hover:scale-110"
           />
         </button>
 
         <Link
           href={productHref}
-          className="relative flex items-center justify-center w-[208px] h-[255px]"
+          className="relative flex items-center justify-center w-full max-w-[170px] sm:max-w-[208px] max-h-[220px] sm:max-h-[255px]"
         >
           <Image
             src={activeProduct.imageSrc}
             alt={activeProduct.title}
-            width={208}
-            height={255}
+            width={170}
+            height={220}
             className="max-h-full max-w-full w-auto h-auto object-contain transition-all duration-300"
           />
         </Link>
@@ -88,8 +88,8 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
           aria-label="Next product"
           className="
             carousel-btn
-            flex justify-center items-center -mr-7
-            border-0 w-[48px] h-[48px]
+            flex justify-center items-center -mr-3
+            border-0 w-[40px] h-[40px] sm:w-[48px] sm:h-[48px]
             rounded-[50%]
             bg-white
             shadow-[0_4px_12px_rgba(0,0,0,0.15)]
@@ -100,32 +100,33 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
           <Image
             src="/home/carousel_chewron.svg"
             alt="carousel_chewron"
-            width={34}
-            height={74}
+            width={28}
+            height={56}
             className="transition-transform duration-300 hover:scale-110"
           />
         </button>
       </div >
       <div>
-        <p className="text-[18px] text-[#333333]">{activeProduct.title}</p>
-        <div className="flex flex-row gap-1.5 mt-1.5 mb-1.5">
+        <p className="text-[14px] sm:text-[18px] text-[#333333] font-medium line-clamp-1 mb-1">{activeProduct.title}</p>
+        <div className="flex flex-row gap-1 mt-1 mb-1.5">
           {Array.from({ length: 5 }, (_, index) => (
             <img
               key={index}
               src={index < (activeProduct.rating ?? 0) ? "/common/star_filled.svg" : "/common/star_empty.svg"}
               alt={index < (activeProduct.rating ?? 0) ? "Filled star" : "Empty star"}
+              className="w-3 h-3 sm:w-3.5 sm:h-3.5"
             />
           ))}
         </div>
-        <p className="text-4xl font-light text-[#2D2D2D]">
-          <span className="text-[18px] inline-block align-top font-light">$</span>
+        <p className="text-2xl sm:text-4xl font-light text-[#2D2D2D]">
+          <span className="text-[14px] sm:text-[18px] inline-block align-top font-light mr-1">$</span>
           {activeProduct.price.toFixed(2)}
         </p>
       </div>
 
     </div >
   );
-}
+};
 
 
 export default CarouselCard;

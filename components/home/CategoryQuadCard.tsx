@@ -17,21 +17,21 @@ interface CategoryQuadCardProps {
 
 const CategoryQuadCard = ({ title, moreHref, items }: CategoryQuadCardProps) => {
   return (
-    <div className="flex flex-col w-92 h-115 rounded-[20px] pt-6 px-5.5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033]">
-      <div className="flex flex-row justify-between items-center mb-3.5">
-        <h2 className="text-[24px] font-semibold">{title}</h2>
+    <div className="flex flex-col w-full max-w-[280px] min-h-[340px] rounded-[20px] pt-5 px-5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] sm:w-[360px] sm:min-h-[420px] lg:w-[400px] lg:min-h-[480px]">
+      <div className="flex flex-row justify-between items-center mb-3">
+        <h2 className="text-[18px] sm:text-[24px] font-semibold">{title}</h2>
 
         <Link className="flex flex-row items-center" href={moreHref}>
-          <span className="text-[#333333] text-[13px] mr-2.25">More</span>
+          <span className="text-[#333333] text-[12px] sm:text-[13px] mr-2">More</span>
           <Image
             src="/home/vector.svg"
             alt="vector"
-            width={22}
-            height={8}
+            width={18}
+            height={6}
           />
         </Link>
       </div >
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-2 gap-4 sm:gap-5">
         {items.slice(0, 4).map((item) => (
           <CategoryQuadItem
             key={item.id}
@@ -44,27 +44,27 @@ const CategoryQuadCard = ({ title, moreHref, items }: CategoryQuadCardProps) => 
       </div>
     </div>
   );
-}
+};
 
 const CategoryQuadItem = ({ title, imageSrc, href, rating = 0 }: Omit<QuadItem, "id">) => {
   return (
     <Link
       href={href}
-      className="flex flex-col p-3 w-38 h-38 bg-white rounded-[16px] shadow-[0px_2px_4px_0px_#0000001A] hover:shadow-md transition-shadow group overflow-hidden cursor-pointer"
+      className="flex flex-col p-2.5 sm:p-3 w-full min-h-[80px] sm:min-h-[96px] bg-white rounded-[16px] shadow-[0px_2px_4px_0px_#0000001A] hover:shadow-md transition-shadow group overflow-hidden cursor-pointer"
     >
       {/* Название товара */}
-      <span className="text-[12px] font-light text-[#333333] line-clamp-1 mb-2">
+      <span className="text-[10px] sm:text-[12px] font-light text-[#333333] line-clamp-1 mb-1.5">
         {title}
       </span>
 
       {/* Рейтинг */}
-      <div className="flex gap-[2px] mb-2">
+      <div className="flex gap-[2px] mb-1.5">
         {Array.from({ length: 5 }, (_, index) => (
           <img
             key={index}
             src={index < rating ? "/common/star_filled.svg" : "/common/star_empty.svg"}
             alt={index < rating ? "Filled star" : "Empty star"}
-            className="w-[12px] h-[12px]"
+            className="w-[10px] h-[10px] sm:w-[12px] sm:h-[12px]"
           />
         ))}
       </div>

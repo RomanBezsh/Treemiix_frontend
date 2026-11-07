@@ -56,8 +56,8 @@ export default function AccountDropdown({
     <div
       aria-hidden={!isOpen}
       className={`
-        absolute -right-[150px] top-[calc(100%+10px)] z-50
-        w-[432px] rounded-[20px] bg-[#F8F8F8] p-6
+        absolute right-0 top-[calc(100%+8px)] z-50
+        w-full max-w-[432px] rounded-[20px] bg-[#F8F8F8] p-6
         shadow-[0px_2px_4px_rgba(0,0,0,0.2)]
         origin-top
         transition-all duration-200 ease-out
@@ -69,7 +69,7 @@ export default function AccountDropdown({
       `}
     >
       {/* Pointer */}
-      <div className="absolute -top-[10px] right-[190px] h-[10px] w-[20px] bg-[#F8F8F8] [clip-path:polygon(50%_0%,0%_100%,100%_100%)]" />
+      <div className="absolute -top-[8px] right-[24px] sm:right-[40px] h-[10px] w-[20px] bg-[#F8F8F8] [clip-path:polygon(50%_0%,0%_100%,100%_100%)]" />
 
       {isAuthenticated ? (
         <>
