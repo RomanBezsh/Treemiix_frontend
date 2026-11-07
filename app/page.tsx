@@ -61,21 +61,36 @@ export default function Home() {
   useEffect(() => {
     async function fetchHomeData() {
       try {
-        const [prodRes, catRes] = await Promise.all([
-          getApi("/products?isActive=true"),
-          getApi("/categories").catch(() => ({ data: [] }))
-        ]);
+        // Категории грузим первыми
+        const catRes = await getApi("/categories").catch(() => ({ data: [] }));
+        const allCategories = Array.isArray(catRes.data) ? catRes.data : [];
 
-        if (Array.isArray(prodRes.data) && prodRes.data.length > 0) {
-          const mapped = prodRes.data.map((p: any) => ({
+        if (Array.isArray(catRes.data)) {
+          setCategories(catRes.data);
+        }
+
+        // Товары грузим по категориям — запрос всех товаров сразу
+        // (/products?isActive=true) падает с 500 на проде. По категориям работает.
+        const categoryProducts = await Promise.all(
+          allCategories.map((c: { id: string }) =>
+            getApi(`/products?categoryId=${c.id}`).then((res) =>
+              Array.isArray(res.data) ? res.data : []
+            ).catch(() => [])
+          )
+        );
+        const allProducts = categoryProducts.flat();
+
+        // Показываем только демо-товары (SKU начинается с DEMO-)
+        const demoProducts = allProducts.filter(
+          (p: any) => (p.sku || "").startsWith("DEMO-")
+        );
+
+        if (demoProducts.length > 0) {
+          const mapped = demoProducts.map((p: any) => ({
             ...p,
             imageUrl: p.imageUrl || (p.images && p.images[0]) || (p.galleries && p.galleries[0]?.path) || (p.productGalleries && p.productGalleries[0]?.path) || ""
           }));
           setProducts(mapped);
-        }
-
-        if (Array.isArray(catRes.data)) {
-          setCategories(catRes.data);
         }
       } catch (err) {
         console.error("Backend fetch error, using fallback mock data", err);

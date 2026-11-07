@@ -35,12 +35,11 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* Тёмная тема отключена, чтобы избежать конфликта цветов:
+   компоненты используют жёсткие цвета (bg-white, text-white и т.д.),
+   которые не перекрываются CSS-переменными --background/--foreground.
+   При необходимости добавить темную тему позже — использовать next-themes
+   и обновлять компоненты на CSS-переменные. */
 
 body {
   background: var(--background);

@@ -69,13 +69,44 @@ function CatalogContent() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [prodRes, catRes] = await Promise.all([
-          getApi("/products?isActive=true"),
-          getApi("/categories").catch(() => ({ data: [] }))
-        ]);
+        // Категории грузим первыми
+        const catRes = await getApi("/categories").catch(() => ({ data: [] }));
+        const allCategories = Array.isArray(catRes.data) ? catRes.data : [];
 
-        if (Array.isArray(prodRes.data) && prodRes.data.length > 0) {
-          const mapped = prodRes.data.map((p: Product) => ({
+        if (Array.isArray(catRes.data)) {
+          const sortedCategories = [...catRes.data].sort(
+            (a: { sortOrder?: number }, b: { sortOrder?: number }) =>
+              (a.sortOrder ?? Number.MAX_SAFE_INTEGER) -
+              (b.sortOrder ?? Number.MAX_SAFE_INTEGER)
+          );
+          setCategories(
+            sortedCategories.map((c: { id: string; name: string }) => ({
+              id: c.id,
+              title: c.name,
+            }))
+          );
+        }
+
+        // Товары грузим по категориям — запрос всех товаров сразу
+        // (/products?isActive=true) падает с 500 на проде из-за большого
+        // вложенного ответа. По категориям работает стабильно.
+        const categoryProducts = await Promise.all(
+          allCategories.map((c: { id: string }) =>
+            getApi(`/products?categoryId=${c.id}`).then((res) =>
+              Array.isArray(res.data) ? res.data : []
+            ).catch(() => [])
+          )
+        );
+        const allProducts = categoryProducts.flat();
+
+        // Показываем только демо-товары (SKU начинается с DEMO-).
+        // Старые тестовые товары с битыми ссылками на медиа не попадают в каталог.
+        const demoProducts = allProducts.filter(
+          (p: Product) => (p.sku || "").startsWith("DEMO-")
+        );
+
+        if (demoProducts.length > 0) {
+          const mapped = demoProducts.map((p: Product) => ({
             ...p,
             imageUrl: p.imageUrl || (p.images && p.images[0]) || (p.galleries && p.galleries[0]?.path) || (p.productGalleries && p.productGalleries[0]?.path) || ""
           }));
@@ -84,7 +115,7 @@ function CatalogContent() {
           setProducts([]);
         }
 
-        const sourceData = Array.isArray(prodRes.data) && prodRes.data.length > 0 ? prodRes.data : [
+        const sourceData = demoProducts.length > 0 ? demoProducts : [
           { manufacturer: "Apple" },
           { manufacturer: "Sony" },
           { manufacturer: "De'Longhi" },
@@ -103,19 +134,6 @@ function CatalogContent() {
         }));
         setBrands(brandList);
 
-        if (Array.isArray(catRes.data)) {
-          const sortedCategories = [...catRes.data].sort(
-            (a: { sortOrder?: number }, b: { sortOrder?: number }) =>
-              (a.sortOrder ?? Number.MAX_SAFE_INTEGER) -
-              (b.sortOrder ?? Number.MAX_SAFE_INTEGER)
-          );
-          setCategories(
-            sortedCategories.map((c: { id: string; name: string }) => ({
-              id: c.id,
-              title: c.name,
-            }))
-          );
-        }
       } catch (err) {
         console.error("Failed to fetch catalog data", err);
       } finally {
