@@ -14,7 +14,7 @@ const API_BASE_URL =
   "https://treemiix-backend.onrender.com/api";
 
 const navigationLinks = [
-  { title: "Today's Deals", href: "/" },
+  { title: "Today's Deals", href: "/todays-deals" },
   { title: "Customer Service", href: "/customer-service" },
   { title: "Registry", href: "/" },
   { title: "Gift Cards", href: "/gift-cards" },
