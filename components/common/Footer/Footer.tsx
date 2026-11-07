@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 const desktopFooterSections = [
   {
@@ -57,6 +60,14 @@ const mobileFooterLinks = [
 ];
 
 export default function Footer() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsAuthenticated(Boolean(localStorage.getItem("token")));
+    }
+  }, []);
+
   return (
     <footer className="w-full font-[var(--font-roboto)]">
       {/* Recommendations */}
@@ -66,23 +77,25 @@ export default function Footer() {
             See personalized recommendations
           </p>
 
-          <Link
-            href="/auth"
-            className="
-              flex h-[48px] w-[386px] items-center justify-center
-              rounded-[49px] bg-[#F5AD69]
-              text-center text-[24px] font-light leading-[130%] text-white
-              transition-all duration-200 ease-out
-              hover:-translate-y-[2px]
-              hover:scale-[1.01]
-              hover:bg-[#F7B475]
-              hover:shadow-[0_6px_14px_rgba(0,0,0,0.14)]
-              active:translate-y-0
-              active:scale-[0.98]
-            "
-          >
-            Sign in
-          </Link>
+          {!isAuthenticated && (
+            <Link
+              href="/auth"
+              className="
+                flex h-[48px] w-[386px] items-center justify-center
+                rounded-[49px] bg-[#F5AD69]
+                text-center text-[24px] font-light leading-[130%] text-white
+                transition-all duration-200 ease-out
+                hover:-translate-y-[2px]
+                hover:scale-[1.01]
+                hover:bg-[#F7B475]
+                hover:shadow-[0_6px_14px_rgba(0,0,0,0.14)]
+                active:translate-y-0
+                active:scale-[0.98]
+              "
+            >
+              Sign in
+            </Link>
+          )}
 
           <p className="mt-[8px] text-center text-[14px] font-medium leading-[130%] text-[#333333]">
             New Customer?{" "}

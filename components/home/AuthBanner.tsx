@@ -1,7 +1,20 @@
 
+"use client";
+
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 const AuthBanner = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsAuthenticated(Boolean(localStorage.getItem("token")));
+    }
+  }, []);
+
+  if (isAuthenticated) return null;
+
   return (
     <div className="relative w-[1532px] h-[282px] overflow-hidden rounded-[24px] mb-5">
       <div className="absolute h-[281.6px] w-[1920px] left-[-194px] top-0 bg-[linear-gradient(90deg,#9FA6B8_0%,#496B94_100%)]" />
