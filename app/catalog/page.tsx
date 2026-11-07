@@ -99,10 +99,17 @@ function CatalogContent() {
         );
         const allProducts = categoryProducts.flat();
 
-        // Показываем только демо-товары (SKU начинается с DEMO-).
-        // Старые тестовые товары с битыми ссылками на медиа не попадают в каталог.
+        // Показываем только демо-товары (SKU начинается с DEMO-)
+        // и только с картинками — товары без медиа не выводятся вообще
         const demoProducts = allProducts.filter(
-          (p: Product) => (p.sku || "").startsWith("DEMO-")
+          (p: Product) =>
+            (p.sku || "").startsWith("DEMO-") &&
+            Boolean(
+              p.imageUrl ||
+                p.images?.[0] ||
+                p.galleries?.[0]?.path ||
+                p.productGalleries?.[0]?.path
+            )
         );
 
         if (demoProducts.length > 0) {

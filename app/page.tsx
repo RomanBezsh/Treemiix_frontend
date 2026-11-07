@@ -82,8 +82,16 @@ export default function Home() {
         const allProducts = categoryProducts.flat();
 
         // Показываем только демо-товары (SKU начинается с DEMO-)
+        // и только с картинками — товары без медиа не выводятся вообще
         const demoProducts = allProducts.filter(
-          (p: any) => (p.sku || "").startsWith("DEMO-")
+          (p: any) =>
+            (p.sku || "").startsWith("DEMO-") &&
+            Boolean(
+              p.imageUrl ||
+                p.images?.[0] ||
+                p.galleries?.[0]?.path ||
+                p.productGalleries?.[0]?.path
+            )
         );
 
         if (demoProducts.length > 0) {

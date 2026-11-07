@@ -37,7 +37,16 @@ export default function TodaysDealsPage() {
         const allProducts = categoryProducts.flat();
 
         const dealProducts: DealProduct[] = allProducts
-          .filter((p: any) => p.oldCost && p.oldCost > p.price)
+          .filter(
+            (p: any) =>
+              p.oldCost &&
+              p.oldCost > p.price &&
+              Boolean(
+                p.imageUrl ||
+                  p.galleries?.[0]?.path ||
+                  p.productGalleries?.[0]?.path
+              )
+          )
           .slice(0, 15)
           .map((p: any) => ({
             id: p.id,
