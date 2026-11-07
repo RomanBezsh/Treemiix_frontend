@@ -263,6 +263,15 @@ function CatalogContent() {
       break;
   }
 
+  // Pagination: 10 products per page
+  const PAGE_SIZE = 10;
+  const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE) || 1;
+  const clampedPage = Math.max(1, Math.min(currentPage, totalPages));
+  const paginatedProducts = filteredProducts.slice(
+    (clampedPage - 1) * PAGE_SIZE,
+    clampedPage * PAGE_SIZE
+  );
+
   const activeChips = [
     searchQuery.trim()
       ? {
@@ -370,11 +379,11 @@ function CatalogContent() {
 
           {loading ? (
             <div className="py-20 text-center text-[18px] text-[#555]">Loading products from backend...</div>
-            ) : filteredProducts.length === 0 ? (
+            ) : paginatedProducts.length === 0 ? (
             <div className="py-20 text-center text-[18px] text-[#777]">No products matching current filters.</div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 mb-10">
-              {filteredProducts.map((p) => {
+              {paginatedProducts.map((p) => {
                 const img = p.imageUrl || p.images?.[0] || "";
                 const hasDiscount = Boolean(p.oldCost && p.oldCost > p.price);
                 return (
@@ -396,8 +405,8 @@ function CatalogContent() {
           )}
 
           <Pagination 
-            totalPages={Math.ceil(filteredProducts.length / 10) || 1} 
-            currentPage={currentPage} 
+            totalPages={totalPages} 
+            currentPage={clampedPage} 
             onPageChange={(page) => setCurrentPage(page)} 
           />
         </div>

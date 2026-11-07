@@ -29,6 +29,7 @@ export default function Header() {
     useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [searchValue, setSearchValue] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -64,12 +65,13 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    const loadCartCount = async () => {
-      const token =
-        typeof window !== "undefined"
-          ? localStorage.getItem("token")
-          : null;
+    const token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("token")
+        : null;
+    setIsAuthenticated(Boolean(token));
 
+    const loadCartCount = async () => {
       if (!token) {
         setCartCount(0);
         return;
@@ -83,6 +85,7 @@ export default function Header() {
         if (res.status === 401) {
           clearAuthSession();
           setCartCount(0);
+          setIsAuthenticated(false);
           return;
         }
 
@@ -100,8 +103,7 @@ export default function Header() {
 
         setCartCount(
           cartItems.reduce(
-            (total, item) =>
-              total + (Number(item.quantity) || 0),
+            (total, item) => total + (Number(item.quantity) || 0),
             0,
           ),
         );
@@ -119,10 +121,7 @@ export default function Header() {
     window.addEventListener("cart-updated", handleCartUpdated);
 
     return () => {
-      window.removeEventListener(
-        "cart-updated",
-        handleCartUpdated,
-      );
+      window.removeEventListener("cart-updated", handleCartUpdated);
     };
   }, [pathname]);
 
@@ -306,6 +305,7 @@ export default function Header() {
             <AccountDropdown
               isOpen={isAccountDropdownOpen}
               onClose={() => setIsAccountDropdownOpen(false)}
+              isAuthenticated={isAuthenticated}
             />
           </div>
 

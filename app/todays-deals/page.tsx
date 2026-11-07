@@ -1,17 +1,64 @@
+"use client";
+
 import DealCard from "@/components/deals/DealCard";
 import DealsSidebar from "@/components/deals/DealsSidebar";
 import DealsToolbar from "@/components/deals/DealsToolbar";
 import RecommendedDeals from "@/components/deals/RecommendedDeals";
+import { getApi } from "@/components/api/useApi";
+import { useState, useEffect } from "react";
 
-const deals = Array.from({ length: 15 }, (_, index) => ({
-  id: index + 1,
-  title: "essence | Lash Princess False Lash Effect Mascara",
-  price: 50,
-  oldPrice: 75,
-  rating: 4,
-}));
+interface DealProduct {
+  id: string;
+  title: string;
+  price: number;
+  oldPrice?: number;
+  rating: number;
+  imageUrl?: string;
+}
 
 export default function TodaysDealsPage() {
+  const [deals, setDeals] = useState<DealProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchDeals() {
+      try {
+        // Load products from all categories, filter those with discounts
+        const catRes = await getApi("/categories").catch(() => ({ data: [] }));
+        const allCategories = Array.isArray(catRes.data) ? catRes.data : [];
+
+        const categoryProducts = await Promise.all(
+          allCategories.map((c: { id: string }) =>
+            getApi(`/products?categoryId=${c.id}`).then((res) =>
+              Array.isArray(res.data) ? res.data : []
+            ).catch(() => [])
+          )
+        );
+        const allProducts = categoryProducts.flat();
+
+        const dealProducts: DealProduct[] = allProducts
+          .filter((p: any) => p.oldCost && p.oldCost > p.price)
+          .slice(0, 15)
+          .map((p: any) => ({
+            id: p.id,
+            title: p.name,
+            price: p.price,
+            oldPrice: p.oldCost,
+            rating: p.rating || 0,
+            imageUrl: p.imageUrl || p.galleries?.[0]?.path || p.productGalleries?.[0]?.path || "",
+          }));
+
+        setDeals(dealProducts);
+      } catch (err) {
+        console.error("Failed to fetch deals", err);
+        setDeals([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDeals();
+  }, []);
+
   return (
     <main className="w-full bg-white font-[var(--font-roboto)]">
       <div className="mx-auto w-full max-w-[1600px] px-[16px] pb-[80px] pt-[24px] sm:px-[24px] lg:px-[40px]">
@@ -25,7 +72,7 @@ export default function TodaysDealsPage() {
           <section className="min-w-0 flex-1">
             {/* Recommended title */}
             <h1 className="text-[20px] font-medium leading-[130%] text-[#333333]/80 sm:text-[24px]">
-              Recommended deals for you
+              Today's Deals
             </h1>
 
             {/* Selected filters and sorting */}
@@ -38,18 +85,25 @@ export default function TodaysDealsPage() {
               <RecommendedDeals />
             </div>
 
-            {/* Deals grid */}
-            <div className="mt-[42px] grid grid-cols-1 gap-[14px] sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
-              {deals.map((deal) => (
-                <DealCard
-                  key={deal.id}
-                  title={deal.title}
-                  price={deal.price}
-                  oldPrice={deal.oldPrice}
-                  rating={deal.rating}
-                />
-              ))}
-            </div>
+            {loading ? (
+              <div className="mt-[42px] py-20 text-center text-[18px] text-[#555]">Loading deals...</div>
+            ) : deals.length === 0 ? (
+              <div className="mt-[42px] py-20 text-center text-[18px] text-[#777]">No deals available right now.</div>
+            ) : (
+              <>
+                {/* Deals grid */}
+                <div className="mt-[42px] grid grid-cols-1 gap-[14px] sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
+                  {deals.map((deal) => (
+                    <DealCard
+                      key={deal.id}
+                      title={deal.title}
+                      price={deal.price}
+                      oldPrice={deal.oldPrice}
+                      rating={deal.rating}
+                      image={deal.imageUrl || "/account/lists/product-placeholder.png"}
+                    />
+                  ))}
+                </div>
 
             {/* Pagination */}
             <nav
@@ -191,6 +245,8 @@ export default function TodaysDealsPage() {
     </button>
   </p>
 </div>
+              </>
+            )}
           </section>
         </div>
       </div>
