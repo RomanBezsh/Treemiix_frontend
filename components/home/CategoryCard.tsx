@@ -11,11 +11,11 @@ const CategoryCard = ({ title, imageSrc, href }: CategoryCardProps) => {
   return (
     <Link
       href={href}
-      className="flex flex-col w-full max-w-[280px] min-h-[280px] rounded-[20px] pt-5 px-5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] transition-transform hover:scale-[1.02] sm:w-[360px] sm:min-h-[320px] lg:w-[400px] lg:min-h-[360px]"
+      className="flex flex-col w-full max-w-[280px] min-h-[300px] rounded-[20px] pt-5 px-5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] transition-transform hover:scale-[1.02] sm:w-[360px] sm:min-h-[340px] lg:w-[400px] lg:min-h-[380px]"
     >
 
       <div className="flex flex-row justify-between items-center mb-3 px-2">
-        <h2 className="text-[18px] sm:text-[24px] font-semibold line-clamp-1">{title}</h2>
+        <h2 className="text-[18px] sm:text-[24px] font-semibold line-clamp-1 webkit-line-clamp-1">{title}</h2>
 
         <span className="flex flex-row items-center">
           <span className="text-[#333333] text-[12px] sm:text-[13px] mr-2">More</span>
@@ -27,7 +27,7 @@ const CategoryCard = ({ title, imageSrc, href }: CategoryCardProps) => {
           />
         </span>
       </div >
-      <div className="relative flex items-center justify-center w-full h-full max-h-[220px] sm:max-h-[280px]">
+      <div className="relative flex items-center justify-center w-full h-full max-h-[240px] sm:max-h-[300px] overflow-hidden">
         <Image
           src={imageSrc}
           alt={title}

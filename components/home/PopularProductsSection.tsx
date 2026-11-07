@@ -11,7 +11,7 @@ const PopularProductsSection = ({ href, items }: PopularProductsSectionProps) =>
   return (
     <div className="flex flex-col w-full max-w-[240px] sm:w-[280px] gap-3">
       <div className="flex flex-row justify-between items-center mb-2 px-2">
-        <h2 className="text-[16px] sm:text-2xl font-semibold text-[#333333] line-clamp-1">Popular</h2>
+        <h2 className="text-[16px] sm:text-2xl font-semibold text-[#333333] line-clamp-1 webkit-line-clamp-1">Popular</h2>
         <Link className="flex flex-row items-center" href={href}>
           <span className="text-[#333333] text-[12px] sm:text-[13px] mr-2">More</span>
           <Image

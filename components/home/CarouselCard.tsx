@@ -37,12 +37,12 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
   };
 
   return (
-    <div className="flex flex-col w-full max-w-[280px] min-h-[340px] rounded-[20px] justify-between pt-5 px-5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] product-card-enter animate-fade-in-up hover-lift sm:w-[340px] sm:min-h-[380px] lg:w-[380px] lg:min-h-[420px]">
+    <div className="flex flex-col w-full max-w-[280px] min-h-[360px] rounded-[20px] justify-between pt-5 px-5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] product-card-enter animate-fade-in-up hover-lift sm:w-[340px] sm:min-h-[400px] lg:w-[380px] lg:min-h-[440px]">
 
       <div className="flex flex-row justify-between items-center mb-3 px-2">
-        <h2 className="text-[18px] sm:text-[24px] font-semibold line-clamp-1">{title}</h2>
+        <h2 className="text-[18px] sm:text-[24px] font-semibold line-clamp-1 webkit-line-clamp-1">{title}</h2>
       </div>
-      <div className="relative flex-1 flex items-center justify-center min-h-[160px] sm:min-h-[200px]">
+      <div className="relative flex-1 flex items-center justify-center min-h-[180px] sm:min-h-[220px] max-h-[260px]">
 
         <button
           type="button"
@@ -51,7 +51,7 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
           className="
             absolute left-0 top-1/2
             flex justify-center items-center
-            border-0 w-[36px] h-[36px] sm:w-[44px] sm:h-[44px]
+            border-0 w-[32px] h-[32px] sm:w-[40px] sm:h-[40px]
             rounded-[50%]
             bg-white/90
             shadow-[0_2px_8px_rgba(0,0,0,0.12)]
@@ -64,21 +64,21 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
           <Image
             src="/home/carousel_chewron.svg"
             alt="carousel_chewron"
-            width={24}
-            height={48}
+            width={20}
+            height={40}
             className="rotate-180 transition-transform duration-300 hover:scale-105"
           />
         </button>
 
         <Link
           href={productHref}
-          className="relative flex items-center justify-center w-full max-h-full"
+          className="relative flex items-center justify-center w-full max-h-full overflow-hidden"
         >
           <Image
             src={activeProduct.imageSrc}
             alt={activeProduct.title}
-            width={180}
-            height={200}
+            width={200}
+            height={220}
             className="max-w-full max-h-full object-contain mx-auto"
           />
         </Link>
@@ -90,7 +90,7 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
           className="
             absolute right-0 top-1/2
             flex justify-center items-center
-            border-0 w-[36px] h-[36px] sm:w-[44px] sm:h-[44px]
+            border-0 w-[32px] h-[32px] sm:w-[40px] sm:h-[40px]
             rounded-[50%]
             bg-white/90
             shadow-[0_2px_8px_rgba(0,0,0,0.12)]
@@ -102,14 +102,14 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
           <Image
             src="/home/carousel_chewron.svg"
             alt="carousel_chewron"
-            width={24}
-            height={48}
+            width={20}
+            height={40}
             className="transition-transform duration-300 hover:scale-105"
           />
         </button>
       </div >
       <div className="px-2 mt-2">
-        <p className="text-[14px] sm:text-[18px] text-[#333333] font-medium line-clamp-1 mb-1">{activeProduct.title}</p>
+        <p className="text-[13px] sm:text-[16px] text-[#333333] font-medium line-clamp-2 webkit-line-clamp-2 mb-1">{activeProduct.title}</p>
         <div className="flex flex-row gap-1 mt-1 mb-1">
           {Array.from({ length: 5 }, (_, index) => (
             <img
@@ -120,8 +120,8 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
             />
           ))}
         </div>
-        <p className="text-xl sm:text-2xl font-light text-[#2D2D2D]">
-          <span className="text-[14px] sm:text-[18px] inline-block align-top font-light mr-1">$</span>
+        <p className="text-lg sm:text-xl font-light text-[#2D2D2D]">
+          <span className="text-[13px] sm:text-[16px] inline-block align-top font-light mr-1">$</span>
           {activeProduct.price.toFixed(2)}
         </p>
       </div>

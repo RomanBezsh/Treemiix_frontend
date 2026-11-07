@@ -17,9 +17,9 @@ interface CategoryQuadCardProps {
 
 const CategoryQuadCard = ({ title, moreHref, items }: CategoryQuadCardProps) => {
   return (
-    <div className="flex flex-col w-full max-w-[280px] min-h-[380px] rounded-[20px] pt-5 px-5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] sm:w-[360px] sm:min-h-[440px] lg:w-[400px] lg:min-h-[500px]">
+    <div className="flex flex-col w-full max-w-[280px] min-h-[400px] rounded-[20px] pt-5 px-5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] sm:w-[360px] sm:min-h-[460px] lg:w-[400px] lg:min-h-[520px]">
       <div className="flex flex-row justify-between items-center mb-3 px-2">
-        <h2 className="text-[18px] sm:text-[24px] font-semibold line-clamp-1">{title}</h2>
+        <h2 className="text-[18px] sm:text-[24px] font-semibold line-clamp-1 webkit-line-clamp-1">{title}</h2>
 
         <Link className="flex flex-row items-center" href={moreHref}>
           <span className="text-[#333333] text-[12px] sm:text-[13px] mr-2">More</span>
@@ -50,10 +50,10 @@ const CategoryQuadItem = ({ title, imageSrc, href, rating = 0 }: Omit<QuadItem, 
   return (
     <Link
       href={href}
-      className="flex flex-col p-3 w-full min-h-[120px] sm:min-h-[140px] bg-white rounded-[16px] shadow-[0px_2px_4px_0px_#0000001A] hover:shadow-md transition-shadow group overflow-hidden cursor-pointer"
+      className="flex flex-col p-3 w-full min-h-[140px] sm:min-h-[160px] bg-white rounded-[16px] shadow-[0px_2px_4px_0px_#0000001A] hover:shadow-md transition-shadow group overflow-hidden cursor-pointer"
     >
       {/* Название товара */}
-      <span className="text-[11px] sm:text-[13px] font-light text-[#333333] line-clamp-2 mb-2">
+      <span className="text-[11px] sm:text-[13px] font-light text-[#333333] line-clamp-2 webkit-line-clamp-2 mb-2 overflow-hidden">
         {title}
       </span>
 

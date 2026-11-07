@@ -11,8 +11,8 @@ export interface HorizontalProductCardProps {
 const HorizontalProductCard = ({ imageSrc, title, price, rating = 0, isLastItem }: HorizontalProductCardProps) => {
   return (
     <div
-      className={`flex flex-row items-start gap-4 transition-colors ${isLastItem ? "bg-[#F8F8F8] rounded-[10px] shadow-[0px_2px_4px_0px_#00000033]" : ""
-        }`}
+      className={`flex flex-row items-start gap-4 transition-colors ${isLastItem ? "bg-[#F8F8F8] rounded-[10px] shadow-[0px_2px_4px_0px_#00000033]" : ""}
+      `}
     >
       <div className={`relative w-43.5 h-43   flex items-center justify-center ${!isLastItem ? "shadow-[0px_2px_4px_0px_#00000033] rounded-[10px] bg-[#F8F8F8]" : ""}`}>
         <Image
@@ -23,19 +23,20 @@ const HorizontalProductCard = ({ imageSrc, title, price, rating = 0, isLastItem 
           className="object-contain max-h-36 max-w-36"
         />
       </div>
-      <div className="flex flex-col mt-4 gap-3">
-        <h3 className="text-[18px] text-[#333333] leading-tight">{title}</h3>
-        <div className="flex flex-row gap-1.5 -mt-1.5">
+      <div className="flex flex-col mt-4 gap-3 w-full">
+        <h3 className="text-[14px] sm:text-[18px] text-[#333333] font-medium leading-tight line-clamp-1 webkit-line-clamp-1 overflow-hidden">{title}</h3>
+        <div className="flex flex-row gap-1.5 mt-1">
           {Array.from({ length: 5 }, (_, index) => (
             <img
               key={index}
               src={index < rating ? "/common/star_filled.svg" : "/common/star_empty.svg"}
               alt={index < rating ? "Filled star" : "Empty star"}
+              className="w-3 h-3 sm:w-3.5 sm:h-3.5"
             />
           ))}
         </div>
-        <h3 className="text-4xl font-light">
-          <span className="text-[18px] inline-block align-top font-light">$</span>
+        <h3 className="text-2xl sm:text-4xl font-light">
+          <span className="text-[14px] sm:text-[18px] inline-block align-top font-light">$</span>
           {price.toFixed(2)}
         </h3>
       </div>
