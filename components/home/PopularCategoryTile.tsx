@@ -15,17 +15,16 @@ const PopularCategoryTile = ({
   return (
     <Link
       href={href}
-      className="relative block h-139 w-67.75 shrink-0 overflow-hidden rounded-lg bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] transition-transform hover:scale-[1.02]"
+      className="relative w-[170px] h-[200px] shrink-0 overflow-hidden rounded-lg bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] transition-transform hover:scale-[1.02] flex flex-col items-center"
     >
       <Image
         src={imageSrc}
         alt={category}
-        width={432}
-        height={378}
-        className="absolute mt-17.5 -right-1/4 h-[378px] w-[432px] object-cover"
+        width={170}
+        height={140}
+        className="w-full h-[140px] object-cover object-center mb-3"
       />
-
-      <h3 className="absolute bottom-4 left-4 text-[22px] font-normal text-[#333333]">
+      <h3 className="px-2 text-[13px] font-normal text-[#333333] line-clamp-2 text-center leading-tight">
         {category}
       </h3>
     </Link>
