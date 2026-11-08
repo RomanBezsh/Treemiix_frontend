@@ -65,7 +65,8 @@ export default async function Home() {
         (p.galleries && p.galleries[0]?.path) ||
         (p.productGalleries && p.productGalleries[0]?.path) ||
         "",
-    }));
+    }))
+    .slice(0, 24);
 
   // --- Derived data ---
 
