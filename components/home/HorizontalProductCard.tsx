@@ -10,8 +10,8 @@ export interface HorizontalProductCardProps {
 
 const HorizontalProductCard = ({ imageSrc, title, price, rating = 0 }: HorizontalProductCardProps) => {
   return (
-    <div className="flex flex-row items-start gap-4 bg-[#F8F8F8] rounded-[10px] shadow-[0px_2px_4px_0px_#00000033] p-3">
-      <div className="relative w-43.5 h-43 flex items-center justify-center">
+    <div className="flex flex-row items-start gap-4 bg-[#F8F8F8] rounded-[10px] shadow-[0px_2px_4px_0px_#00000033] p-3 w-full max-w-[300px]">
+      <div className="relative w-43.5 h-43 flex items-center justify-center shrink-0">
         <Image
           src={imageSrc}
           alt={title}
@@ -20,7 +20,7 @@ const HorizontalProductCard = ({ imageSrc, title, price, rating = 0 }: Horizonta
           className="object-contain max-h-36 max-w-36"
         />
       </div>
-      <div className="flex flex-col mt-1 gap-2 w-full">
+      <div className="flex flex-col mt-1 gap-2 w-full min-w-0">
         <h3 className="text-[13px] sm:text-[15px] text-[#333333] font-medium leading-tight line-clamp-1 overflow-hidden">{title}</h3>
         <div className="flex flex-row gap-1.5 mt-1">
           {Array.from({ length: 5 }, (_, index) => (
@@ -32,7 +32,7 @@ const HorizontalProductCard = ({ imageSrc, title, price, rating = 0 }: Horizonta
             />
           ))}
         </div>
-        <h3 className="text-lg sm:text-2xl font-light">
+        <h3 className="text-lg sm:text-xl font-light">
           <span className="text-[13px] sm:text-[16px] inline-block align-top font-light">$</span>
           {price.toFixed(2)}
         </h3>
