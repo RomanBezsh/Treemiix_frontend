@@ -258,7 +258,7 @@ export default async function Home() {
           ))}
         </div>
 
-        <div className="flex flex-row gap-6 justify-center mb-5">
+        <div className="flex flex-row gap-6 justify-between mb-5">
           <PopularProductsSection href="/catalog" items={popularItems} />
           <PopularCategoriesSection
             href="/catalog"
