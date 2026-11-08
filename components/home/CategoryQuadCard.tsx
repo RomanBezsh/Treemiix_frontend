@@ -50,7 +50,7 @@ const CategoryQuadItem = ({ title, imageSrc, href, rating = 0 }: Omit<QuadItem, 
   return (
     <Link
       href={href}
-      className="flex flex-col p-3 w-full min-h-[140px] sm:min-h-[160px] bg-white rounded-[16px] shadow-[0px_2px_4px_0px_#0000001A] hover:shadow-md transition-shadow group overflow-hidden cursor-pointer"
+      className="flex flex-col p-3 w-full min-h-[130px] bg-white rounded-[16px] shadow-[0px_2px_4px_0px_#0000001A] hover:shadow-md transition-shadow group overflow-hidden cursor-pointer"
     >
       {/* Название товара */}
       <span className="text-[11px] sm:text-[13px] font-light text-[#333333] line-clamp-2 webkit-line-clamp-2 mb-2 overflow-hidden">

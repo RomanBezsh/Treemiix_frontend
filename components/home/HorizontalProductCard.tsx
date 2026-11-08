@@ -10,7 +10,7 @@ export interface HorizontalProductCardProps {
 
 const HorizontalProductCard = ({ imageSrc, title, price, rating = 0 }: HorizontalProductCardProps) => {
   return (
-    <div className="flex flex-row items-start gap-4 bg-[#F8F8F8] rounded-[10px] shadow-[0px_2px_4px_0px_#00000033] p-3 w-full max-w-[380px]">
+    <div className="flex flex-row items-start gap-4 bg-[#F8F8F8] rounded-[10px] shadow-[0px_2px_4px_0px_#00000033] p-3 w-full max-w-[380px] min-h-[130px]">
       <div className="relative w-43.5 h-43 flex items-center justify-center shrink-0">
         <Image
           src={imageSrc}
