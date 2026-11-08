@@ -8,13 +8,10 @@ export interface HorizontalProductCardProps {
   isLastItem?: boolean;
 }
 
-const HorizontalProductCard = ({ imageSrc, title, price, rating = 0, isLastItem }: HorizontalProductCardProps) => {
+const HorizontalProductCard = ({ imageSrc, title, price, rating = 0 }: HorizontalProductCardProps) => {
   return (
-    <div
-      className={`flex flex-row items-start gap-4 transition-colors ${isLastItem ? "bg-[#F8F8F8] rounded-[10px] shadow-[0px_2px_4px_0px_#00000033]" : ""}
-      `}
-    >
-      <div className={`relative w-43.5 h-43   flex items-center justify-center ${!isLastItem ? "shadow-[0px_2px_4px_0px_#00000033] rounded-[10px] bg-[#F8F8F8]" : ""}`}>
+    <div className="flex flex-row items-start gap-4 bg-[#F8F8F8] rounded-[10px] shadow-[0px_2px_4px_0px_#00000033] p-3">
+      <div className="relative w-43.5 h-43 flex items-center justify-center">
         <Image
           src={imageSrc}
           alt={title}
@@ -23,9 +20,9 @@ const HorizontalProductCard = ({ imageSrc, title, price, rating = 0, isLastItem 
           className="object-contain max-h-36 max-w-36"
         />
       </div>
-      <div className="flex flex-col mt-4 gap-3 w-full">
+      <div className="flex flex-col mt-1 gap-2 w-full">
         <h3 className="text-[13px] sm:text-[15px] text-[#333333] font-medium leading-tight line-clamp-1 overflow-hidden">{title}</h3>
-        <div className="flex flex-row gap-1 mt-1">
+        <div className="flex flex-row gap-1.5 mt-1">
           {Array.from({ length: 5 }, (_, index) => (
             <img
               key={index}
