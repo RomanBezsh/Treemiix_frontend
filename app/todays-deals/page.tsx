@@ -6,7 +6,7 @@ import DealsToolbar from "@/components/deals/DealsToolbar";
 import RecommendedDeals from "@/components/deals/RecommendedDeals";
 import { getApi } from "@/components/api/useApi";
 import { mainImagePath } from "@/lib/media";
-import { ACTIVE_PRODUCTS_PATH, isStorefrontProduct, orderByCategories, type StorefrontCandidate } from "@/lib/products";
+import { ACTIVE_PRODUCTS_PATH, isStorefrontProduct, orderByCategories, rootCategoryCards, type CategoryCard, type StorefrontCandidate } from "@/lib/products";
 import { useState, useEffect } from "react";
 
 interface DealProduct {
@@ -20,6 +20,7 @@ interface DealProduct {
 
 export default function TodaysDealsPage() {
   const [deals, setDeals] = useState<DealProduct[]>([]);
+  const [categoryCards, setCategoryCards] = useState<CategoryCard[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -46,6 +47,7 @@ export default function TodaysDealsPage() {
           }));
 
         setDeals(dealProducts);
+        setCategoryCards(rootCategoryCards(productsRes.data, allCategories));
       } catch (err) {
         console.error("Failed to fetch deals", err);
         setDeals([]);
@@ -79,7 +81,7 @@ export default function TodaysDealsPage() {
 
             {/* Categories */}
             <div className="mt-[28px]">
-              <RecommendedDeals />
+              <RecommendedDeals categories={categoryCards} loading={loading} />
             </div>
 
             {loading ? (

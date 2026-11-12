@@ -53,3 +53,65 @@ export function orderByCategories<T extends { categoryId?: string }>(
     (category?.id && byCategory.get(category.id)) || [],
   );
 }
+
+export interface CategoryCard {
+  id: string;
+  name: string;
+  imageUrl: string;
+}
+
+interface CategoryNode {
+  id?: string;
+  name?: string;
+  parentId?: string | null;
+  sortOrder?: number;
+}
+
+/**
+ * Root categories (sorted by sortOrder) that have at least one storefront product,
+ * each with the main image of a product from that category; products placed
+ * directly in the root category win over products from its subcategories.
+ */
+export function rootCategoryCards(
+  products: unknown,
+  categories: unknown,
+  limit = 6,
+): CategoryCard[] {
+  if (!Array.isArray(products) || !Array.isArray(categories)) return [];
+
+  const nodes = (categories as CategoryNode[]).filter(
+    (c): c is CategoryNode & { id: string } => Boolean(c?.id),
+  );
+  const rootOf = new Map<string, string>();
+  const parentOf = new Map(nodes.map((c) => [c.id, c.parentId ?? null]));
+  for (const c of nodes) {
+    let current: string = c.id;
+    const seen = new Set<string>();
+    while (parentOf.get(current) && !seen.has(current)) {
+      seen.add(current);
+      current = parentOf.get(current) as string;
+    }
+    rootOf.set(c.id, current);
+  }
+
+  const ownImage = new Map<string, string>();
+  const subImage = new Map<string, string>();
+  for (const product of products as (StorefrontCandidate & { categoryId?: string })[]) {
+    if (!product?.categoryId || !isStorefrontProduct(product)) continue;
+    const root = rootOf.get(product.categoryId);
+    if (!root) continue;
+    const target = root === product.categoryId ? ownImage : subImage;
+    if (!target.has(root)) target.set(root, productImage(product));
+  }
+
+  return nodes
+    .filter((c) => !c.parentId)
+    .sort((a, b) => (a.sortOrder ?? Number.MAX_SAFE_INTEGER) - (b.sortOrder ?? Number.MAX_SAFE_INTEGER))
+    .map((c) => ({
+      id: c.id,
+      name: c.name ?? "",
+      imageUrl: ownImage.get(c.id) || subImage.get(c.id) || "",
+    }))
+    .filter((card) => card.imageUrl)
+    .slice(0, limit);
+}
