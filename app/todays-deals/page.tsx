@@ -6,7 +6,7 @@ import DealsToolbar from "@/components/deals/DealsToolbar";
 import RecommendedDeals from "@/components/deals/RecommendedDeals";
 import { getApi } from "@/components/api/useApi";
 import { mainImagePath } from "@/lib/media";
-import { ACTIVE_PRODUCTS_PATH, orderByCategories } from "@/lib/products";
+import { ACTIVE_PRODUCTS_PATH, isStorefrontProduct, orderByCategories, type StorefrontCandidate } from "@/lib/products";
 import { useState, useEffect } from "react";
 
 interface DealProduct {
@@ -30,19 +30,11 @@ export default function TodaysDealsPage() {
         const allCategories = Array.isArray(catRes.data) ? catRes.data : [];
 
         const productsRes = await getApi(ACTIVE_PRODUCTS_PATH).catch(() => ({ data: [] }));
-        const allProducts = orderByCategories<{ categoryId?: string }>(productsRes.data, allCategories);
+        const allProducts = orderByCategories<StorefrontCandidate & { categoryId?: string }>(productsRes.data, allCategories);
 
         const dealProducts: DealProduct[] = allProducts
-          .filter(
-            (p: any) =>
-              p.oldCost &&
-              p.oldCost > p.price &&
-              Boolean(
-                p.imageUrl ||
-                  p.galleries?.[0]?.path ||
-                  p.productGalleries?.[0]?.path
-              )
-          )
+          .filter(isStorefrontProduct)
+          .filter((p: any) => p.oldCost && p.oldCost > p.price)
           .slice(0, 15)
           .map((p: any) => ({
             id: p.id,

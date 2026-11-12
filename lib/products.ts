@@ -1,6 +1,34 @@
+import { mainImagePath } from "@/lib/media";
+
 // One request for all active products instead of one request per category
 // (~70 requests per page used to hit the backend rate limit and return 429).
 export const ACTIVE_PRODUCTS_PATH = "/products?isActive=true";
+
+export interface StorefrontCandidate {
+  isActive?: boolean;
+  imageUrl?: string | null;
+  images?: string[];
+  galleries?: { path?: string }[];
+  productGalleries?: { path?: string }[];
+  seller?: { status?: string } | null;
+}
+
+/** Main image of a product (isMain, otherwise the first one), or "". */
+export function productImage(product: StorefrontCandidate): string {
+  return mainImagePath(product);
+}
+
+/**
+ * Storefront rule: a product is shown to buyers only when it is active,
+ * has at least one image and its seller is approved (status Active).
+ */
+export function isStorefrontProduct(product: StorefrontCandidate): boolean {
+  return (
+    product.isActive !== false &&
+    Boolean(productImage(product)) &&
+    product.seller?.status === "Active"
+  );
+}
 
 /**
  * Orders products the same way the old per-category loading did:

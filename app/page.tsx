@@ -11,7 +11,7 @@ import PromoBanner from "@/components/home/PromoBanner";
 import SalesSection from "@/components/home/SalesSection";
 import RecentlyViewedSection from "@/components/home/RecentlyViewedSection";
 import { mainImagePath } from "@/lib/media";
-import { ACTIVE_PRODUCTS_PATH, orderByCategories } from "@/lib/products";
+import { ACTIVE_PRODUCTS_PATH, isStorefrontProduct, orderByCategories } from "@/lib/products";
 import {
   popularCategoriesData,
   popularProductsData,
@@ -41,19 +41,9 @@ export default async function Home() {
     .catch(() => []);
   const allProducts: any[] = orderByCategories(productsData, allCategories);
 
-  // Показываем только демо-товары (SKU начинается с DEMO-)
-  // и только с картинками — товары без медиа не выводятся вообще
+  // Правило витрины: активный товар, есть картинка, продавец одобрен
   const products = allProducts
-    .filter(
-      (p: any) =>
-        (p.sku || "").startsWith("DEMO-") &&
-        Boolean(
-          p.imageUrl ||
-            p.images?.[0] ||
-            p.galleries?.[0]?.path ||
-            p.productGalleries?.[0]?.path
-        )
-    )
+    .filter(isStorefrontProduct)
     .map((p: any) => ({
       ...p,
       imageUrl: mainImagePath(p),

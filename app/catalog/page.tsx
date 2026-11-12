@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, useEffect, useMemo } from "react";
 import { getApi } from "@/components/api/useApi";
 import { mainImagePath } from "@/lib/media";
-import { ACTIVE_PRODUCTS_PATH, orderByCategories } from "@/lib/products";
+import { ACTIVE_PRODUCTS_PATH, isStorefrontProduct, orderByCategories } from "@/lib/products";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
 
@@ -93,18 +93,8 @@ function CatalogContent() {
         const productsRes = await getApi(ACTIVE_PRODUCTS_PATH).catch(() => ({ data: [] }));
         const allProducts = orderByCategories<Product>(productsRes.data, allCategories);
 
-        // Показываем только демо-товары (SKU начинается с DEMO-)
-        // и только с картинками — товары без медиа не выводятся вообще
-        const demoProducts = allProducts.filter(
-          (p: Product) =>
-            (p.sku || "").startsWith("DEMO-") &&
-            Boolean(
-              p.imageUrl ||
-                p.images?.[0] ||
-                p.galleries?.[0]?.path ||
-                p.productGalleries?.[0]?.path
-            )
-        );
+        // Правило витрины: активный товар, есть картинка, продавец одобрен
+        const demoProducts = allProducts.filter(isStorefrontProduct);
 
         if (demoProducts.length > 0) {
           const mapped = demoProducts.map((p: Product) => ({

@@ -9,6 +9,7 @@ import ProductCard from "@/components/catalog/ProductCard";
 import SortSelect from "@/components/catalog/SortSelect";
 import SellerStoreHeader, { type SellerStore } from "@/components/seller/SellerStoreHeader";
 import { mainImagePath } from "@/lib/media";
+import { isStorefrontProduct } from "@/lib/products";
 
 // Fields of GET /products that this page uses
 interface ApiProduct {
@@ -18,6 +19,8 @@ interface ApiProduct {
   oldCost?: number | null;
   rating?: number;
   sellerId?: string;
+  isActive?: boolean;
+  seller?: { status?: string } | null;
   createdAt?: string;
   imageUrl?: string;
   images?: string[];
@@ -73,9 +76,10 @@ export default function SellerStorePage() {
         }
 
         setSeller(sellerRes.data as SellerStore);
-        // Filter on the client too, in case the backend ignores the sellerId parameter
+        // Filter on the client too, in case the backend ignores the sellerId parameter.
+        // Buyers see only storefront products (active, with an image, approved seller).
         const list = Array.isArray(productsRes.data) ? (productsRes.data as ApiProduct[]) : [];
-        setProducts(list.filter((product) => product.sellerId === id));
+        setProducts(list.filter((product) => product.sellerId === id && isStorefrontProduct(product)));
         setState("ready");
       } catch (err) {
         console.error("Failed to load seller store", err);
