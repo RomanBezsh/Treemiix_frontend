@@ -35,4 +35,7 @@ export function clearAuthSession(): void {
   localStorage.removeItem("token");
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("userRole");
+  localStorage.removeItem("userEmail");
+  localStorage.removeItem("userFirstName");
+  localStorage.removeItem("userLastName");
 }

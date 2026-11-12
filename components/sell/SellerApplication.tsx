@@ -173,6 +173,7 @@ function StepPill({
 export default function SellerApplication() {
   const [loading, setLoading] = useState(true);
   const [hasToken, setHasToken] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [seller, setSeller] = useState<Seller | null>(null);
   const [plan, setPlan] = useState<SellerPlan | null>(null);
   const [step, setStep] = useState(1);
@@ -252,6 +253,7 @@ export default function SellerApplication() {
       }
 
       setHasToken(true);
+      setUserEmail(localStorage.getItem("userEmail"));
 
       try {
         const [planData, sellerData] = await Promise.all([
@@ -529,6 +531,12 @@ export default function SellerApplication() {
           <h1 className="text-[30px] font-bold text-[#333] sm:text-[36px]">
             Seller Center
           </h1>
+          {userEmail && (
+            <p className="mt-1 text-[14px] text-[#666]">
+              Signed in as{" "}
+              <span className="font-semibold text-[#333]">{userEmail}</span>
+            </p>
+          )}
         </div>
 
         {seller && (
@@ -1036,9 +1044,14 @@ export default function SellerApplication() {
                   <h2 className="truncate text-[26px] font-bold text-[#333]">
                     {seller.storeName}
                   </h2>
-                  <p className="mt-1 text-[14px] text-[#777]">
-                    /seller/{seller.storeSlug}
-                  </p>
+                  {seller.status === "Active" && (
+                    <Link
+                      href={`/seller/${seller.id}`}
+                      className="mt-1 inline-block text-[14px] font-medium text-[#496B94] hover:underline"
+                    >
+                      View store
+                    </Link>
+                  )}
                   <p className="mt-3 line-clamp-2 text-[14px] leading-6 text-[#666]">
                     {seller.description || "No store description yet."}
                   </p>
