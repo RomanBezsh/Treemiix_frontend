@@ -8,6 +8,7 @@ import ProductCard from "@/components/catalog/ProductCard";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, useEffect, useMemo } from "react";
 import { getApi } from "@/components/api/useApi";
+import { ACTIVE_PRODUCTS_PATH, orderByCategories } from "@/lib/products";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
 
@@ -87,17 +88,9 @@ function CatalogContent() {
           );
         }
 
-        // Товары грузим по категориям — запрос всех товаров сразу
-        // (/products?isActive=true) падает с 500 на проде из-за большого
-        // вложенного ответа. По категориям работает стабильно.
-        const categoryProducts = await Promise.all(
-          allCategories.map((c: { id: string }) =>
-            getApi(`/products?categoryId=${c.id}`).then((res) =>
-              Array.isArray(res.data) ? res.data : []
-            ).catch(() => [])
-          )
-        );
-        const allProducts = categoryProducts.flat();
+        // Все активные товары одним запросом, порядок — как при загрузке по категориям
+        const productsRes = await getApi(ACTIVE_PRODUCTS_PATH).catch(() => ({ data: [] }));
+        const allProducts = orderByCategories<Product>(productsRes.data, allCategories);
 
         // Показываем только демо-товары (SKU начинается с DEMO-)
         // и только с картинками — товары без медиа не выводятся вообще

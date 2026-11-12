@@ -10,6 +10,7 @@ import PopularProductsSection from "@/components/home/PopularProductsSection";
 import PromoBanner from "@/components/home/PromoBanner";
 import SalesSection from "@/components/home/SalesSection";
 import RecentlyViewedSection from "@/components/home/RecentlyViewedSection";
+import { ACTIVE_PRODUCTS_PATH, orderByCategories } from "@/lib/products";
 import {
   popularCategoriesData,
   popularProductsData,
@@ -31,18 +32,13 @@ export default async function Home() {
 
   const allCategories = Array.isArray(categories) ? categories : [];
 
-  // Товары грузим по категориям — запрос всех товаров сразу
-  // (/products?isActive=true) падает с 500 на проде. По категориям работает.
-  const categoryProducts = await Promise.all(
-    allCategories.map((c: { id: string }) =>
-      fetch(`${API_BASE_URL}/products?categoryId=${c.id}`, {
-        cache: "no-store",
-      })
-        .then((res) => res.json().catch(() => []))
-        .catch(() => [])
-    )
-  );
-  const allProducts: any[] = categoryProducts.flat();
+  // Все активные товары одним запросом, порядок — как при загрузке по категориям
+  const productsData = await fetch(`${API_BASE_URL}${ACTIVE_PRODUCTS_PATH}`, {
+    cache: "no-store",
+  })
+    .then((res) => res.json().catch(() => []))
+    .catch(() => []);
+  const allProducts: any[] = orderByCategories(productsData, allCategories);
 
   // Показываем только демо-товары (SKU начинается с DEMO-)
   // и только с картинками — товары без медиа не выводятся вообще

@@ -5,6 +5,7 @@ import DealsSidebar from "@/components/deals/DealsSidebar";
 import DealsToolbar from "@/components/deals/DealsToolbar";
 import RecommendedDeals from "@/components/deals/RecommendedDeals";
 import { getApi } from "@/components/api/useApi";
+import { ACTIVE_PRODUCTS_PATH, orderByCategories } from "@/lib/products";
 import { useState, useEffect } from "react";
 
 interface DealProduct {
@@ -27,14 +28,8 @@ export default function TodaysDealsPage() {
         const catRes = await getApi("/categories").catch(() => ({ data: [] }));
         const allCategories = Array.isArray(catRes.data) ? catRes.data : [];
 
-        const categoryProducts = await Promise.all(
-          allCategories.map((c: { id: string }) =>
-            getApi(`/products?categoryId=${c.id}`).then((res) =>
-              Array.isArray(res.data) ? res.data : []
-            ).catch(() => [])
-          )
-        );
-        const allProducts = categoryProducts.flat();
+        const productsRes = await getApi(ACTIVE_PRODUCTS_PATH).catch(() => ({ data: [] }));
+        const allProducts = orderByCategories<{ categoryId?: string }>(productsRes.data, allCategories);
 
         const dealProducts: DealProduct[] = allProducts
           .filter(
