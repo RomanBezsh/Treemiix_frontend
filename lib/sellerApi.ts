@@ -97,8 +97,23 @@ export interface SellerProduct {
   description: string;
   categoryId: string;
   sellerId: string;
+  oldCost?: number | null;
+  isActive?: boolean;
   imageUrl?: string | null;
-  galleries?: { id: string; path: string; isMain?: boolean }[];
+  galleries?: { id: string; path: string; isMain?: boolean; sortOrder?: number }[];
+  // Detail fields are not edited in Seller Center but must survive PUT /products/{id},
+  // which overwrites every field of the product.
+  sku?: string | null;
+  asin?: string | null;
+  itemModelNumber?: string | null;
+  manufacturer?: string | null;
+  countryOfOrigin?: string | null;
+  productDimensions?: string | null;
+  itemWeight?: string | null;
+  warrantyInfo?: string | null;
+  features?: string | null;
+  binding?: string | null;
+  releaseDate?: string | null;
 }
 
 export interface BusinessForm {
@@ -127,8 +142,12 @@ export interface CreateProductForm {
   slug: string;
   categoryId: string;
   price: number;
+  /** Price before the discount; shown as a deal when higher than price. */
+  oldCost: number | null;
   stock: number;
   description: string;
+  /** Image URLs, the first one is the main image. */
+  images: string[];
 }
 
 export class SellerApiError extends Error {
@@ -308,10 +327,40 @@ export function createSellerProduct(
     method: "POST",
     body: JSON.stringify({
       ...form,
-      oldCost: null,
       sku: null,
-      imageUrl: null,
-      images: [],
+      imageUrl: form.images[0] ?? null,
+      images: form.images,
+    }),
+  });
+}
+
+/**
+ * PUT /products/{id} replaces every field, so detail fields that Seller Center
+ * does not edit (SKU, manufacturer, features...) are sent back unchanged.
+ * The backend keeps the current gallery when images is empty.
+ */
+export function updateSellerProduct(
+  product: SellerProduct,
+  form: CreateProductForm,
+): Promise<void> {
+  return request<void>(`/products/${product.id}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      sellerId: product.sellerId,
+      sku: product.sku ?? null,
+      asin: product.asin ?? null,
+      itemModelNumber: product.itemModelNumber ?? null,
+      manufacturer: product.manufacturer ?? null,
+      countryOfOrigin: product.countryOfOrigin ?? null,
+      productDimensions: product.productDimensions ?? null,
+      itemWeight: product.itemWeight ?? null,
+      warrantyInfo: product.warrantyInfo ?? null,
+      features: product.features ?? null,
+      binding: product.binding ?? null,
+      releaseDate: product.releaseDate ?? null,
+      ...form,
+      imageUrl: form.images[0] ?? null,
+      images: form.images,
     }),
   });
 }

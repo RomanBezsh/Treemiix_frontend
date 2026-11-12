@@ -8,6 +8,7 @@ import ProductCard from "@/components/catalog/ProductCard";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, useEffect, useMemo } from "react";
 import { getApi } from "@/components/api/useApi";
+import { mainImagePath } from "@/lib/media";
 import { ACTIVE_PRODUCTS_PATH, orderByCategories } from "@/lib/products";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
@@ -108,7 +109,7 @@ function CatalogContent() {
         if (demoProducts.length > 0) {
           const mapped = demoProducts.map((p: Product) => ({
             ...p,
-            imageUrl: p.imageUrl || (p.images && p.images[0]) || (p.galleries && p.galleries[0]?.path) || (p.productGalleries && p.productGalleries[0]?.path) || ""
+            imageUrl: mainImagePath(p)
           }));
           setProducts(mapped);
         } else {

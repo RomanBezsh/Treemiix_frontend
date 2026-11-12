@@ -1,5 +1,6 @@
 "use client";
 
+import { productImagePaths } from "@/lib/media";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -163,15 +164,12 @@ const ProductMainSection = ({
     }
   };
 
+  // Main image first (isMain), then the rest of the gallery
+  const productImages = productImagePaths(product);
   const imagesList =
-    product.galleries && product.galleries.length > 0
-      ? product.galleries.map((g: any) => g.path)
-      : product.images && product.images.length > 0
-        ? product.images
-        : [
-            product.imageUrl ||
-              "/account/lists/product-placeholder.png",
-          ];
+    productImages.length > 0
+      ? productImages
+      : ["/account/lists/product-placeholder.png"];
 
   let parsedFeatures: string[] = [];
 

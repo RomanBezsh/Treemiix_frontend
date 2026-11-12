@@ -5,6 +5,7 @@ import DealsSidebar from "@/components/deals/DealsSidebar";
 import DealsToolbar from "@/components/deals/DealsToolbar";
 import RecommendedDeals from "@/components/deals/RecommendedDeals";
 import { getApi } from "@/components/api/useApi";
+import { mainImagePath } from "@/lib/media";
 import { ACTIVE_PRODUCTS_PATH, orderByCategories } from "@/lib/products";
 import { useState, useEffect } from "react";
 
@@ -49,7 +50,7 @@ export default function TodaysDealsPage() {
             price: p.price,
             oldPrice: p.oldCost,
             rating: p.rating || 0,
-            imageUrl: p.imageUrl || p.galleries?.[0]?.path || p.productGalleries?.[0]?.path || "",
+            imageUrl: mainImagePath(p),
           }));
 
         setDeals(dealProducts);

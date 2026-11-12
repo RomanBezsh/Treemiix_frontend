@@ -8,15 +8,20 @@ import {
   ArrowRight,
   CheckCircle2,
   Clock3,
+  ImageOff,
   Loader2,
   LockKeyhole,
   Package,
+  Pencil,
   RefreshCw,
   Store,
   Trash2,
   Wallet,
 } from "lucide-react";
+import Image from "next/image";
+import ProductMediaFields from "@/components/products/ProductMediaFields";
 import { clearAuthSession, saveAuthSession } from "@/lib/authSession";
+import { productImagePaths } from "@/lib/media";
 import {
   createSellerProduct,
   deleteSellerProduct,
@@ -35,6 +40,7 @@ import {
   submitSellerOnboarding,
   updateSellerBusiness,
   updateSellerPayout,
+  updateSellerProduct,
   updateSellerStorefront,
   type BusinessForm,
   type CreateProductForm,
@@ -68,8 +74,10 @@ const emptyProduct: CreateProductForm = {
   slug: "",
   categoryId: "",
   price: 0,
+  oldCost: null,
   stock: 0,
   description: "",
+  images: [],
 };
 
 const statusLabels: Record<SellerStatus, string> = {
@@ -191,6 +199,9 @@ export default function SellerApplication() {
   const [categories, setCategories] = useState<SellerCategory[]>([]);
   const [productForm, setProductForm] =
     useState<CreateProductForm>(emptyProduct);
+  const [editingProduct, setEditingProduct] = useState<SellerProduct | null>(
+    null,
+  );
 
   const applySeller = useCallback((next: Seller | null) => {
     setSeller(next);
@@ -441,7 +452,34 @@ export default function SellerApplication() {
     }));
   };
 
-  const handleAddProduct = async (event: FormEvent) => {
+  const resetProductForm = () => {
+    setEditingProduct(null);
+    setProductForm({
+      ...emptyProduct,
+      categoryId: categories[0]?.id || "",
+    });
+  };
+
+  const handleEditProduct = (product: SellerProduct) => {
+    setEditingProduct(product);
+    setError(null);
+    setNotice(null);
+    setProductForm({
+      name: product.name,
+      slug: product.slug,
+      categoryId: product.categoryId,
+      price: Number(product.price),
+      oldCost: product.oldCost ?? null,
+      stock: Number(product.stock),
+      description: product.description,
+      images: productImagePaths(product),
+    });
+    document
+      .getElementById("seller-product-form")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleSaveProduct = async (event: FormEvent) => {
     event.preventDefault();
 
     if (!productForm.categoryId) {
@@ -449,22 +487,37 @@ export default function SellerApplication() {
       return;
     }
 
+    const price = Number(productForm.price);
+    const oldCost =
+      productForm.oldCost === null || Number.isNaN(Number(productForm.oldCost))
+        ? null
+        : Number(productForm.oldCost);
+    if (oldCost !== null && oldCost <= price) {
+      setError("Old price must be higher than the current price.");
+      return;
+    }
+
     setBusy(true);
     setError(null);
     setNotice(null);
 
+    const form: CreateProductForm = {
+      ...productForm,
+      price,
+      oldCost,
+      stock: Number(productForm.stock),
+    };
+
     try {
-      await createSellerProduct({
-        ...productForm,
-        price: Number(productForm.price),
-        stock: Number(productForm.stock),
-      });
-      setProductForm({
-        ...emptyProduct,
-        categoryId: categories[0]?.id || "",
-      });
+      if (editingProduct) {
+        await updateSellerProduct(editingProduct, form);
+      } else {
+        await createSellerProduct(form);
+      }
+      const wasEditing = Boolean(editingProduct);
+      resetProductForm();
       if (seller) await loadProducts(seller.id);
-      setNotice("Product added.");
+      setNotice(wasEditing ? "Product updated." : "Product added.");
     } catch (productError) {
       setError(messageOf(productError));
     } finally {
@@ -481,6 +534,7 @@ export default function SellerApplication() {
 
     try {
       await deleteSellerProduct(id);
+      if (editingProduct?.id === id) resetProductForm();
       if (seller) await loadProducts(seller.id);
       setNotice("Product deleted.");
     } catch (productError) {
@@ -1127,9 +1181,15 @@ export default function SellerApplication() {
 
             {seller.canSell ? (
               <form
-                onSubmit={handleAddProduct}
-                className="mb-7 grid gap-3 rounded-[16px] bg-[#F8F8F8] p-4 sm:grid-cols-2 lg:grid-cols-3"
+                id="seller-product-form"
+                onSubmit={handleSaveProduct}
+                className="mb-7 grid scroll-mt-6 gap-3 rounded-[16px] bg-[#F8F8F8] p-4 sm:grid-cols-2 lg:grid-cols-3"
               >
+                {editingProduct && (
+                  <p className="text-[14px] font-medium text-[#49516D] sm:col-span-2 lg:col-span-3">
+                    Editing: {editingProduct.name}
+                  </p>
+                )}
                 <input
                   value={productForm.name}
                   onChange={(event) =>
@@ -1190,6 +1250,23 @@ export default function SellerApplication() {
                 />
                 <input
                   type="number"
+                  min="0.01"
+                  step="0.01"
+                  value={productForm.oldCost ?? ""}
+                  onChange={(event) =>
+                    setProductForm((current) => ({
+                      ...current,
+                      oldCost:
+                        event.target.value === ""
+                          ? null
+                          : Number(event.target.value),
+                    }))
+                  }
+                  placeholder="Old price (optional, for a deal)"
+                  className="h-[44px] rounded-[10px] border border-[#D8DCE5] bg-white px-3 text-[14px] outline-none focus:border-[#7C9BC0]"
+                />
+                <input
+                  type="number"
                   min="0"
                   step="1"
                   value={productForm.stock || ""}
@@ -1215,13 +1292,38 @@ export default function SellerApplication() {
                   placeholder="Description"
                   className="h-[44px] rounded-[10px] border border-[#D8DCE5] bg-white px-3 text-[14px] outline-none focus:border-[#7C9BC0]"
                 />
-                <button
-                  type="submit"
-                  disabled={busy}
-                  className="inline-flex h-[44px] items-center justify-center rounded-[10px] bg-[#49516D] px-5 text-[14px] font-medium text-white disabled:opacity-60 lg:col-start-3"
-                >
-                  Add product
-                </button>
+                <div className="sm:col-span-2 lg:col-span-3">
+                  <ProductMediaFields
+                    images={productForm.images}
+                    onChange={(images) =>
+                      setProductForm((current) => ({ ...current, images }))
+                    }
+                  />
+                  {productForm.images.length === 0 && (
+                    <p className="mt-2 text-[12px] text-amber-700">
+                      Products without a photo are not shown on the site.
+                    </p>
+                  )}
+                </div>
+                <div className="flex gap-3 sm:col-span-2 lg:col-span-1 lg:col-start-3">
+                  {editingProduct && (
+                    <button
+                      type="button"
+                      onClick={resetProductForm}
+                      disabled={busy}
+                      className="inline-flex h-[44px] flex-1 items-center justify-center rounded-[10px] border border-[#D8DCE5] bg-white px-4 text-[14px] font-medium text-[#49516D] disabled:opacity-60"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={busy}
+                    className="inline-flex h-[44px] flex-1 items-center justify-center rounded-[10px] bg-[#49516D] px-5 text-[14px] font-medium text-white disabled:opacity-60"
+                  >
+                    {editingProduct ? "Save changes" : "Add product"}
+                  </button>
+                </div>
               </form>
             ) : (
               <p className="mb-5 rounded-[12px] bg-amber-50 p-4 text-[13px] text-amber-800">
@@ -1245,23 +1347,66 @@ export default function SellerApplication() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#F1F2F5]">
-                    {products.map((product) => (
+                    {products.map((product) => {
+                      const mainImage = productImagePaths(product)[0];
+                      return (
                       <tr key={product.id}>
                         <td className="px-3 py-3">
-                          <p className="font-medium text-[#333]">
-                            {product.name}
-                          </p>
-                          <p className="text-[12px] text-[#888]">
-                            {product.slug}
-                          </p>
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-[#EEF0F4] bg-white">
+                              {mainImage ? (
+                                <Image
+                                  src={mainImage}
+                                  alt={product.name}
+                                  width={48}
+                                  height={48}
+                                  className="h-full w-full object-contain"
+                                />
+                              ) : (
+                                <ImageOff size={18} className="text-[#BBB]" />
+                              )}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="font-medium text-[#333]">
+                                {product.name}
+                              </p>
+                              <p className="text-[12px] text-[#888]">
+                                {product.slug}
+                              </p>
+                              {!mainImage && (
+                                <span className="mt-1 inline-block rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+                                  No photo — not shown on the site
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         </td>
                         <td className="px-3 py-3 text-[#555]">
                           ${Number(product.price).toFixed(2)}
+                          {product.oldCost != null &&
+                            Number(product.oldCost) > Number(product.price) && (
+                              <span className="ml-1 text-[12px] text-[#999] line-through">
+                                ${Number(product.oldCost).toFixed(2)}
+                              </span>
+                            )}
                         </td>
                         <td className="px-3 py-3 text-[#555]">
                           {product.stock}
                         </td>
-                        <td className="px-3 py-3 text-right">
+                        <td className="whitespace-nowrap px-3 py-3 text-right">
+                          <button
+                            type="button"
+                            onClick={() => handleEditProduct(product)}
+                            disabled={busy || !seller.canSell}
+                            title={
+                              seller.canSell
+                                ? "Edit product"
+                                : "Subscription must be active"
+                            }
+                            className="mr-2 inline-flex h-[34px] items-center gap-1 rounded-[8px] bg-[#EEF1F7] px-3 text-[12px] font-medium text-[#49516D] disabled:opacity-50"
+                          >
+                            <Pencil size={13} /> Edit
+                          </button>
                           <button
                             type="button"
                             onClick={() => handleDeleteProduct(product.id)}
@@ -1277,7 +1422,8 @@ export default function SellerApplication() {
                           </button>
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

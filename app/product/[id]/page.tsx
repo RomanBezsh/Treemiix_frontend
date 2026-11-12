@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { mainImagePath } from "@/lib/media";
 import { useEffect, useState } from "react";
 
 import ProductMainSection from "@/components/product/ProductMainSection";
@@ -82,7 +83,7 @@ export default function ProductDetailPage() {
 
         try {
           const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-          const imageUrl = productData.imageUrl || (productData.images && productData.images[0]) || (productData.galleries && productData.galleries[0]?.path) || "";
+          const imageUrl = mainImagePath(productData);
           const newItem = {
             id: productData.id,
             title: productData.name,

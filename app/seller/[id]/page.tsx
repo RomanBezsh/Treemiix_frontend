@@ -8,6 +8,7 @@ import { getApi } from "@/components/api/useApi";
 import ProductCard from "@/components/catalog/ProductCard";
 import SortSelect from "@/components/catalog/SortSelect";
 import SellerStoreHeader, { type SellerStore } from "@/components/seller/SellerStoreHeader";
+import { mainImagePath } from "@/lib/media";
 
 // Fields of GET /products that this page uses
 interface ApiProduct {
@@ -26,12 +27,7 @@ interface ApiProduct {
 
 type LoadState = "loading" | "ready" | "not-found" | "error";
 
-const getProductImage = (product: ApiProduct) =>
-  product.imageUrl ||
-  product.images?.[0] ||
-  product.galleries?.[0]?.path ||
-  product.productGalleries?.[0]?.path ||
-  "";
+const getProductImage = (product: ApiProduct) => mainImagePath(product);
 
 function sortProducts(products: ApiProduct[], sort: string) {
   const sorted = [...products];

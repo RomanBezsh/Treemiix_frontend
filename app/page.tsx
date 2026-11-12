@@ -10,6 +10,7 @@ import PopularProductsSection from "@/components/home/PopularProductsSection";
 import PromoBanner from "@/components/home/PromoBanner";
 import SalesSection from "@/components/home/SalesSection";
 import RecentlyViewedSection from "@/components/home/RecentlyViewedSection";
+import { mainImagePath } from "@/lib/media";
 import { ACTIVE_PRODUCTS_PATH, orderByCategories } from "@/lib/products";
 import {
   popularCategoriesData,
@@ -55,12 +56,7 @@ export default async function Home() {
     )
     .map((p: any) => ({
       ...p,
-      imageUrl:
-        p.imageUrl ||
-        (p.images && p.images[0]) ||
-        (p.galleries && p.galleries[0]?.path) ||
-        (p.productGalleries && p.productGalleries[0]?.path) ||
-        "",
+      imageUrl: mainImagePath(p),
     }))
     .slice(0, 24);
 
