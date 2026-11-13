@@ -19,35 +19,46 @@ interface ProductMediaFieldsProps {
 export default function ProductMediaFields({ images, onChange }: ProductMediaFieldsProps) {
   const [urlInput, setUrlInput] = useState("");
   const [uploading, setUploading] = useState(false);
+  // Inline feedback instead of alert(): "error" — nothing was added, "warning" — added with a caveat
+  const [message, setMessage] = useState<{ kind: "error" | "warning"; text: string } | null>(null);
 
   const handleFiles = async (e: ChangeEvent<HTMLInputElement>) => {
     const input = e.target;
     const files = input.files ? Array.from(input.files) : [];
     if (files.length === 0) return;
+    setMessage(null);
 
     const oversized = files.filter((f) => f.size > MAX_IMAGE_BYTES);
     if (oversized.length > 0) {
-      alert(
-        `Каждое изображение не должно превышать ${MAX_IMAGE_KB} КБ. ` +
-          `Слишком большие файлы: ${oversized.map((f) => f.name).join(", ")}. ` +
-          `Рекомендуемый размер: 600×600 пикселей, JPEG, до 500 КБ.`,
-      );
+      setMessage({
+        kind: "error",
+        text:
+          `Each image must be ${MAX_IMAGE_KB} KB or smaller. Too large: ${oversized.map((f) => f.name).join(", ")}. ` +
+          `Recommended: 600×600 px, JPEG.`,
+      });
       input.value = "";
       return;
     }
 
     setUploading(true);
     const uploaded: string[] = [];
+    const failed: string[] = [];
     for (const file of files) {
       try {
         uploaded.push(await uploadMediaFile(file));
       } catch (error) {
-        console.error("Upload failed:", error);
-        alert(`Failed to upload ${file.name}: ${error instanceof Error ? error.message : "Network error"}`);
+        console.warn("Upload failed:", error);
+        failed.push(file.name);
       }
     }
     setUploading(false);
     if (uploaded.length > 0) onChange([...images, ...uploaded]);
+    if (failed.length > 0) {
+      setMessage({
+        kind: "error",
+        text: `Couldn't upload ${failed.join(", ")}. Check your connection and try again.`,
+      });
+    }
     input.value = "";
   };
 
@@ -55,14 +66,18 @@ export default function ProductMediaFields({ images, onChange }: ProductMediaFie
     const url = urlInput.trim();
     if (!url) return;
     setUrlInput("");
+    setMessage(null);
 
     // Same as before: if the backend cannot copy the file, keep the original URL.
     let saved = url;
     try {
       saved = await importMediaUrl(url);
     } catch (error) {
-      console.error("Import failed:", error);
-      alert(`Failed to import URL: ${error instanceof Error ? error.message : "Network error"}`);
+      console.warn("Import failed:", error);
+      setMessage({
+        kind: "warning",
+        text: "Couldn't copy this image to Treemiix, so the original link was added. It will disappear if that site removes it.",
+      });
     }
     onChange([...images, saved]);
   };
@@ -122,6 +137,19 @@ export default function ProductMediaFields({ images, onChange }: ProductMediaFie
           </label>
         </div>
       </div>
+
+      {message && (
+        <p
+          role={message.kind === "error" ? "alert" : "status"}
+          className={`rounded-[10px] border px-3 py-2 text-[13px] ${
+            message.kind === "error"
+              ? "border-red-200 bg-red-50 text-red-700"
+              : "border-amber-200 bg-amber-50 text-amber-800"
+          }`}
+        >
+          {message.text}
+        </p>
+      )}
 
       {images.length > 0 && (
         <div className="pt-2">

@@ -10,6 +10,7 @@ import PopularProductsSection from "@/components/home/PopularProductsSection";
 import PromoBanner from "@/components/home/PromoBanner";
 import SalesSection from "@/components/home/SalesSection";
 import RecentlyViewedSection from "@/components/home/RecentlyViewedSection";
+import LoadError from "@/components/common/LoadError";
 import { mainImagePath } from "@/lib/media";
 import { ACTIVE_PRODUCTS_PATH, isStorefrontProduct, orderByCategories, rootCategoryCards } from "@/lib/products";
 
@@ -18,22 +19,28 @@ const API_BASE_URL =
   "https://treemiix-backend.onrender.com/api";
 const FALLBACK_IMAGE = "/account/lists/product-placeholder.png";
 
+/** GET from the backend; null when it is unreachable or answers with an error (never throws). */
+async function loadJson(path: string): Promise<unknown> {
+  try {
+    const res = await fetch(`${API_BASE_URL}${path}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
 
 export default async function Home() {
   // --- Server-side data fetching ---
-  const catRes = await fetch(`${API_BASE_URL}/categories`, {
-    cache: "no-store",
-  });
-  const categories: any[] = await catRes.json().catch(() => []);
+  // Категории и все активные товары (одним запросом); если бэк недоступен — страница не падает
+  const [categoriesData, productsData] = await Promise.all([
+    loadJson("/categories"),
+    loadJson(ACTIVE_PRODUCTS_PATH),
+  ]);
+  const loadFailed = !Array.isArray(categoriesData) || !Array.isArray(productsData);
+  const categories = (Array.isArray(categoriesData) ? categoriesData : []) as { id: string; name: string }[];
 
-  const allCategories = Array.isArray(categories) ? categories : [];
-
-  // Все активные товары одним запросом, порядок — как при загрузке по категориям
-  const productsData = await fetch(`${API_BASE_URL}${ACTIVE_PRODUCTS_PATH}`, {
-    cache: "no-store",
-  })
-    .then((res) => res.json().catch(() => []))
-    .catch(() => []);
+  const allCategories = categories;
   const allProducts: any[] = orderByCategories(productsData, allCategories);
 
   // Правило витрины: активный товар, есть картинка, продавец одобрен
@@ -177,6 +184,11 @@ export default async function Home() {
 
       {/* Mobile order follows Figma; from md the desktop order is restored via md:order-* */}
       <div className="relative z-10 -mt-12 flex w-full max-w-[1534px] flex-col gap-8 px-4 sm:-mt-24 sm:px-6 md:gap-5 2xl:-mt-43 2xl:px-0">
+        {loadFailed && (
+          <LoadError what="products" className="order-1 mt-16 sm:mt-28 2xl:mt-48" />
+        )}
+
+        {!loadFailed && (<>
         {/* Product carousels + banners */}
         <div className="animate-fade-in-up order-1 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
           {carouselGroups.map((group, index) => group.length > 0 && (
@@ -263,6 +275,7 @@ export default async function Home() {
           className="order-7 -mx-4 mb-10 sm:-mx-6 2xl:mx-0"
           itemClassName={homeCarouselItem}
         />
+        </>)}
       </div>
     </div>
   );

@@ -35,7 +35,7 @@ const ActiveFiltersBar = ({ selected, chips, onReset, sortValue, onSortChange }:
   return (
     <div className="flex items-center mb-17.75">
       <span className="text-[#333333] text-2xl mr-5">
-        {selected} <span className="text-[#2D2D2D] text-sm">Item selected</span>
+        {selected} <span className="text-[#2D2D2D] text-sm">{selected === 1 ? "item" : "items"}</span>
       </span>
       <button onClick={onReset} className="bg-[#B3B3B3] px-6 py-1  rounded-full shadow-[0px_2px_4px_0px_#00000033] mr-2">
         <span className="text-[18px] text-[#FFFFFF] drop-shadow-[0px_2px_4px_0px_#00000033]">Reset</span>

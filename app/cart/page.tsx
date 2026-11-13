@@ -12,6 +12,7 @@ import RecentlyViewed, {
   type RecentItem,
 } from "@/components/cart/RecentlyViewed";
 import { clearAuthSession } from "@/lib/authSession";
+import LoadError from "@/components/common/LoadError";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -49,16 +50,23 @@ const mapBackendItem = (item: BackendCartItem): CartProduct => {
 export default function CartPage() {
   const router = useRouter();
   const [items, setItems] = useState<CartProduct[]>([]);
+  // "error": the cart request failed (server error, rate limit, network) — not the same as an empty cart
+  const [cartStatus, setCartStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("token")
-        : null;
-
-    if (!token) return;
-
     const loadCart = async () => {
+      const token =
+        typeof window !== "undefined"
+          ? localStorage.getItem("token")
+          : null;
+
+      // Guests have no server cart
+      if (!token) {
+        setCartStatus("ready");
+        return;
+      }
+
       try {
         const headers = {
           Authorization: `Bearer ${token}`,
@@ -70,30 +78,37 @@ export default function CartPage() {
         );
         if (cartRes.status === 401) {
           clearAuthSession();
+          setCartStatus("ready");
           return;
         }
-        if (!cartRes.ok) return;
+        // 404: this user has no cart yet, i.e. it is empty
+        if (cartRes.status === 404) {
+          setItems([]);
+          setCartStatus("ready");
+          return;
+        }
+        if (!cartRes.ok) throw new Error(`HTTP ${cartRes.status}`);
 
         const cart = await cartRes.json();
-        if (!cart?.id) return;
+        if (!cart?.id) throw new Error("Unexpected cart response");
 
         const itemsRes = await fetch(
           `${API_BASE_URL}/cartitems/bycart/${cart.id}`,
           { headers },
         );
-        if (!itemsRes.ok) return;
+        if (!itemsRes.ok) throw new Error(`HTTP ${itemsRes.status}`);
 
         const data = await itemsRes.json();
-        if (Array.isArray(data)) {
-          setItems(data.map(mapBackendItem));
-        }
+        setItems(Array.isArray(data) ? data.map(mapBackendItem) : []);
+        setCartStatus("ready");
       } catch (e) {
-        console.error("Error loading cart", e);
+        console.warn("Error loading cart", e);
+        setCartStatus("error");
       }
     };
 
     loadCart();
-  }, []);
+  }, [reloadKey]);
 
   const addRecentToCart = async (
     item: RecentItem,
@@ -359,13 +374,27 @@ export default function CartPage() {
         {/* Cart content */}
         <div className="mt-[24px] grid grid-cols-1 gap-[32px] lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
           {/* Items */}
-          <CartItemsList
-            items={items}
-            onSelect={toggleItem}
-            onIncrease={increaseQuantity}
-            onDecrease={decreaseQuantity}
-            onDelete={deleteItem}
-          />
+          {cartStatus === "error" ? (
+            <LoadError
+              what="your cart"
+              onRetry={() => {
+                setCartStatus("loading");
+                setReloadKey((key) => key + 1);
+              }}
+            />
+          ) : cartStatus === "loading" ? (
+            <div className="flex min-h-[160px] w-full items-center justify-center rounded-[14px] bg-[#F8F8F8] text-[16px] text-[#555555]">
+              Loading your cart...
+            </div>
+          ) : (
+            <CartItemsList
+              items={items}
+              onSelect={toggleItem}
+              onIncrease={increaseQuantity}
+              onDecrease={decreaseQuantity}
+              onDelete={deleteItem}
+            />
+          )}
 
           {/* Sidebar */}
           <div className="flex flex-col gap-[24px]">

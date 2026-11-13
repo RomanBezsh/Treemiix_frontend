@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import LoadError from "@/components/common/LoadError";
 import {
   AlertCircle,
   ArrowLeft,
@@ -180,6 +181,10 @@ function StepPill({
 
 export default function SellerApplication() {
   const [loading, setLoading] = useState(true);
+  // The initial seller/plan request failed (server error, rate limit, network): show a retry
+  // instead of the onboarding wizard, which would wrongly suggest the user has no store
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   const [hasToken, setHasToken] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [seller, setSeller] = useState<Seller | null>(null);
@@ -287,7 +292,8 @@ export default function SellerApplication() {
           clearAuthSession();
           setHasToken(false);
         } else {
-          setError(messageOf(loadError));
+          console.warn("Failed to load Seller Center", loadError);
+          setLoadFailed(true);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -299,7 +305,7 @@ export default function SellerApplication() {
     return () => {
       cancelled = true;
     };
-  }, [applySeller, loadProducts]);
+  }, [applySeller, loadProducts, reloadKey]);
 
   useEffect(() => {
     const shouldPoll =
@@ -548,6 +554,24 @@ export default function SellerApplication() {
     return (
       <div className="flex min-h-[420px] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-[#49516D]" />
+      </div>
+    );
+  }
+
+  if (loadFailed) {
+    return (
+      <div className="mx-auto w-full max-w-[720px]">
+        <h1 className="mb-6 text-[30px] font-bold text-[#333] sm:text-[36px]">
+          Seller Center
+        </h1>
+        <LoadError
+          what="your Seller Center"
+          onRetry={() => {
+            setLoadFailed(false);
+            setLoading(true);
+            setReloadKey((key) => key + 1);
+          }}
+        />
       </div>
     );
   }

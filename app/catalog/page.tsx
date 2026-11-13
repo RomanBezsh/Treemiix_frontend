@@ -5,6 +5,7 @@ import { CategoryHeader } from "@/components/catalog/CategoryHeader";
 import Filter from "@/components/catalog/Filter";
 import Pagination from "@/components/catalog/Pagination";
 import ProductCard from "@/components/catalog/ProductCard";
+import LoadError from "@/components/common/LoadError";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, useEffect, useMemo } from "react";
 import { getApi } from "@/components/api/useApi";
@@ -52,6 +53,9 @@ function CatalogContent() {
   const [categories, setCategories] = useState<{ id: string; title: string }[]>([]);
   const [brands, setBrands] = useState<{ id: string; title: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  // Server error, rate limit or no network: show an error with "Try again" instead of "no products"
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   // Below lg the filters sidebar is collapsed behind a "Filters" button.
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -74,8 +78,15 @@ function CatalogContent() {
     async function fetchData() {
       try {
         // Категории грузим первыми
-        const catRes = await getApi("/categories").catch(() => ({ data: [] }));
-        const allCategories = Array.isArray(catRes.data) ? catRes.data : [];
+        const catRes = await getApi("/categories");
+        // Все активные товары одним запросом, порядок — как при загрузке по категориям
+        const productsRes = await getApi(ACTIVE_PRODUCTS_PATH);
+        // Without categories the products cannot be ordered either, so both must succeed
+        if (!catRes.response.ok || !productsRes.response.ok || !Array.isArray(catRes.data) || !Array.isArray(productsRes.data)) {
+          setLoadError(true);
+          return;
+        }
+        const allCategories = catRes.data;
 
         if (Array.isArray(catRes.data)) {
           const sortedCategories = [...catRes.data].sort(
@@ -91,8 +102,6 @@ function CatalogContent() {
           );
         }
 
-        // Все активные товары одним запросом, порядок — как при загрузке по категориям
-        const productsRes = await getApi(ACTIVE_PRODUCTS_PATH).catch(() => ({ data: [] }));
         const allProducts = orderByCategories<Product>(productsRes.data, allCategories);
 
         // Правило витрины: активный товар, есть картинка, продавец одобрен
@@ -108,15 +117,9 @@ function CatalogContent() {
           setProducts([]);
         }
 
-        const sourceData = demoProducts.length > 0 ? demoProducts : [
-          { manufacturer: "Apple" },
-          { manufacturer: "Sony" },
-          { manufacturer: "De'Longhi" },
-          { manufacturer: "Nike" }
-        ];
-
+        // Brands come only from the products actually on the storefront
         const extractedBrandsMap = new Map();
-        sourceData.forEach((p: { manufacturer?: string }) => {
+        demoProducts.forEach((p: { manufacturer?: string }) => {
           if (p.manufacturer) {
             extractedBrandsMap.set(p.manufacturer, p.manufacturer);
           }
@@ -128,13 +131,15 @@ function CatalogContent() {
         setBrands(brandList);
 
       } catch (err) {
-        console.error("Failed to fetch catalog data", err);
+        // Network failure (backend down / unreachable)
+        console.warn("Failed to fetch catalog data", err);
+        setLoadError(true);
       } finally {
         setLoading(false);
       }
     }
     fetchData();
-  }, []);
+  }, [reloadKey]);
 
   // Sync filters from URL query params on mount and on client-side navigation
   // (?search=<query> searches across all categories, ?category=<id>, ?sale=1)
@@ -391,7 +396,17 @@ function CatalogContent() {
             }}
           />
 
-          {loading ? (
+          {loadError ? (
+            <LoadError
+              what="products"
+              className="mb-10"
+              onRetry={() => {
+                setLoadError(false);
+                setLoading(true);
+                setReloadKey((key) => key + 1);
+              }}
+            />
+          ) : loading ? (
             <div className="py-20 text-center text-[18px] text-[#555]">Loading products from backend...</div>
             ) : paginatedProducts.length === 0 ? (
             <div className="py-20 text-center text-[18px] text-[#777]">No products matching current filters.</div>
