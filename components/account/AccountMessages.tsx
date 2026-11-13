@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 import MessageBubble from "./MessageBubble";
 
@@ -9,7 +9,8 @@ const messages = [
   {
     id: 1,
     sender: "user" as const,
-    name: typeof window !== "undefined" ? (localStorage.getItem("userFirstName") || "Пользователь") : "Пользователь",
+    // Replaced with the signed-in user's name after mount (see userName below)
+    name: "Пользователь",
     time: "11:30 02/16",
     text: "Hello, I ordered a phone case from you. He came, but not the one I wanted. Can I make a return or exchange? I am attaching a photo. I 1 wanted, but 2 were sent",
   },
@@ -22,8 +23,19 @@ const messages = [
   },
 ];
 
+// The name only changes on sign-in/out, which reloads the page; nothing to subscribe to.
+const subscribeToNothing = () => () => {};
+
 export default function AccountMessages() {
   const [message, setMessage] = useState("");
+  // Server render and hydration use the default name, then the stored one: reading localStorage
+  // directly during render made the server and client HTML differ (hydration error), and React
+  // then re-rendered the whole page, dropping the dark theme class.
+  const userName = useSyncExternalStore(
+    subscribeToNothing,
+    () => localStorage.getItem("userFirstName") || messages[0].name,
+    () => messages[0].name,
+  );
 
   const handleSend = () => {
     if (!message.trim()) return;
@@ -59,7 +71,7 @@ export default function AccountMessages() {
           <MessageBubble
             text={messages[0].text}
             sender={messages[0].sender}
-            name={messages[0].name}
+            name={userName}
             time={messages[0].time}
           />
 

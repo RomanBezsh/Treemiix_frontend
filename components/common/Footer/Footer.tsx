@@ -119,19 +119,19 @@ export default function Footer() {
         href="#top"
         className="
           flex h-[42px] w-full items-center justify-center
-          bg-[#49516D]
+          bg-[#49516D] dark:bg-[#232735]
           text-[20px] font-semibold text-white
           transition-all duration-200 ease-out
-          hover:bg-[#555E7D]
+          hover:bg-[#555E7D] dark:hover:bg-[#2C3142]
           hover:tracking-[0.4px]
-          active:bg-[#414861]
+          active:bg-[#414861] dark:active:bg-[#1E2230]
         "
       >
         Back to top
       </a>
 
       {/* Mobile footer */}
-      <div className="bg-[#626B88] px-[26px] pb-[52px] pt-[28px] md:hidden">
+      <div className="bg-[#626B88] px-[26px] dark:bg-[#1A1D27] pb-[52px] pt-[28px] md:hidden">
         <nav
           aria-label="Mobile footer navigation"
           className="grid grid-cols-2 gap-x-[24px] gap-y-[20px]"
@@ -155,7 +155,7 @@ export default function Footer() {
       </div>
 
       {/* Desktop footer */}
-      <div className="hidden bg-[#626B88] px-4 pb-[70px] pt-[42px] md:block">
+      <div className="hidden bg-[#626B88] px-4 dark:bg-[#1A1D27] pb-[70px] pt-[42px] md:block">
         <div className="mx-auto grid max-w-[1280px] grid-cols-4 gap-[80px]">
           {desktopFooterSections.map((section) => (
             <div key={section.title}>

@@ -183,6 +183,7 @@ const VideoCarousel = ({
           onClick={prevSlide}
           disabled={currentIndex === 0}
           className="
+            tm-carousel-arrow
             absolute left-0 top-1/2 z-20
             flex h-[40px] w-[40px]
             -translate-y-1/2
@@ -256,6 +257,7 @@ const VideoCarousel = ({
           onClick={nextSlide}
           disabled={currentIndex === maxIndex}
           className="
+            tm-carousel-arrow
             absolute right-0 top-1/2 z-20
             flex h-[40px] w-[40px]
             -translate-y-1/2

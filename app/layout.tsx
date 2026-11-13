@@ -3,6 +3,9 @@ import { Geist, Geist_Mono, Roboto } from "next/font/google";
 import Header from "@/components/common/Header/Header";
 import Footer from "@/components/common/Footer/Footer";
 import "./globals.css";
+// Dark theme layer, imported here (not via @import in globals.css) so dev-server edits are picked up
+import "./theme-dark.css";
+import { themeInitScript } from "@/lib/theme";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,7 +38,13 @@ export default function RootLayout({
       id="top"
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${roboto.variable} h-full antialiased`}
+      // The theme script below may add the "dark" class before React hydrates
+      suppressHydrationWarning
     >
+      <head>
+        {/* Applies the saved theme before the first paint (no light flash) */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="flex min-h-full flex-col">
         <Header />
 

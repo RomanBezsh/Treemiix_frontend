@@ -48,7 +48,7 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
           type="button"
           onClick={showPrevious}
           aria-label="Previous product"
-          className="hidden shrink-0 items-center justify-center rounded-[14px] border-0 shadow-[0_2px_4px_0px_#00000033] sm:-ml-4 sm:flex sm:h-12 sm:w-12 2xl:-ml-7 2xl:h-19 2xl:w-19 2xl:rounded-[20px]"
+          className="tm-carousel-arrow hidden shrink-0 items-center justify-center rounded-[14px] border-0 shadow-[0_2px_4px_0px_#00000033] sm:-ml-4 sm:flex sm:h-12 sm:w-12 2xl:-ml-7 2xl:h-19 2xl:w-19 2xl:rounded-[20px]"
         >
           <Image
             src="/home/carousel_chewron.svg"
@@ -76,7 +76,7 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
           type="button"
           onClick={showNext}
           aria-label="Next product"
-          className="hidden shrink-0 items-center justify-center rounded-[14px] border-0 shadow-[0_2px_4px_0px_#00000033] sm:-mr-4 sm:flex sm:h-12 sm:w-12 2xl:-mr-7 2xl:h-19 2xl:w-19 2xl:rounded-[20px]"
+          className="tm-carousel-arrow hidden shrink-0 items-center justify-center rounded-[14px] border-0 shadow-[0_2px_4px_0px_#00000033] sm:-mr-4 sm:flex sm:h-12 sm:w-12 2xl:-mr-7 2xl:h-19 2xl:w-19 2xl:rounded-[20px]"
         >
           <Image
             src="/home/carousel_chewron.svg"

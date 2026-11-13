@@ -4,10 +4,7 @@ import Link from "next/link";
 export default function SellerHero() {
   return (
     <section
-      className="relative w-full bg-cover bg-center bg-no-repeat font-[var(--font-roboto)]"
-      style={{
-        backgroundImage: "url('/sell/seller-hero-background.png')",
-      }}
+      className="tm-seller-hero relative w-full bg-[url('/sell/seller-hero-background.png')] bg-cover bg-center bg-no-repeat font-[var(--font-roboto)]"
     >
       <div className="relative mx-auto min-h-[650px] w-full max-w-[1440px] px-[20px] pb-[40px] pt-[50px] sm:px-[32px] lg:min-h-[520px] lg:px-[80px] lg:pb-0 lg:pt-0">
         {/* Hero content */}

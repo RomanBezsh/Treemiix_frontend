@@ -138,6 +138,7 @@ const Carousel = ({
           type="button"
           onClick={() => scroll("left")}
           className="
+            tm-carousel-arrow
             absolute left-[3px] top-1/2 z-20
             flex h-[38px] w-[38px]
             -translate-y-1/2
@@ -217,6 +218,7 @@ const Carousel = ({
           type="button"
           onClick={() => scroll("right")}
           className="
+            tm-carousel-arrow
             absolute right-[3px] top-1/2 z-20
             flex h-[38px] w-[38px]
             -translate-y-1/2

@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 
+/* Tailwind dark: utilities follow the "dark" class on <html> (theme toggle), not the OS setting */
+@custom-variant dark (&:where(.dark, .dark *));
+
 
 @layer utilities {
   .thumb-style::-webkit-slider-thumb {
@@ -239,6 +242,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Light theme by default, regardless of the OS theme; dark is opt-in (app/theme-dark.css) */
+  color-scheme: light;
 }
 
 @theme inline {
@@ -248,11 +253,10 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Тёмная тема отключена, чтобы избежать конфликта цветов:
-   компоненты используют жёсткие цвета (bg-white, text-white и т.д.),
-   которые не перекрываются CSS-переменными --background/--foreground.
-   При необходимости добавить темную тему позже — использовать next-themes
-   и обновлять компоненты на CSS-переменные. */
+/* Системная тёмная тема (prefers-color-scheme) не используется: компоненты
+   используют жёсткие цвета (bg-white, text-white и т.д.), и тёмный фон из ОС
+   конфликтовал с ними. Тёмная тема включается только переключателем в шапке
+   (класс "dark" на <html>); жёсткие светлые цвета перекрашиваются в app/theme-dark.css. */
 
 body {
   background: var(--background);
