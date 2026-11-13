@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import AccountDropdown from "./AccountDropdown";
 import AllCategoriesDropdown from "./AllCategoriesDropdown";
 import ThemeToggle from "@/components/common/ThemeToggle/ThemeToggle";
-import { clearAuthSession } from "@/lib/authSession";
+import { AUTH_CHANGED_EVENT, clearAuthSession, signOut, useAuthUser } from "@/lib/authSession";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -29,17 +29,15 @@ export default function Header() {
     useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [searchValue, setSearchValue] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [displayName, setDisplayName] = useState("Customer");
+  // One source for the greeting here and in the account menu; updates on auth-changed
+  const { isAuthenticated, displayName } = useAuthUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSignOut = () => {
-    clearAuthSession();
-    setIsAuthenticated(false);
+    signOut();
     setCartCount(0);
     setIsMenuOpen(false);
     router.push("/");
-    window.dispatchEvent(new Event("cart-updated"));
   };
   const [menuPathname, setMenuPathname] = useState(pathname);
 
@@ -101,18 +99,9 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("token")
-        : null;
-    setIsAuthenticated(Boolean(token));
-    setDisplayName(
-      localStorage.getItem("userFirstName") ||
-        localStorage.getItem("userEmail") ||
-        "Customer",
-    );
-
     const loadCartCount = async () => {
+      // Read on every call: the session may have changed since the effect ran
+      const token = localStorage.getItem("token");
       if (!token) {
         setCartCount(0);
         return;
@@ -126,7 +115,6 @@ export default function Header() {
         if (res.status === 401) {
           clearAuthSession();
           setCartCount(0);
-          setIsAuthenticated(false);
           return;
         }
 
@@ -160,9 +148,11 @@ export default function Header() {
     };
 
     window.addEventListener("cart-updated", handleCartUpdated);
+    window.addEventListener(AUTH_CHANGED_EVENT, handleCartUpdated);
 
     return () => {
       window.removeEventListener("cart-updated", handleCartUpdated);
+      window.removeEventListener(AUTH_CHANGED_EVENT, handleCartUpdated);
     };
   }, [pathname]);
 

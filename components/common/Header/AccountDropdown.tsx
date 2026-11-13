@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { clearAuthSession } from "@/lib/authSession";
+import { signOut, useAuthUser } from "@/lib/authSession";
 import { useIsAdmin } from "@/lib/useIsAdmin";
 import { useWishlistCount } from "@/lib/wishlist";
 
@@ -39,19 +39,15 @@ export default function AccountDropdown({
     item.href === "/account/lists" && isAuthenticated ? { ...item, title: `Lists (${wishlistCount})` } : item,
   );
 
+  // Same source as the header greeting
+  const { displayName } = useAuthUser();
+
   const handleLogout = () => {
-    clearAuthSession();
+    // signOut fires auth-changed, so the header switches to "Sign in" even when already on "/"
+    signOut();
     onClose();
     router.push("/");
-    window.dispatchEvent(new Event("cart-updated"));
   };
-
-  const userFirstName =
-    typeof window !== "undefined"
-      ? localStorage.getItem("userFirstName") ||
-        localStorage.getItem("userEmail") ||
-        "Customer"
-      : "Customer";
   return (
     <div
       aria-hidden={!isOpen}
@@ -76,7 +72,7 @@ export default function AccountDropdown({
           {/* User greeting & Sign out */}
           <div className="flex flex-col items-center gap-2 py-3">
             <span className="text-[14px] font-medium text-[#333333]">
-              Hello, {userFirstName}
+              Hello, {displayName}
             </span>
             <button
               onClick={handleLogout}

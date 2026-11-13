@@ -12,6 +12,7 @@ import { useMemo, useSyncExternalStore } from "react";
 import { getApi } from "@/components/api/useApi";
 import { apiErrorMessage } from "@/lib/apiError";
 import { getSessionUserId } from "@/lib/session";
+import { AUTH_CHANGED_EVENT } from "@/lib/authSession";
 import { mainImagePath } from "@/lib/media";
 import { isStorefrontProduct, type StorefrontCandidate } from "@/lib/products";
 
@@ -64,9 +65,12 @@ export function isSignedIn(): boolean {
 
 function subscribe(onChange: () => void) {
   window.addEventListener(WISHLIST_UPDATED_EVENT, onChange);
+  // The list is per user, so sign-in/out switches it
+  window.addEventListener(AUTH_CHANGED_EVENT, onChange);
   window.addEventListener("storage", onChange);
   return () => {
     window.removeEventListener(WISHLIST_UPDATED_EVENT, onChange);
+    window.removeEventListener(AUTH_CHANGED_EVENT, onChange);
     window.removeEventListener("storage", onChange);
   };
 }

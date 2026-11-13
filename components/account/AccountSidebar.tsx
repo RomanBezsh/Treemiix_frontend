@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { signOut } from "@/lib/authSession";
 import { useIsAdmin } from "@/lib/useIsAdmin";
 
 const menuItems = [
@@ -64,7 +65,13 @@ const menuItems = [
 
 export default function AccountSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const isAdmin = useIsAdmin();
+
+  const handleSignOut = () => {
+    signOut();
+    router.push("/");
+  };
 
   // Admins cannot open a store: "Seller Center" becomes "Admin panel"
   const items = isAdmin
@@ -106,6 +113,13 @@ export default function AccountSidebar() {
             </Link>
           );
         })}
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="flex h-[44px] shrink-0 items-center whitespace-nowrap rounded-[12px] px-[12px] text-[13px] font-medium text-[#C2410C]"
+        >
+          Sign out
+        </button>
       </nav>
 
       {/* Desktop navigation */}
@@ -145,7 +159,14 @@ export default function AccountSidebar() {
         </nav>
 
         {/* Delete account */}
-        <div className="mt-auto px-[24px] pb-[30px] pt-[40px] xl:px-[28px] xl:pb-[36px]">
+        <div className="mt-auto flex flex-col gap-[10px] px-[24px] pb-[30px] pt-[40px] xl:px-[28px] xl:pb-[36px]">
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="flex h-[46px] w-full items-center justify-center rounded-[24px] border-2 border-[#7C9BC0] px-[20px] text-[14px] font-medium text-[#496B94] transition-colors hover:bg-[#EEF3F9] xl:text-[16px]"
+          >
+            Sign out
+          </button>
           <button
             type="button"
             className="flex h-[46px] w-full items-center justify-center rounded-[24px] bg-[#7C9BC0] px-[20px] text-[14px] font-medium text-white xl:text-[16px]"

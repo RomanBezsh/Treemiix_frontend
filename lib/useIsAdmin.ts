@@ -2,11 +2,9 @@
 
 import { useSyncExternalStore } from "react";
 import { getSessionRole } from "@/lib/adminAuth";
+import { subscribeToAuth } from "@/lib/authSession";
 
-// The role only changes on sign-in/out, which navigates away, so there is nothing to subscribe to.
-const subscribeToNothing = () => () => {};
-
-/** True for an admin session; false on the server and during hydration. */
+/** True for an admin session; false on the server and during hydration. Updates on sign-in/out. */
 export function useIsAdmin(): boolean {
-  return useSyncExternalStore(subscribeToNothing, () => getSessionRole() === "Admin", () => false);
+  return useSyncExternalStore(subscribeToAuth, () => getSessionRole() === "Admin", () => false);
 }
