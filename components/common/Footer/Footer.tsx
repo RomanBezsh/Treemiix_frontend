@@ -9,39 +9,39 @@ const desktopFooterSections = [
     links: [
       { title: "Careers", href: "/" },
       { title: "Blog", href: "/" },
-      { title: "About Treemix", href: "/" },
+      { title: "About Treemiix", href: "/" },
       { title: "Investor Relations", href: "/" },
-      { title: "Treemix Devices", href: "/" },
+      { title: "Treemiix Devices", href: "/" },
     ],
   },
   {
     title: "Make Money with Us",
     links: [
-      { title: "Sell products on Treemix", href: "/" },
-      { title: "Sell apps on Treemix", href: "/" },
+      { title: "Sell products on Treemiix", href: "/" },
+      { title: "Sell apps on Treemiix", href: "/" },
       { title: "Become an Affiliate", href: "/" },
       { title: "Advertise Your Products", href: "/" },
       { title: "See More Make Money with Us", href: "/" },
     ],
   },
   {
-    title: "Treemix Payment Products",
+    title: "Treemiix Payment Products",
     links: [
       { title: "Shop with Points", href: "/" },
       { title: "Reload Your Balance", href: "/" },
-      { title: "Treemix Currency Converter", href: "/" },
+      { title: "Treemiix Currency Converter", href: "/" },
     ],
   },
   {
     title: "Let Us Help You",
     links: [
-      { title: "Treemix and COVID-19", href: "/" },
+      { title: "Treemiix and COVID-19", href: "/" },
       { title: "Your Account", href: "/auth" },
       { title: "Your Orders", href: "/account/orders" },
       { title: "Shipping Rates & Policies", href: "/" },
       { title: "Returns & Replacements", href: "/" },
       { title: "Manage Your Content and Devices", href: "/" },
-      { title: "Treemix Assistant", href: "/" },
+      { title: "Treemiix Assistant", href: "/" },
       { title: "Help", href: "/" },
     ],
   },
@@ -55,7 +55,7 @@ const mobileFooterLinks = [
   { title: "Browsing History", href: "/" },
   { title: "Your Account", href: "/auth" },
   { title: "Returns", href: "/" },
-  { title: "Sell products on Treemix", href: "/" },
+  { title: "Sell products on Treemiix", href: "/" },
   { title: "Customer Service", href: "/" },
 ];
 

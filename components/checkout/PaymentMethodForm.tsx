@@ -104,7 +104,7 @@ export default function PaymentMethodForm() {
       {/* Store Card */}
       <div className="mt-[30px]">
         <h3 className="text-[18px] font-normal leading-[150%] text-[#333333] sm:text-[20px]">
-          TreeMiix.com Store Card
+          Treemiix.com Store Card
         </h3>
 
         <p className="mt-[8px] text-[13px] font-normal leading-[150%] text-[#333333] sm:text-[14px]">

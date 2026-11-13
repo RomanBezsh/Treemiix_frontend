@@ -560,7 +560,7 @@ export default function SellerApplication() {
           Sign in to become a seller
         </h1>
         <p className="mt-3 text-[15px] text-[#666]">
-          Use your TreeMiix account to open a store. It takes a few minutes.
+          Use your Treemiix account to open a store. It takes a few minutes.
         </p>
         <Link
           href="/auth?next=/sell/apply"
@@ -621,10 +621,10 @@ export default function SellerApplication() {
           <div className="grid gap-8 lg:grid-cols-[1.4fr_0.6fr]">
             <div>
               <h2 className="text-[28px] font-bold text-[#333]">
-                Open your TreeMiix store
+                Open your Treemiix store
               </h2>
               <p className="mt-3 max-w-[620px] text-[15px] leading-7 text-[#666]">
-                Sell to customers across TreeMiix. Fill in your business and
+                Sell to customers across Treemiix. Fill in your business and
                 store details, then our team will review your application.
               </p>
 
@@ -667,7 +667,7 @@ export default function SellerApplication() {
               </p>
               <p className="mt-3 text-[13px] leading-6 text-[#777]">
                 Plus selling fees. Your subscription is activated after
-                approval and renewed by the TreeMiix team.
+                approval and renewed by the Treemiix team.
               </p>
               <div className="mt-5 flex items-center gap-2 rounded-[12px] bg-[#F3F5F9] p-3 text-[12px] text-[#555]">
                 <Wallet size={16} className="text-[#49516D]" />
@@ -949,7 +949,7 @@ export default function SellerApplication() {
                     Payout details
                   </h2>
                   <p className="mt-1 text-[14px] text-[#777]">
-                    Where should TreeMiix send your sales payouts?
+                    Where should Treemiix send your sales payouts?
                   </p>
                 </div>
 
@@ -968,7 +968,7 @@ export default function SellerApplication() {
                 </label>
 
                 <div className="rounded-[12px] bg-[#F3F5F9] p-4 text-[13px] leading-6 text-[#666]">
-                  Payout details are visible only to you and the TreeMiix
+                  Payout details are visible only to you and the Treemiix
                   administration team. They are never shown on your public store
                   page.
                 </div>
@@ -1068,7 +1068,7 @@ export default function SellerApplication() {
           </h2>
           <p className="mx-auto mt-3 max-w-[620px] text-[15px] leading-7 text-[#666]">
             We received your application for <b>{seller.storeName}</b>. The
-            TreeMiix team will review it and activate your store. This page
+            Treemiix team will review it and activate your store. This page
             refreshes automatically.
           </p>
           <div className="mt-4 text-[13px] text-[#888]">
@@ -1156,7 +1156,7 @@ export default function SellerApplication() {
               {!seller.canSell && (
                 <p className="mt-3 rounded-[10px] bg-amber-50 p-3 text-[12px] leading-5 text-amber-800">
                   You can view your store, but new products are blocked until
-                  the TreeMiix team marks the subscription as paid.
+                  the Treemiix team marks the subscription as paid.
                 </p>
               )}
               <button
@@ -1440,8 +1440,8 @@ export default function SellerApplication() {
           </h2>
           <p className="mx-auto mt-3 max-w-[620px] text-[15px] leading-7 text-[#666]">
             {seller.status === "Inactive"
-              ? "The subscription is not active. Contact TreeMiix support to renew it."
-              : "This store has been suspended. Contact TreeMiix support for details."}
+              ? "The subscription is not active. Contact Treemiix support to renew it."
+              : "This store has been suspended. Contact Treemiix support for details."}
           </p>
           <button
             type="button"

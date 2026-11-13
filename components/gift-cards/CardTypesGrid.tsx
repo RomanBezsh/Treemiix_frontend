@@ -31,7 +31,7 @@ const cardTypes = [
     gridClassName: "lg:col-span-3",
   },
   {
-    title: "TreeMiix Reload",
+    title: "Treemiix Reload",
     description: "Easily add funds to your gift card balance.",
     image: "/gift-cards/card-types/card-balance.svg",
     href: "/gift-cards/reload",

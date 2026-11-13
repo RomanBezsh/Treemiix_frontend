@@ -47,14 +47,14 @@ const AuthBanner = () => {
         Sign in for the best experience
       </h2>
 
-      <button
-        type="button"
-        className="absolute w-[480px] h-[85px] left-[185px] top-[137px] flex items-center justify-center rounded-[61px] bg-[#FFA95A] [box-shadow:inset_-4px_4px_6px_rgba(0,0,0,0.1)] transition-transform"
+      <Link
+        href="/auth"
+        className="absolute w-[480px] h-[85px] left-[185px] top-[137px] flex items-center justify-center rounded-[61px] bg-[#FFA95A] [box-shadow:inset_-4px_4px_6px_rgba(0,0,0,0.1)] transition-[translate,scale,box-shadow] duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97]"
       >
         <span className="font-bold text-white text-center text-[30px] leading-[130%] [font-family:'Roboto',sans-serif] [text-shadow:0px_4px_4px_rgba(0,0,0,0.15)]">
           Sign in securely
         </span>
-      </button>
+      </Link>
 
 
       <Image
@@ -65,9 +65,9 @@ const AuthBanner = () => {
         height={143}
       />
 
-      <h3 className="absolute w-[168px] left-[1229px] top-[109.81px] font-medium text-white text-[48px] leading-[130%] [font-family:'Roboto',sans-serif] [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)]">
-        Naming
-      </h3>
+      <p className="absolute left-[1229px] top-[109.81px] font-medium text-white text-[48px] leading-[130%] [font-family:'Roboto',sans-serif] [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)]">
+        Treemiix
+      </p>
     </div>
     </>
   );

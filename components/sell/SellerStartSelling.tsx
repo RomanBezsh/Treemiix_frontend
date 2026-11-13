@@ -29,7 +29,7 @@ export default function SellerStartSelling() {
 
               <p className="mt-[12px] max-w-[650px] text-[14px] font-black leading-[145%] text-[#333333]/80 min-[380px]:text-[15px] sm:mt-[14px] sm:text-[19px] sm:leading-[150%] lg:text-[24px]">
                 Put your products in front of the millions of customers who
-                search TreeMiix.com every day.
+                search Treemiix.com every day.
               </p>
 
               {/* Sign up */}

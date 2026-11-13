@@ -5,25 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { clearAuthSession } from "@/lib/authSession";
 
-const yourLists = [
-  "Create a List",
-  "Find a List or Registry",
-  "TreemiixSmile Charity Lists",
-];
-
-const yourAccount = [
-  { title: "Seller Center", href: "/sell/apply" },
+const accountLinks = [
   { title: "Account", href: "/account" },
   { title: "Orders", href: "/account/orders" },
-  { title: "Recommendations", href: "/account" },
-  { title: "Browsing History", href: "/account" },
-  { title: "Watchlist", href: "/account" },
-  { title: "Video Purchases & Rentals", href: "/account" },
-  { title: "Kindle Unlimited", href: "/account" },
-  { title: "Content & Devices", href: "/account" },
-  { title: "Subscribe & Save Items", href: "/account" },
-  { title: "Memberships & Subscriptions", href: "/account" },
-  { title: "Music Library", href: "/account" },
+  { title: "Seller Center", href: "/sell/apply" },
+  { title: "Lists", href: "/account/lists" },
+  { title: "Messages", href: "/account/messages" },
 ];
 
 interface AccountDropdownProps {
@@ -57,7 +44,7 @@ export default function AccountDropdown({
       aria-hidden={!isOpen}
       className={`
         absolute right-0 top-[calc(100%+8px)] z-50
-        w-[432px] max-w-[calc(100vw-32px)] rounded-[20px] bg-[#F8F8F8] p-6
+        w-[300px] max-w-[calc(100vw-32px)] rounded-[20px] bg-[#F8F8F8] p-6
         shadow-[0px_2px_4px_rgba(0,0,0,0.2)]
         origin-top
         transition-all duration-200 ease-out
@@ -144,54 +131,28 @@ export default function AccountDropdown({
         </>
       )}
 
-      {/* Lists & Account */}
-      <div className="flex gap-6 text-[12px] text-[#828282]">
-        <div className="flex min-w-0 flex-1 flex-col gap-2">
-          <span className="font-medium text-[#828282]">
-            Your Lists
-          </span>
+      {/* Account links */}
+      <nav aria-label="Your account" className="flex flex-col gap-1 text-[14px] text-[#828282]">
+        <span className="mb-1 text-[12px] font-medium text-[#828282]">
+          Your Account
+        </span>
 
-          {yourLists.map((item) => (
-            <Link
-              key={item}
-              href="/"
-              onClick={onClose}
-              className="
-                w-fit
-                transition-all duration-150 ease-out
-                hover:translate-x-[2px]
-                hover:text-black
-              "
-            >
-              {item}
-            </Link>
-          ))}
-        </div>
-
-        <div className="w-[1px] shrink-0 bg-[#EFEFEF]" />
-
-        <div className="flex min-w-0 flex-1 flex-col gap-2">
-          <span className="font-medium text-[#828282]">
-            Your Account
-          </span>
-
-          {yourAccount.map((item) => (
-            <Link
-              key={item.title}
-              href={item.href}
-              onClick={onClose}
-              className="
-                w-fit
-                transition-all duration-150 ease-out
-                hover:translate-x-[2px]
-                hover:text-black
-              "
-            >
-              {item.title}
-            </Link>
-          ))}
-        </div>
-      </div>
+        {accountLinks.map((item) => (
+          <Link
+            key={item.title}
+            href={item.href}
+            onClick={onClose}
+            className="
+              w-fit py-[3px]
+              transition-all duration-150 ease-out
+              hover:translate-x-[2px]
+              hover:text-[#333333]
+            "
+          >
+            {item.title}
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }

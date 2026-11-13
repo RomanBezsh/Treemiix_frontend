@@ -5,20 +5,20 @@ import { useState } from "react";
 
 const faqItems = [
   {
-    question: "What can TreeMiix Gift Cards be redeemed towards?",
+    question: "What can Treemiix Gift Cards be redeemed towards?",
     answer:
-      "TreeMiix Gift Cards can be used toward eligible products and services available on TreeMiix.com.",
+      "Treemiix Gift Cards can be used toward eligible products and services available on Treemiix.com.",
   },
   {
     question:
-      "Are there any fees or expiration date to use TreeMiix Gift Cards?",
+      "Are there any fees or expiration date to use Treemiix Gift Cards?",
     answer:
-      "TreeMiix Gift Cards do not have service fees and do not expire unless otherwise stated.",
+      "Treemiix Gift Cards do not have service fees and do not expire unless otherwise stated.",
   },
   {
-    question: "Are there any shipping costs on TreeMiix Gift Cards?",
+    question: "Are there any shipping costs on Treemiix Gift Cards?",
     answer:
-      "Physical TreeMiix.com gift cards (except Anytime Gift Cards) are delivered with FREE One-Day shipping when you select One-Day shipping at checkout. For more information, check this page.",
+      "Physical Treemiix.com gift cards (except Anytime Gift Cards) are delivered with FREE One-Day shipping when you select One-Day shipping at checkout. For more information, check this page.",
   },
 ];
 
@@ -34,7 +34,7 @@ export default function GiftCardsFaq() {
   return (
     <section className="gift-fade-up w-full font-[var(--font-roboto)]">
       <h2 className="mb-[18px] text-[24px] font-normal leading-[150%] text-[#333333]">
-        Frequently asked questions about TreeMiix.com gift cards
+        Frequently asked questions about Treemiix.com gift cards
       </h2>
 
       <div className="flex flex-col gap-[10px]">

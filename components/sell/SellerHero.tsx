@@ -12,7 +12,7 @@ export default function SellerHero() {
           <h1 className="sell-fade-left sell-delay-1 max-w-[520px] text-[38px] font-black leading-[115%] text-[#333333] sm:text-[44px] lg:text-[48px] lg:leading-[120%]">
             Become an
             <br />
-            TreeMiix seller
+            Treemiix seller
           </h1>
 
           <p className="sell-fade-left sell-delay-2 mt-[24px] max-w-[620px] text-[16px] font-black leading-[150%] text-[#333333] sm:text-[18px] lg:mt-[40px] lg:text-[20px]">

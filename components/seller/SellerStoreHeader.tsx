@@ -61,7 +61,7 @@ export default function SellerStoreHeader({ seller, productsCount }: SellerStore
 
         {/* Name and meta */}
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-medium text-[#7C9BC0]">TreeMiix seller</p>
+          <p className="text-[13px] font-medium text-[#7C9BC0]">Treemiix seller</p>
           <h1 className="break-words text-[26px] font-black leading-[120%] text-[#333333] sm:text-[32px] lg:text-[36px]">
             {seller.storeName}
           </h1>
@@ -101,7 +101,7 @@ export default function SellerStoreHeader({ seller, productsCount }: SellerStore
         <h2 className="text-[16px] font-medium text-[#333333]">About the store</h2>
         <p className="mt-[6px] max-w-[900px] text-[14px] leading-[150%] text-[#555555] sm:text-[15px]">
           {seller.description?.trim() ||
-            `${seller.storeName} sells on TreeMiix. Browse their products below — every order is protected by TreeMiix buyer guarantees.`}
+            `${seller.storeName} sells on Treemiix. Browse their products below — every order is protected by Treemiix buyer guarantees.`}
         </p>
       </div>
     </section>

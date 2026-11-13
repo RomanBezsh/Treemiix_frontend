@@ -11,18 +11,13 @@ import PromoBanner from "@/components/home/PromoBanner";
 import SalesSection from "@/components/home/SalesSection";
 import RecentlyViewedSection from "@/components/home/RecentlyViewedSection";
 import { mainImagePath } from "@/lib/media";
-import { ACTIVE_PRODUCTS_PATH, isStorefrontProduct, orderByCategories } from "@/lib/products";
-import {
-  popularCategoriesData,
-  popularProductsData,
-  carouselCardProducts,
-} from "@/data/mockData";
+import { ACTIVE_PRODUCTS_PATH, isStorefrontProduct, orderByCategories, rootCategoryCards } from "@/lib/products";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://treemiix-backend.onrender.com/api";
-const FALLBACK_IMAGE =
-  "https://cdn.new-brz.net/app/public/models/MPXV3ZP-A/large/w/231110080013512834.webp";
+const FALLBACK_IMAGE = "/account/lists/product-placeholder.png";
+
 
 export default async function Home() {
   // --- Server-side data fetching ---
@@ -42,13 +37,13 @@ export default async function Home() {
   const allProducts: any[] = orderByCategories(productsData, allCategories);
 
   // Правило витрины: активный товар, есть картинка, продавец одобрен
-  const products = allProducts
+  const storefrontProducts = allProducts
     .filter(isStorefrontProduct)
     .map((p: any) => ({
       ...p,
       imageUrl: mainImagePath(p),
-    }))
-    .slice(0, 24);
+    }));
+  const products = storefrontProducts.slice(0, 24);
 
   // --- Derived data ---
 
@@ -63,62 +58,35 @@ export default async function Home() {
     isLastItem: index === 2,
   }));
 
-  const displayCategories =
-    categories.length > 0
-      ? categories
-      : [
-          { id: "1", name: "Electronics" },
-          { id: "2", name: "Fashion" },
-          { id: "3", name: "Home & Kitchen" },
-        ];
+  // Root categories that have storefront products, each with a photo of one of them:
+  // the first three go to "Most popular categories", the next two to the bottom row.
+  const categoryCards = rootCategoryCards(productsData, allCategories, 5);
+  const popularCategoriesItems = categoryCards.slice(0, 3).map((card) => ({
+    category: card.name,
+    href: `/catalog?category=${card.id}`,
+    imageSrc: card.imageUrl,
+  }));
+  const bottomCategoryCards = categoryCards.slice(3, 5);
 
-  const shuffledCategories = [...displayCategories].sort((a, b) =>
-    String(a.id || a.name).localeCompare(String(b.id || b.name))
-  );
-  const popularCategoriesItems = shuffledCategories.slice(0, 3).map(
-    (cat, catIndex) => {
-      const catProducts = products.filter(
-        (p) =>
-          p.categoryId === cat.id &&
-          (p.imageUrl || p.images?.[0])
-      );
-      const targetProduct =
-        catProducts.length > 0
-          ? catProducts[catIndex % catProducts.length]
-          : products.length > 0
-            ? products[catIndex % products.length]
-            : null;
-
-      const isGuid = (id: unknown) =>
-        typeof id === "string" &&
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-          id
-        );
-
-      const fallbackImage =
-        popularCategoriesData?.[catIndex]?.imageSrc || FALLBACK_IMAGE;
-
-      return {
-        category: cat.name || cat.title || "Category",
-        href: isGuid(cat.id)
-          ? `/catalog?category=${cat.id}`
-          : "/catalog",
-        imageSrc:
-          targetProduct?.imageUrl ||
-          targetProduct?.images?.[0] ||
-          fallbackImage,
-      };
-    }
-  );
-
-  const cardItems = products.map((p) => ({
+  const toCardItem = (p: (typeof storefrontProducts)[number]) => ({
     id: p.id || p.title,
     title: p.name || p.title,
     imageSrc:
       p.imageUrl || p.images?.[0] || p.imageSrc || "",
     price: p.price,
     rating: p.rating || 0,
-  }));
+  });
+  const cardItems = products.map(toCardItem);
+
+  // Bottom row: newest products and best rated ones (storefront only)
+  const newArrivals = [...storefrontProducts]
+    .sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")))
+    .slice(0, 4)
+    .map(toCardItem);
+  const topRated = [...storefrontProducts]
+    .sort((a, b) => (b.rating || 0) - (a.rating || 0) || String(a.name).localeCompare(String(b.name)))
+    .slice(0, 4)
+    .map(toCardItem);
 
   const saleCardItems = products
     .filter((p) => p.oldCost && p.oldCost > p.price)
@@ -142,18 +110,6 @@ export default async function Home() {
     const group = cardItems
       .filter((_, index) => index % 3 === groupIndex)
       .slice(0, 4);
-    // Если в группе нет товаров с картинками, подставляем из mock-данных
-    if (group.length === 0 || group.every((i) => !i.imageSrc)) {
-      return popularProductsData
-        .slice(groupIndex * 3, (groupIndex + 1) * 3)
-        .map((p) => ({
-          id: p.title,
-          title: p.title,
-          imageSrc: p.imageSrc,
-          price: p.price,
-          rating: 0,
-        }));
-    }
     return group;
   });
 
@@ -223,7 +179,7 @@ export default async function Home() {
       <div className="relative z-10 -mt-12 flex w-full max-w-[1534px] flex-col gap-8 px-4 sm:-mt-24 sm:px-6 md:gap-5 2xl:-mt-43 2xl:px-0">
         {/* Product carousels + banners */}
         <div className="animate-fade-in-up order-1 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
-          {carouselGroups.map((group, index) => (
+          {carouselGroups.map((group, index) => group.length > 0 && (
             <div key={carouselTitles[index]} className={`min-w-0 ${index === 2 ? "hidden md:block" : ""}`}>
               <CarouselCard
                 title={carouselTitles[index]}
@@ -270,52 +226,36 @@ export default async function Home() {
         </div>
 
         <div className="order-6 grid grid-cols-2 gap-3 sm:gap-5 md:mb-5 xl:grid-cols-4 2xl:flex 2xl:flex-row 2xl:justify-between">
-          <CarouselCard
-            title="Backend Products"
-            imageSrc={
-              cardItems[0]?.imageSrc ||
-              carouselCardProducts[0]?.imageSrc ||
-              FALLBACK_IMAGE
-            }
-            href="/catalog"
-            items={cardItems.slice(0, 4)}
-          />
-          <CategoryCard
-            title={categories[0]?.name || "Category 1"}
-            imageSrc={
-              popularCategoriesData[0]?.imageSrc ||
-              carouselCardProducts[1]?.imageSrc ||
-              FALLBACK_IMAGE
-            }
-            href={
-              categories[0]?.id
-                ? `/catalog?category=${categories[0].id}`
-                : "/catalog"
-            }
-          />
-          <CarouselCard
-            title="Backend Products"
-            imageSrc={
-              cardItems[1]?.imageSrc ||
-              carouselCardProducts[2]?.imageSrc ||
-              FALLBACK_IMAGE
-            }
-            href="/catalog"
-            items={cardItems.slice(0, 4)}
-          />
-          <CategoryCard
-            title={categories[1]?.name || "Category 2"}
-            imageSrc={
-              popularCategoriesData[1]?.imageSrc ||
-              carouselCardProducts[3]?.imageSrc ||
-              FALLBACK_IMAGE
-            }
-            href={
-              categories[1]?.id
-                ? `/catalog?category=${categories[1].id}`
-                : "/catalog"
-            }
-          />
+          {newArrivals.length > 0 && (
+            <CarouselCard
+              title="New Arrivals"
+              imageSrc={newArrivals[0].imageSrc || FALLBACK_IMAGE}
+              href="/catalog"
+              items={newArrivals}
+            />
+          )}
+          {bottomCategoryCards[0] && (
+            <CategoryCard
+              title={bottomCategoryCards[0].name}
+              imageSrc={bottomCategoryCards[0].imageUrl}
+              href={`/catalog?category=${bottomCategoryCards[0].id}`}
+            />
+          )}
+          {topRated.length > 0 && (
+            <CarouselCard
+              title="Top Rated"
+              imageSrc={topRated[0].imageSrc || FALLBACK_IMAGE}
+              href="/catalog"
+              items={topRated}
+            />
+          )}
+          {bottomCategoryCards[1] && (
+            <CategoryCard
+              title={bottomCategoryCards[1].name}
+              imageSrc={bottomCategoryCards[1].imageUrl}
+              href={`/catalog?category=${bottomCategoryCards[1].id}`}
+            />
+          )}
         </div>
 
         <RecentlyViewedSection

@@ -122,7 +122,7 @@ export default function SellerStorePage() {
         </h1>
         <p className="mt-[10px] text-[15px] text-[#555555]">
           {state === "not-found"
-            ? "This seller doesn't exist or is no longer on TreeMiix."
+            ? "This seller doesn't exist or is no longer on Treemiix."
             : "The server may be waking up. Please try again in a few seconds."}
         </p>
         <Link

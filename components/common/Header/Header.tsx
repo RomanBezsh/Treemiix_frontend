@@ -17,7 +17,6 @@ const API_BASE_URL =
 const navigationLinks = [
   { title: "Today's Deals", href: "/todays-deals" },
   { title: "Customer Service", href: "/customer-service" },
-  { title: "Registry", href: "/" },
   { title: "Gift Cards", href: "/gift-cards" },
   { title: "Sell", href: "/sell" },
 ];
@@ -216,9 +215,10 @@ export default function Header() {
             />
           </Link>
 
-          {/* Delivery location */}
-          <button
-            type="button"
+          {/* Delivery location: opens the saved delivery addresses (sign in first for guests) */}
+          <Link
+            href={isAuthenticated ? "/account/addresses" : "/auth"}
+            aria-label="Delivery addresses"
             className="
               group hidden min-h-[45px] shrink-0 items-center gap-2
               rounded-[14px] border-2 border-white px-3 py-1 text-left
@@ -252,7 +252,7 @@ export default function Header() {
                 Ukraine
               </span>
             </span>
-          </button>
+          </Link>
 
           {/* Search */}
           <form

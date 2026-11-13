@@ -10,7 +10,7 @@ const supportItems = [
   {
     title: "Device support",
     description:
-      "Get help with devices connected to your TreeMiix account.",
+      "Get help with devices connected to your Treemiix account.",
     href: "/account/digital-services/devices",
   },
   {

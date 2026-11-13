@@ -12,9 +12,9 @@ const PromoBanner = () => {
       />
 
       <p className="relative z-10 w-full max-w-65.75 text-[20px] 2xl:text-[24px] leading-[130%] font-medium text-center text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]">
-        We ship over 45 million<br />
-        products around<br />
-        the world
+        Products from trusted<br />
+        sellers, delivered<br />
+        to your door
       </p>
 
     </div>

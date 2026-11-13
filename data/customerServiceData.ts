@@ -376,7 +376,7 @@ export const customerServiceCategories: Record<
         slug: "lost-gift-card",
         title: "Lost a Gift Card",
         description: [
-          "If you accidentally deleted or lost a Treemix Gift Card, please contact us.",
+          "If you accidentally deleted or lost a Treemiix Gift Card, please contact us.",
           "You may need to provide the following information:",
         ],
         bulletPoints: [

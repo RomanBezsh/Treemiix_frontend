@@ -5,7 +5,7 @@ export default function SellerTopBar() {
     <section className="w-full bg-[#F8F8F8CC] font-[var(--font-roboto)]">
       <div className="sell-fade-down mx-auto flex min-h-[76px] w-full max-w-[1440px] items-center justify-between gap-[20px] px-[20px] sm:px-[32px] lg:min-h-[96px] lg:px-[80px]">
         <h1 className="text-[24px] font-black leading-[130%] text-[#333333]/80 sm:text-[30px] lg:text-[40px] lg:leading-[150%]">
-          Sell on TreeMiix
+          Sell on Treemiix
         </h1>
 
         <Link
