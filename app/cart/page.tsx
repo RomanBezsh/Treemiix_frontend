@@ -13,6 +13,7 @@ import RecentlyViewed, {
 } from "@/components/cart/RecentlyViewed";
 import { clearAuthSession } from "@/lib/authSession";
 import LoadError from "@/components/common/LoadError";
+import { addToCart } from "@/lib/cart";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -113,113 +114,40 @@ export default function CartPage() {
   const addRecentToCart = async (
     item: RecentItem,
   ): Promise<boolean> => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      router.push("/auth");
+    const result = await addToCart(item.id, 1);
+    if (!result.ok) {
+      if (result.reason === "auth") router.push("/auth");
       return false;
     }
 
-    try {
-      const authHeaders = {
-        Authorization: `Bearer ${token}`,
-      };
+    const created = result.item;
+    if (created?.id) {
+      setItems((currentItems) => {
+        if (
+          currentItems.some(
+            (cartItem) => cartItem.productId === item.id,
+          )
+        ) {
+          return currentItems;
+        }
 
-      let cartId: string | null = null;
-
-      const cartRes = await fetch(
-        `${API_BASE_URL}/carts/my`,
-        { headers: authHeaders },
-      );
-
-      if (cartRes.status === 401) {
-        router.push("/auth");
-        return false;
-      }
-
-      if (cartRes.ok) {
-        const cart = await cartRes.json();
-        cartId = cart?.id || null;
-      } else if (cartRes.status === 404) {
-        const createRes = await fetch(
-          `${API_BASE_URL}/carts`,
+        return [
+          ...currentItems,
           {
-            method: "POST",
-            headers: authHeaders,
-          },
-        );
-        if (createRes.status === 401) {
-          router.push("/auth");
-          return false;
-        }
-        if (createRes.ok) {
-          const created = await createRes.json();
-          cartId = created?.id || null;
-        }
-      }
-
-      if (!cartId) return false;
-
-      const addRes = await fetch(
-        `${API_BASE_URL}/cartitems`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            cartId,
+            id: String(created.id),
             productId: item.id,
-            quantity: 1,
-          }),
-        },
-      );
-
-      if (addRes.status === 401) {
-        router.push("/auth");
-        return false;
-      }
-
-      if (!addRes.ok) return false;
-
-      const created = await addRes.json();
-
-      if (created?.id) {
-        setItems((currentItems) => {
-          if (
-            currentItems.some(
-              (cartItem) => cartItem.productId === item.id,
-            )
-          ) {
-            return currentItems;
-          }
-
-          return [
-            ...currentItems,
-            {
-              id: String(created.id),
-              productId: item.id,
-              title: item.title,
-              image: item.imageSrc,
-              price: Number(created.price ?? item.price ?? 0),
-              quantity: Number(created.quantity) || 1,
-              selected: false,
-              inStock: true,
-            },
-          ];
-        });
-      }
-
-      window.dispatchEvent(
-        new CustomEvent("cart-updated"),
-      );
-
-      return true;
-    } catch (e) {
-      console.error("Error adding to cart", e);
-      return false;
+            title: item.title,
+            image: item.imageSrc,
+            price: Number(created.price ?? item.price ?? 0),
+            quantity: Number(created.quantity) || 1,
+            selected: false,
+            inStock: true,
+          },
+        ];
+      });
     }
+
+    return true;
   };
 
   const persistQuantity = async (

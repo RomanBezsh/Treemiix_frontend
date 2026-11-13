@@ -1,6 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
+import HeartButton from "@/components/common/HeartButton";
 
 type DealCardProps = {
+  /** Product id: the card links to the product and gets a wishlist button */
+  id?: string;
   title: string;
   price: number;
   oldPrice?: number;
@@ -9,6 +13,7 @@ type DealCardProps = {
 };
 
 export default function DealCard({
+  id,
   title,
   price,
   oldPrice,
@@ -42,37 +47,10 @@ export default function DealCard({
         Deal
       </span>
 
-      {/* Favorite */}
-      <button
-        type="button"
-        aria-label="Add to favorites"
-        className="
-          absolute right-[8px] top-[9px]
-          flex h-[40px] w-[40px]
-          items-center justify-center
-          rounded-[10px]
-          bg-[#F8F8F8]/10
-          shadow-[0_2px_4px_0_rgba(0,0,0,0.20)]
-          transition-all duration-200 ease-out
-          hover:scale-[1.1]
-          hover:bg-white/60
-          hover:shadow-[0_5px_10px_rgba(0,0,0,0.16)]
-          active:scale-[0.92]
-        "
-      >
-        <Image
-          src="/deals/deal_favorite_icon.svg"
-          alt=""
-          width={24}
-          height={22}
-          aria-hidden="true"
-          className="
-            h-[22px] w-[24px] object-contain opacity-30
-            transition-all duration-200
-            hover:opacity-60
-          "
-        />
-      </button>
+      {/* Favorite: above the stretched product link */}
+      {id && (
+        <HeartButton productId={id} variant="deal" className="absolute right-[8px] top-[9px] z-10" />
+      )}
 
       {/* Product image */}
       <div className="mt-[48px] flex h-[150px] items-center justify-center">
@@ -98,7 +76,14 @@ export default function DealCard({
           group-hover:text-[#496B94]
         "
       >
-        {title}
+        {id ? (
+          // The link covers the whole card (after:absolute), the heart stays clickable above it
+          <Link href={`/product/${id}`} className="after:absolute after:inset-0 after:content-['']">
+            {title}
+          </Link>
+        ) : (
+          title
+        )}
       </h3>
 
       {/* Rating */}

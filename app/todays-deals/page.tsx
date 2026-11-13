@@ -95,6 +95,7 @@ export default function TodaysDealsPage() {
                   {deals.map((deal) => (
                     <DealCard
                       key={deal.id}
+                      id={deal.id}
                       title={deal.title}
                       price={deal.price}
                       oldPrice={deal.oldPrice}

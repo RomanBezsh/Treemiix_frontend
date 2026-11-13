@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { MouseEvent, useEffect, useState } from "react";
 
 import RatingsDropdown from "./RatingsDropdown";
+import { addToCart } from "@/lib/cart";
+import HeartButton from "@/components/common/HeartButton";
 
 // Estimated delivery shown in the buy box: today + DELIVERY_DAYS
 const DELIVERY_DAYS = 3;
@@ -88,87 +90,9 @@ const ProductMainSection = ({
   const handleAddToCart = async (
     quantity: number,
   ): Promise<boolean> => {
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("token")
-        : null;
-
-    if (!token) {
-      router.push("/auth");
-      return false;
-    }
-
-    try {
-      let cartId: string | null = null;
-      const authHeaders = {
-        Authorization: `Bearer ${token}`,
-      };
-
-      const cartRes = await fetch(
-        `${API_BASE_URL}/carts/my`,
-        { headers: authHeaders },
-      );
-
-      if (cartRes.status === 401) {
-        router.push("/auth");
-        return false;
-      }
-
-      if (cartRes.ok) {
-        const cart = await cartRes.json();
-        cartId = cart?.id || null;
-      } else if (cartRes.status === 404) {
-        const createRes = await fetch(
-          `${API_BASE_URL}/carts`,
-          {
-            method: "POST",
-            headers: authHeaders,
-          },
-        );
-        if (createRes.status === 401) {
-          router.push("/auth");
-          return false;
-        }
-        if (createRes.ok) {
-          const created = await createRes.json();
-          cartId = created?.id || null;
-        }
-      }
-
-      if (!cartId) return false;
-
-      const addRes = await fetch(
-        `${API_BASE_URL}/cartitems`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            cartId,
-            productId: product.id,
-            quantity,
-          }),
-        },
-      );
-
-      if (addRes.status === 401) {
-        router.push("/auth");
-        return false;
-      }
-
-      if (addRes.ok) {
-        window.dispatchEvent(
-          new CustomEvent("cart-updated"),
-        );
-      }
-
-      return addRes.ok;
-    } catch (e) {
-      console.error("Error adding to cart", e);
-      return false;
-    }
+    const result = await addToCart(product.id, quantity);
+    if (!result.ok && result.reason === "auth") router.push("/auth");
+    return result.ok;
   };
 
   const handleBuyNow = async (quantity: number): Promise<boolean> => {
@@ -255,6 +179,7 @@ const ProductMainSection = ({
       {/* Buy box */}
       <div className="min-w-0 lg:col-span-2 2xl:col-span-1">
         <ProductBuyBox
+          productId={product.id}
           price={product.price}
           shippingPrice={0}
           shippingDestination="Ukraine"
@@ -817,6 +742,7 @@ const ProductInfo = ({
 };
 
 interface ProductBuyBoxProps {
+  productId: string;
   price: number;
   shippingPrice?: number;
   shippingDestination?: string;
@@ -832,6 +758,7 @@ interface ProductBuyBoxProps {
 }
 
 const ProductBuyBox = ({
+  productId,
   price,
   shippingPrice,
   shippingDestination,
@@ -1016,6 +943,9 @@ const ProductBuyBox = ({
       >
         {buying ? "Opening cart..." : "Buy Now"}
       </button>
+
+      {/* Wishlist */}
+      <HeartButton productId={productId} variant="page" className="mb-[24px]" />
 
       {isSecureTransaction && (
         <div className="flex items-center gap-[10px]">

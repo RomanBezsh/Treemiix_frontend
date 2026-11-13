@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { clearAuthSession } from "@/lib/authSession";
 import { useIsAdmin } from "@/lib/useIsAdmin";
+import { useWishlistCount } from "@/lib/wishlist";
 
 const accountLinks = [
   { title: "Account", href: "/account" },
@@ -28,9 +29,15 @@ export default function AccountDropdown({
   const router = useRouter();
   const isAdmin = useIsAdmin();
   // Admins cannot open a store: they get the admin panel instead of Seller Center
-  const links = isAdmin
-    ? accountLinks.map((item) => (item.href === "/sell/apply" ? { title: "Admin panel", href: "/admin" } : item))
-    : accountLinks;
+  const wishlistCount = useWishlistCount();
+  const links = (
+    isAdmin
+      ? accountLinks.map((item) => (item.href === "/sell/apply" ? { title: "Admin panel", href: "/admin" } : item))
+      : accountLinks
+  ).map((item) =>
+    // Wishlist size next to "Lists" for signed-in users
+    item.href === "/account/lists" && isAuthenticated ? { ...item, title: `Lists (${wishlistCount})` } : item,
+  );
 
   const handleLogout = () => {
     clearAuthSession();
