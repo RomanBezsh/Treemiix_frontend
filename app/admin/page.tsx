@@ -256,13 +256,18 @@ export default function AdminPage() {
   // Handlers for Orders
   const handleUpdateOrderStatus = async (id: string, newStatus: string) => {
     try {
-      await fetch(`${API_BASE_URL}/orders/${id}/status`, {
+      // The backend binds the status from the query string (enum name)
+      const res = await fetch(`${API_BASE_URL}/orders/${id}/status?status=${encodeURIComponent(newStatus)}`, {
         method: "PATCH",
         headers: getHeaders(),
-        body: JSON.stringify(newStatus),
       });
+      if (!res.ok) {
+        alert(`Failed to update the order status: ${await readApiError(res)}`);
+        return;
+      }
     } catch {
-      // Fallback local
+      alert("Failed to update the order status: network error.");
+      return;
     }
     setOrders(orders.map((o) => (o.id === id ? { ...o, status: newStatus } : o)));
   };

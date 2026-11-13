@@ -1,5 +1,6 @@
 "use client";
 
+import { formatMoney, orderStatusLabel } from "@/lib/checkout";
 import React, { useState } from "react";
 
 export interface OrderItem {
@@ -7,8 +8,10 @@ export interface OrderItem {
   receiverName: string;
   receiverPhone: string;
   shippingAddress: string;
-  status: string;
+  /** The backend sends the enum as a number */
+  status: string | number;
   totalAmount?: number;
+  discountAmount?: number;
   createdAt?: string;
 }
 
@@ -17,7 +20,7 @@ interface AdminOrdersManagerProps {
   onUpdateStatus: (id: string, newStatus: string) => void;
 }
 
-const ORDER_STATUSES = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"];
+const ORDER_STATUSES = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Refunded"];
 
 export default function AdminOrdersManager({
   orders,
@@ -52,6 +55,7 @@ export default function AdminOrdersManager({
               <th className="py-3 px-4">Order ID</th>
               <th className="py-3 px-4">Recipient</th>
               <th className="py-3 px-4">Phone & Address</th>
+              <th className="py-3 px-4">Total</th>
               <th className="py-3 px-4">Status</th>
               <th className="py-3 px-4 text-right">Update Status</th>
             </tr>
@@ -59,7 +63,7 @@ export default function AdminOrdersManager({
           <tbody className="divide-y divide-[#EFEFEF] text-[14px] text-[#333333]">
             {filteredOrders.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-8 text-center text-[#777]">
+                <td colSpan={6} className="py-8 text-center text-[#777]">
                   No orders found.
                 </td>
               </tr>
@@ -74,14 +78,20 @@ export default function AdminOrdersManager({
                     <div>{o.receiverPhone}</div>
                     <div className="text-[12px] text-[#888] truncate max-w-[200px]">{o.shippingAddress}</div>
                   </td>
+                  <td className="py-3 px-4 whitespace-nowrap">
+                    {formatMoney((o.totalAmount ?? 0) - (o.discountAmount ?? 0))}
+                    {o.createdAt && (
+                      <div className="text-[12px] text-[#888]">{new Date(o.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</div>
+                    )}
+                  </td>
                   <td className="py-3 px-4">
                     <span className="px-2.5 py-1 rounded-full text-[12px] font-medium bg-blue-100 text-blue-800">
-                      {o.status}
+                      {orderStatusLabel(o.status)}
                     </span>
                   </td>
                   <td className="py-3 px-4 text-right">
                     <select
-                      value={o.status}
+                      value={orderStatusLabel(o.status)}
                       onChange={(e) => onUpdateStatus(o.id, e.target.value)}
                       className="px-3 py-1.5 rounded-[8px] border bg-white text-[13px] outline-none font-medium text-[#333]"
                     >

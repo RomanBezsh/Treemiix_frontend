@@ -7,7 +7,8 @@ type CartSummaryProps = {
 };
 
 export default function CartSummary({ items }: CartSummaryProps) {
-  const selectedItems = items.filter((item) => item.selected);
+  // Checkout orders the whole cart, so the summary counts every item (not only the ticked ones)
+  const selectedItems = items;
 
   const selectedItemsCount = selectedItems.reduce(
     (total, item) => total + item.quantity,
@@ -57,6 +58,11 @@ export default function CartSummary({ items }: CartSummaryProps) {
         <Link
           href="/checkout/shipping-payment"
           aria-disabled={selectedItemsCount === 0}
+          tabIndex={selectedItemsCount === 0 ? -1 : undefined}
+          onClick={(event) => {
+            // An empty cart cannot be checked out
+            if (selectedItemsCount === 0) event.preventDefault();
+          }}
           className={`
             mt-[22px] flex min-h-[48px] w-full
             items-center justify-center

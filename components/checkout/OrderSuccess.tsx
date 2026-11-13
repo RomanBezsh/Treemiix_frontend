@@ -1,77 +1,73 @@
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
+import { useMemo, useSyncExternalStore } from "react";
+import { formatMoney, getLastCheckoutResult } from "@/lib/checkout";
 
+// The result is written once before navigating here; nothing to subscribe to.
+const subscribeToNothing = () => () => {};
+const readResult = () => {
+  try {
+    return sessionStorage.getItem("checkout-result") || "";
+  } catch {
+    return "";
+  }
+};
+
+/** "Thank you" page with the created orders (one per seller). */
 export default function OrderSuccess() {
+  const raw = useSyncExternalStore(subscribeToNothing, readResult, () => "");
+  const result = useMemo(() => (raw ? getLastCheckoutResult() : null), [raw]);
+
   return (
-    <section className="relative flex min-h-[620px] w-full items-center justify-center overflow-hidden bg-white px-[16px] py-[80px] sm:min-h-[700px] sm:px-[24px] lg:min-h-[760px]">
-      {/* Center content */}
-      <div className="relative z-10 flex flex-col items-center text-center">
-        {/* Gradient title */}
-        <h1 className="bg-[linear-gradient(90deg,#7E8CBD_0%,#CE9AD7_100%)] bg-clip-text text-[38px] font-medium leading-[120%] tracking-[0] text-transparent sm:text-[54px] lg:text-[72px] xl:text-[87.25px]">
-          Thank you for your order
-        </h1>
+    <section className="mx-auto flex w-full max-w-[720px] flex-col items-center rounded-[20px] bg-[#F8F8F8] px-[20px] py-[36px] text-center shadow-[0_2px_5px_rgba(0,0,0,0.08)] sm:px-[36px]">
+      <h1 className="text-[28px] font-medium text-[#333333] sm:text-[32px]">Thank you for your order</h1>
 
-        {/* Actions */}
-<div className="mt-[28px] flex w-full flex-col items-center justify-center gap-[13.42px] sm:flex-row">
-  {/* My Orders */}
-  <Link
-    href="/account/orders"
-    className="
-      flex h-[56px] w-full items-center justify-center
-      rounded-[26.85px] bg-[#7C9BC0]
-      text-[18px] font-medium leading-[120%] text-white
-      sm:w-[220px]
-      lg:h-[64.43px] lg:w-[288.6px] lg:text-[26.85px]
-    "
-  >
-    My Orders
-  </Link>
+      {result ? (
+        <>
+          <p className="mt-[8px] text-[15px] text-[#555555]">
+            {result.orders.length === 1
+              ? "Your order has been placed. You will pay when it is delivered."
+              : `Your items were placed as ${result.orders.length} orders, one per seller. You will pay when they are delivered.`}
+          </p>
+          <ul className="mt-[20px] flex w-full flex-col gap-[8px] text-left">
+            {result.orders.map((order) => (
+              <li key={order.id} className="flex flex-wrap items-center justify-between gap-[8px] rounded-[12px] bg-white px-[14px] py-[12px]">
+                <span>
+                  <span className="block text-[15px] font-medium text-[#333333]">
+                    Order #{order.id.slice(0, 8).toUpperCase()}
+                  </span>
+                  <span className="block text-[13px] text-[#828282]">
+                    {order.storeName} · {order.itemsCount} {order.itemsCount === 1 ? "item" : "items"}
+                  </span>
+                </span>
+                <span className="text-[15px] text-[#333333]">{formatMoney(order.totalAmount - order.discountAmount)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-[14px] text-[16px] text-[#333333]">
+            Total: <strong>{formatMoney(result.total)}</strong>
+            {result.discount > 0 && <span className="text-[14px] text-[#828282]"> (saved {formatMoney(result.discount)})</span>}
+          </p>
+        </>
+      ) : (
+        <p className="mt-[8px] text-[15px] text-[#555555]">You can find your orders in your account.</p>
+      )}
 
-  {/* Continue shopping */}
-  <Link
-    href="/"
-    className="
-      flex h-[56px] w-full items-center justify-center
-      rounded-[26.85px] bg-[#EEEEEE]
-      text-[18px] font-medium leading-[120%] text-[#828282]/50
-      sm:w-[220px]
-      lg:h-[64.43px] lg:w-[273.84px] lg:text-[26.85px]
-    "
-  >
-    Continue shopping
-  </Link>
-</div>
+      <div className="mt-[24px] flex flex-wrap justify-center gap-[12px]">
+        <Link
+          href="/account/orders"
+          className="flex h-[48px] items-center justify-center rounded-[20px] bg-[#7C9BC0] px-[28px] text-[17px] font-medium text-white transition hover:-translate-y-[1px]"
+        >
+          My Orders
+        </Link>
+        <Link
+          href="/catalog"
+          className="flex h-[48px] items-center justify-center rounded-[20px] border-2 border-[#EFEFEF] px-[28px] text-[17px] text-[#333333] transition hover:-translate-y-[1px]"
+        >
+          Continue shopping
+        </Link>
       </div>
-
-      {/* Left plant */}
-      <Image
-        src="/checkout/success/plant-left.png"
-        alt=""
-        width={190}
-        height={310}
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-[35px] left-[3%] hidden h-auto w-[110px] object-contain sm:block md:w-[140px] lg:bottom-[45px] lg:w-[180px]"
-      />
-
-      {/* Small right plant */}
-      <Image
-        src="/checkout/success/plant-right-small.png"
-        alt=""
-        width={100}
-        height={130}
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-[40px] right-[22%] hidden h-auto w-[70px] object-contain md:block lg:bottom-[55px] lg:w-[95px]"
-      />
-
-      {/* Large right plant */}
-      <Image
-        src="/checkout/success/plant-right-large.png"
-        alt=""
-        width={180}
-        height={250}
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-[35px] right-[4%] hidden h-auto w-[115px] object-contain sm:block md:w-[140px] lg:bottom-[45px] lg:w-[175px]"
-      />
     </section>
   );
 }
