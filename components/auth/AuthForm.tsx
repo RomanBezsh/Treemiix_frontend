@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useCallback, useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { saveAuthSession } from "@/lib/authSession";
+import LegalModal, { type LegalDocument } from "./LegalModal";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
 
@@ -70,6 +71,8 @@ export default function AuthForm() {
 
   const [serverError, setServerError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [legalDoc, setLegalDoc] = useState<LegalDocument | null>(null);
+  const closeLegal = useCallback(() => setLegalDoc(null), []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -286,19 +289,25 @@ export default function AuthForm() {
       onSubmit={handleSubmit}
       className="flex flex-col bg-[#F8F8F8] w-full max-w-125.5 h-min-143.5 h-max-190.25 rounded-[32px] px-6 pt-10 pb-10 sm:rounded-[50px] sm:px-12 sm:pt-13.75 sm:pb-15 font-normal shadow-[0_2px_4px_0_#00000033]"
     >
-      <div className="flex row gap-7.75">
-        <h2
+      <div role="tablist" aria-label="Sign in or create an account" className="flex row gap-7.75">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={isLogin}
           onClick={() => handleTabSwitch(true)}
-          className={`text-2xl pb-1.5 cursor-pointer select-none ${isLogin ? "border-b-2 border-[#7C9BC0]" : ""}`}
+          className={`text-2xl pb-1.5 cursor-pointer select-none border-b-2 ${isLogin ? "border-[#7C9BC0]" : "border-transparent"}`}
         >
           Log in
-        </h2>
-        <h2
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={!isLogin}
           onClick={() => handleTabSwitch(false)}
-          className={`text-2xl pb-1.5 cursor-pointer select-none ${!isLogin ? "border-b-2 border-[#7C9BC0]" : ""}`}
+          className={`text-2xl pb-1.5 cursor-pointer select-none border-b-2 ${!isLogin ? "border-[#7C9BC0]" : "border-transparent"}`}
         >
           Sign up
-        </h2>
+        </button>
       </div>
 
       {serverError && (
@@ -409,12 +418,6 @@ export default function AuthForm() {
             <span className="text-red-500 text-xs mt-1 pl-2">{errors.password}</span>
           )}
 
-          {isLogin && (
-            <div className="flex justify-end mt-2.5 w-full">
-              <a className="text-[14px] text-[#E9852A] cursor-pointer">Forgot your password?</a>
-            </div>
-          )}
-
           <div className="flex items-center pl-8 mt-5 gap-4">
             <input
               type="checkbox"
@@ -426,9 +429,27 @@ export default function AuthForm() {
             />
             <label htmlFor="terms" className="text-[14px] text-[#333333] select-none cursor-pointer">
               I agree with{" "}
-              <a href="#" className="text-[#7C9BC0]">Terms and Service</a>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.preventDefault();
+                  setLegalDoc("terms");
+                }}
+                className="text-[#7C9BC0] hover:underline"
+              >
+                Terms of Service
+              </button>
               {" "}and{" "}
-              <a href="#" className="text-[#7C9BC0]">Privacy Policy</a>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.preventDefault();
+                  setLegalDoc("privacy");
+                }}
+                className="text-[#7C9BC0] hover:underline"
+              >
+                Privacy Policy
+              </button>
             </label>
           </div>
           {errors.terms && (
@@ -444,6 +465,7 @@ export default function AuthForm() {
           </button>
         </>
       )}
+      <LegalModal document={legalDoc} onClose={closeLegal} />
     </form>
   );
 }

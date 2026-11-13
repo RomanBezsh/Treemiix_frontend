@@ -4,9 +4,11 @@ import Image from "next/image";
 import {
   ChangeEvent,
   FormEvent,
+  useMemo,
   useRef,
   useState,
   useEffect,
+  useSyncExternalStore,
 } from "react";
 
 interface Review {
@@ -14,6 +16,8 @@ interface Review {
   userName: string;
   date: string;
   rating: number;
+  /** ISO date, used for "Most recent" sorting */
+  createdAt: string;
   title: string;
   isVerifiedPurchase: boolean;
   imageUrl?: string;
@@ -42,12 +46,58 @@ interface ReviewCardProps {
 
 const API_BASE_URL = typeof window !== "undefined" ? (process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com").replace(/\/api$/, "").replace(/\/$/, "") : "https://treemiix-backend.onrender.com";
 
+// Backend reviews have no title and no purchase flag, so neither is shown
+interface BackendReview {
+  id: string | number;
+  user?: { firstName?: string };
+  createdAt: string;
+  rating: number;
+  text: string;
+  productGallery?: { path?: string };
+  mediaPaths?: unknown;
+}
+
+const mapReview = (r: BackendReview): Review => ({
+  id: r.id,
+  userName: r.user?.firstName || "User",
+  // English UI: "Oct 29, 2026" regardless of the browser locale
+  date: new Date(r.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+  createdAt: r.createdAt,
+  rating: r.rating,
+  title: "",
+  isVerifiedPurchase: false,
+  comment: r.text,
+  imageUrl: r.productGallery?.path ? `${API_BASE_URL}${r.productGallery.path}` : undefined,
+  mediaPaths: parseMediaPaths(r.mediaPaths),
+});
+
+// Reviews are written by signed-in buyers (role "User"); the backend requires a signed-in user.
+// The session only changes on sign-in/out, which navigates away, so there is nothing to subscribe to.
+const subscribeToNothing = () => () => {};
+const isSignedInBuyer = () =>
+  Boolean(localStorage.getItem("token")) && localStorage.getItem("userRole") === "User";
+
+type ReviewSort = "top" | "recent";
+
 const ProductReviewsSection = ({ productId = "default" }: { productId?: string }) => {
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewsLoaded, setReviewsLoaded] = useState(false);
+  const [sortBy, setSortBy] = useState<ReviewSort>("top");
+  // With no reviews yet the form is hidden behind a "Write a review" button
+  const [formOpen, setFormOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const canWrite = useSyncExternalStore(subscribeToNothing, isSignedInBuyer, () => false);
+
+  // Top: highest rating first (newest among equal ratings); Most recent: newest first
+  const sortedReviews = useMemo(() => {
+    const byDate = (a: Review, b: Review) => String(b.createdAt).localeCompare(String(a.createdAt));
+    return [...reviews].sort((a, b) => (sortBy === "top" ? b.rating - a.rating || byDate(a, b) : byDate(a, b)));
+  }, [reviews, sortBy]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -70,19 +120,10 @@ const ProductReviewsSection = ({ productId = "default" }: { productId?: string }
             const res = await fetch(`${API_BASE_URL}/api/productreviews/byproduct/${productId}`);
             if (res.ok) {
                 const data = await res.json();
-                setReviews(data.map((r: any) => ({
-                    id: r.id,
-                    userName: r.user?.firstName || "User",
-                    date: new Date(r.createdAt).toLocaleDateString(),
-                    rating: r.rating,
-                    title: "Review",
-                    isVerifiedPurchase: true,
-                    comment: r.text,
-                    imageUrl: r.productGallery?.path ? `${API_BASE_URL}${r.productGallery.path}` : undefined,
-                    mediaPaths: parseMediaPaths(r.mediaPaths)
-                })));
+                setReviews(Array.isArray(data) ? data.map(mapReview) : []);
             }
-        } catch (e) { console.error("Error fetching reviews", e); }
+        } catch (e) { console.warn("Error fetching reviews", e); }
+        setReviewsLoaded(true);
     }
     fetchReviews();
   }, [productId]);
@@ -92,6 +133,8 @@ const ProductReviewsSection = ({ productId = "default" }: { productId?: string }
     if (!reviewText.trim() || rating === 0) return;
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    setSubmitError(null);
+    setSubmitting(true);
 
     try {
         // Сначала загружаем медиафайлы на бэкенд (wwwroot/media)
@@ -116,42 +159,30 @@ const ProductReviewsSection = ({ productId = "default" }: { productId?: string }
             headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
             body: JSON.stringify({ productId, text: reviewText.trim(), rating, mediaPaths, productGalleryId: null, productVideoId: null }),
         });
-        if (res.ok) {
-            // Перезагружаем список
-            const refetchRes = await fetch(`${API_BASE_URL}/api/productreviews/byproduct/${productId}`);
-            if (refetchRes.ok) {
-                const data = await refetchRes.json();
-                setReviews(data.map((r: any) => ({
-                    id: r.id,
-                    userName: r.user?.firstName || "User",
-                    date: new Date(r.createdAt).toLocaleDateString(),
-                    rating: r.rating,
-                    title: "Review",
-                    isVerifiedPurchase: true,
-                    comment: r.text,
-                    imageUrl: r.productGallery?.path ? `${API_BASE_URL}${r.productGallery.path}` : undefined,
-                    mediaPaths: parseMediaPaths(r.mediaPaths)
-                })));
-            }
+        if (!res.ok) {
+            // e.g. "You have already reviewed this product"
+            const body = await res.json().catch(() => null);
+            setSubmitError(body?.message || "Couldn't submit your review. Please try again.");
+            setSubmitting(false);
+            return;
         }
-    } catch (e) { console.error("Error submitting review", e); }
-
-    setReviewText(""); setRating(0); setMediaFiles([]);
+        // Перезагружаем список
+        const refetchRes = await fetch(`${API_BASE_URL}/api/productreviews/byproduct/${productId}`);
+        if (refetchRes.ok) {
+            const data = await refetchRes.json();
+            setReviews(Array.isArray(data) ? data.map(mapReview) : []);
+        }
+        setReviewText(""); setRating(0); setMediaFiles([]);
+        setFormOpen(false);
+    } catch (e) {
+        console.warn("Error submitting review", e);
+        setSubmitError("Couldn't submit your review. Check your connection and try again.");
+    }
+    setSubmitting(false);
   };
 
 
-  return (
-    <section
-      className="
-        mb-[70px] w-full max-w-[1690px]
-        px-[16px]
-        font-[var(--font-roboto)]
-        sm:px-[24px]
-        lg:mb-[148px]
-        lg:px-[40px]
-      "
-    >
-      {/* Write review */}
+  const writeForm = (
       <div
         className="
           mb-[48px] w-full
@@ -427,7 +458,7 @@ const ProductReviewsSection = ({ productId = "default" }: { productId?: string }
             <button
               type="submit"
               disabled={
-                rating === 0 || !reviewText.trim()
+                submitting || rating === 0 || !reviewText.trim()
               }
               className="
                 flex min-h-[48px] w-full
@@ -450,12 +481,53 @@ const ProductReviewsSection = ({ productId = "default" }: { productId?: string }
                 sm:text-[17px]
               "
             >
-              Submit review
+              {submitting ? "Submitting..." : "Submit review"}
             </button>
           </div>
+
+          {submitError && (
+            <p role="alert" className="mt-[14px] rounded-[10px] border border-red-200 bg-red-50 px-3 py-2 text-[14px] text-red-700">
+              {submitError}
+            </p>
+          )}
         </form>
       </div>
+  );
 
+  return (
+    <section
+      id="reviews"
+      className="
+        mb-[70px] w-full max-w-[1690px]
+        scroll-mt-[20px]
+        px-[16px]
+        font-[var(--font-roboto)]
+        sm:px-[24px]
+        lg:mb-[148px]
+        lg:px-[40px]
+      "
+    >
+      {/* Write review: signed-in buyers only (guests could not submit) */}
+      {canWrite && (reviews.length > 0 || formOpen) && writeForm}
+
+      {reviewsLoaded && reviews.length === 0 && (
+        <div className="flex flex-col items-start gap-[14px]">
+          <h2 className="text-[21px] font-semibold leading-[130%] text-[#333333] sm:text-2xl">
+            No reviews yet
+          </h2>
+          {canWrite && !formOpen && (
+            <button
+              type="button"
+              onClick={() => setFormOpen(true)}
+              className="min-h-[44px] rounded-full bg-[#7C9BC0] px-[28px] text-[16px] font-medium text-white shadow-[0_2px_4px_#00000033] transition-all duration-200 hover:-translate-y-[2px] hover:bg-[#6D8FB7] active:translate-y-0 active:scale-[0.97]"
+            >
+              Write a review
+            </button>
+          )}
+        </div>
+      )}
+
+      {reviews.length > 0 && (<>
       {/* Reviews header */}
       <div
         className="
@@ -472,41 +544,45 @@ const ProductReviewsSection = ({ productId = "default" }: { productId?: string }
             lg:mr-[29px]
           "
         >
-          Top reviews from the United States
+          Top reviews
         </h2>
 
         {/* Filters */}
         <div className="flex flex-wrap gap-[10px] sm:gap-[16px]">
           <button
             type="button"
-            className="
+            onClick={() => setSortBy("top")}
+            aria-pressed={sortBy === "top"}
+            className={`
               min-h-[28px]
               rounded-[20px]
               bg-[#F8F8F8]
               px-[14px]
-              text-[12px] text-[#7C9BC0]
+              text-[12px] ${sortBy === "top" ? "text-[#7C9BC0]" : "text-[#B3B3B3]"}
               shadow-[0_2px_4px_#00000033]
               transition-all duration-200
               hover:-translate-y-[1px]
               sm:px-4 sm:text-sm
-            "
+            `}
           >
             Top reviews
           </button>
 
           <button
             type="button"
-            className="
+            onClick={() => setSortBy("recent")}
+            aria-pressed={sortBy === "recent"}
+            className={`
               min-h-[28px]
               rounded-[20px]
               bg-[#F8F8F8]
               px-[14px]
-              text-[12px] text-[#B3B3B3]
+              text-[12px] ${sortBy === "recent" ? "text-[#7C9BC0]" : "text-[#B3B3B3]"}
               shadow-[0_2px_4px_#00000033]
               transition-all duration-200
               hover:-translate-y-[1px]
               sm:px-4 sm:text-sm
-            "
+            `}
           >
             Most recent
           </button>
@@ -515,13 +591,14 @@ const ProductReviewsSection = ({ productId = "default" }: { productId?: string }
 
       {/* Reviews */}
       <div className="flex flex-col gap-[48px]">
-        {reviews.map((review) => (
+        {sortedReviews.map((review) => (
           <ReviewCard
             key={review.id}
             review={review}
           />
         ))}
       </div>
+      </>)}
     </section>
   );
 };
@@ -618,15 +695,17 @@ const ReviewCard = ({
           )}
         </div>
 
-        <h3
-          className="
-            break-words
-            text-[16px] font-medium leading-[130%] text-[#333333]
-            sm:text-lg
-          "
-        >
-          {review.title}
-        </h3>
+        {review.title && (
+          <h3
+            className="
+              break-words
+              text-[16px] font-medium leading-[130%] text-[#333333]
+              sm:text-lg
+            "
+          >
+            {review.title}
+          </h3>
+        )}
       </div>
 
       {/* Verified */}
@@ -710,62 +789,6 @@ const ReviewCard = ({
           </div>
         )}
 
-      {/* Helpful count */}
-      <span className="text-[13px] text-[#555555] sm:text-[14px]">
-        953 people found this helpful
-      </span>
-
-      {/* Actions */}
-      <div
-        className="
-          flex w-full flex-col gap-[10px]
-          sm:w-auto sm:flex-row sm:flex-wrap sm:gap-[20px]
-        "
-      >
-        <button
-          type="button"
-          className="
-            min-h-[44px] w-full
-            rounded-full
-            bg-[#7C9BC0]
-            px-[28px] py-[10px]
-            text-[16px] font-medium text-white
-            shadow-[0_2px_4px_#00000033]
-            transition-all duration-200 ease-out
-            hover:-translate-y-[2px]
-            hover:bg-[#6D8FB7]
-            hover:shadow-[0_6px_14px_rgba(124,155,192,0.24)]
-            active:translate-y-0
-            active:scale-[0.97]
-            sm:w-auto
-            sm:text-lg
-          "
-        >
-          Helpful
-        </button>
-
-        <button
-          type="button"
-          className="
-            min-h-[44px] w-full
-            rounded-full
-            border-[3px] border-[#7C9BC0]
-            bg-white
-            px-[24px] py-[8px]
-            text-[16px] text-[#7C9BC0]
-            transition-all duration-200 ease-out
-            hover:-translate-y-[2px]
-            hover:bg-[#7C9BC0]/10
-            hover:shadow-[0_5px_12px_rgba(0,0,0,0.08)]
-            active:translate-y-0
-            active:scale-[0.97]
-            sm:w-auto
-            sm:text-lg
-          "
-        >
-          Report abuse
-        </button>
-      </div>
     </article>
   );
 };

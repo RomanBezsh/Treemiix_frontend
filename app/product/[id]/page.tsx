@@ -1,16 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { mainImagePath } from "@/lib/media";
 import { useEffect, useState } from "react";
 
 import ProductMainSection from "@/components/product/ProductMainSection";
 import ProductDetails from "@/components/product/ProductDetails";
-import ProductPromotions from "@/components/product/ProductPromotions";
 import ProductSearchQuestions from "@/components/product/ProductSearchQuestions";
 import VideoCarousel from "@/components/product/VideoCarousel";
 import ProductQnASection from "@/components/product/ProductQnASection";
-import ReviewFilterChips from "@/components/product/ReviewFilterChips";
 import ProductReviewsSection from "@/components/product/ProductReviewsSection";
 
 const API_BASE_URL =
@@ -66,72 +65,119 @@ export default function ProductDetailPage() {
     useState<ProductItem | null>(null);
 
   const [videos, setVideos] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  // "not-found": 404 (or 400 for a malformed id); "error": server error, rate limit or network failure
+  const [status, setStatus] = useState<"loading" | "ready" | "not-found" | "error">("loading");
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    if (!id) {
-      setLoading(false);
-      return;
-    }
+    if (!id) return;
 
-    setLoading(true);
+    let cancelled = false;
 
-    fetch(`${API_BASE_URL}/products/${id}`)
-      .then((res) => res.json())
-      .then(async (productData) => {
-        setProduct(productData);
-
-        try {
-          const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-          const imageUrl = mainImagePath(productData);
-          const newItem = {
-            id: productData.id,
-            title: productData.name,
-            imageSrc: imageUrl,
-          };
-          await fetch("/api/recently-viewed", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify({ product: newItem }),
-          });
-          const existing = JSON.parse(localStorage.getItem("recentlyViewedProducts") || "[]");
-          const filtered = existing.filter((item: any) => String(item.id) !== String(productData.id));
-          const updated = [newItem, ...filtered].slice(0, 20);
-          localStorage.setItem("recentlyViewedProducts", JSON.stringify(updated));
-        } catch (e) {
-          console.error("Failed to save recently viewed", e);
+    (async () => {
+      let productData: ProductItem;
+      try {
+        const res = await fetch(`${API_BASE_URL}/products/${id}`);
+        if (res.status === 404 || res.status === 400) {
+          if (!cancelled) setStatus("not-found");
+          return;
         }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        productData = await res.json();
+        if (!productData?.id) throw new Error("Unexpected product response");
+      } catch (err) {
+        // Expected when the backend is down or rate-limited: the page shows "Couldn't load the product"
+        console.warn("Failed to load product", err);
+        if (!cancelled) setStatus("error");
+        return;
+      }
+      if (cancelled) return;
 
-        const videoRes = await fetch(
-          `/api/videos?query=${encodeURIComponent(
-            productData.name,
-          )}`,
-        );
+      setProduct(productData);
+      setStatus("ready");
 
-        const videoResults = videoRes.ok
-          ? await videoRes.json()
-          : [];
+      // Secondary data: never blocks the product page
+      try {
+        const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+        const imageUrl = mainImagePath(productData);
+        const newItem = {
+          id: productData.id,
+          title: productData.name,
+          imageSrc: imageUrl,
+        };
+        await fetch("/api/recently-viewed", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ product: newItem }),
+        });
+        const existing = JSON.parse(localStorage.getItem("recentlyViewedProducts") || "[]");
+        const filtered = existing.filter((item: { id?: string | number }) => String(item.id) !== String(productData.id));
+        const updated = [newItem, ...filtered].slice(0, 20);
+        localStorage.setItem("recentlyViewedProducts", JSON.stringify(updated));
+      } catch (e) {
+        console.error("Failed to save recently viewed", e);
+      }
 
-        setVideos(videoResults);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Fetch error:", err);
-        setProduct(null);
-        setLoading(false);
-      });
-  }, [id]);
+      try {
+        const videoRes = await fetch(`/api/videos?query=${encodeURIComponent(productData.name)}`);
+        const videoResults = videoRes.ok ? await videoRes.json() : [];
+        if (!cancelled) setVideos(Array.isArray(videoResults) ? videoResults : []);
+      } catch {
+        if (!cancelled) setVideos([]);
+      }
+    })();
 
-  if (loading || !product) {
+    return () => {
+      cancelled = true;
+    };
+  }, [id, attempt]);
+
+  if (id && status === "loading") {
     return (
-      <div className="flex min-h-screen items-center justify-center px-[20px]">
+      <div className="flex min-h-[60vh] items-center justify-center px-[20px]">
         <p className="text-center text-[18px] text-[#555555]">
-          Loading product detail...
+          Loading product...
         </p>
       </div>
+    );
+  }
+
+  if (status !== "ready" || !product) {
+    const notFound = !id || status === "not-found";
+    return (
+      <main className="mx-auto flex w-full max-w-[700px] flex-col items-center px-[16px] py-[80px] text-center">
+        <h1 className="text-[28px] font-black text-[#333333]">
+          {notFound ? "Product not found" : "Couldn't load the product"}
+        </h1>
+        <p className="mt-[10px] text-[15px] text-[#555555]">
+          {notFound
+            ? "This product doesn't exist or is no longer available."
+            : "The server may be waking up. Please try again in a few seconds."}
+        </p>
+        <div className="mt-[24px] flex flex-wrap items-center justify-center gap-[12px]">
+          {!notFound && (
+            <button
+              type="button"
+              onClick={() => {
+                setStatus("loading");
+                setAttempt((n) => n + 1);
+              }}
+              className="flex h-[46px] items-center justify-center rounded-[12px] border-2 border-[#7C9BC0] px-[22px] text-[16px] font-medium text-[#496B94] transition hover:-translate-y-0.5 active:translate-y-0"
+            >
+              Try again
+            </button>
+          )}
+          <Link
+            href="/catalog"
+            className="flex h-[46px] items-center justify-center rounded-[12px] bg-[linear-gradient(90deg,#FFDB5A_0%,#FF825A_100%)] px-[26px] text-[16px] font-medium text-white transition hover:-translate-y-0.5 active:translate-y-0"
+          >
+            Browse all products
+          </Link>
+        </div>
+      </main>
     );
   }
 
@@ -151,8 +197,6 @@ return (
   >
     <ProductMainSection product={product} />
 
-    <ProductPromotions />
-
     <ProductSearchQuestions />
 
     <ProductDetails product={product} />
@@ -160,8 +204,6 @@ return (
     <VideoCarousel videos={videos} />
 
     <ProductQnASection productId={product.id} />
-
-    <ReviewFilterChips />
 
     <ProductReviewsSection productId={product.id} />
   </main>

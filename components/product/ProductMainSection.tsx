@@ -8,6 +8,9 @@ import { MouseEvent, useEffect, useState } from "react";
 
 import RatingsDropdown from "./RatingsDropdown";
 
+// Estimated delivery shown in the buy box: today + DELIVERY_DAYS
+const DELIVERY_DAYS = 3;
+
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://treemiix-backend.onrender.com/api";
@@ -34,6 +37,8 @@ const ProductMainSection = ({
 }: ProductMainSectionProps) => {
   const router = useRouter();
   const [reviewsCount, setReviewsCount] = useState(0);
+  // false while the reviews are loading (the rating row stays empty instead of flashing "No reviews yet")
+  const [reviewsLoaded, setReviewsLoaded] = useState(false);
   const [avgRating, setAvgRating] = useState<number | null>(null);
   const [ratingBreakdown, setRatingBreakdown] =
     useState<RatingBreakdownItem[]>(zeroBreakdown);
@@ -46,6 +51,7 @@ const ProductMainSection = ({
       .then((data) => {
         const list: { rating: number }[] = Array.isArray(data) ? data : [];
         setReviewsCount(list.length);
+        setReviewsLoaded(true);
 
         if (list.length === 0) {
           setAvgRating(null);
@@ -72,6 +78,7 @@ const ProductMainSection = ({
         );
       })
       .catch(() => {
+        setReviewsLoaded(true);
         setReviewsCount(0);
         setAvgRating(null);
         setRatingBreakdown(zeroBreakdown);
@@ -164,6 +171,21 @@ const ProductMainSection = ({
     }
   };
 
+  const handleBuyNow = async (quantity: number): Promise<boolean> => {
+    const success = await handleAddToCart(quantity);
+    if (success) router.push("/cart");
+    return success;
+  };
+
+  // Delivery estimate: today + DELIVERY_DAYS, e.g. "Thu, Nov 19"
+  const deliveryDate = new Date();
+  deliveryDate.setDate(deliveryDate.getDate() + DELIVERY_DAYS);
+  const deliveryDateText = deliveryDate.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
+
   // Main image first (isMain), then the rest of the gallery
   const productImages = productImagePaths(product);
   const imagesList =
@@ -206,7 +228,7 @@ const ProductMainSection = ({
     >
       {/* Gallery */}
       <div className="min-w-0">
-        <ProductGallery imageScrs={imagesList} />
+        <ProductGallery imageScrs={imagesList} title={product.name} />
       </div>
 
       {/* Product info */}
@@ -219,13 +241,13 @@ const ProductMainSection = ({
             "Treemiix Official Store"
           }
           storeHref={product.sellerId ? `/seller/${product.sellerId}` : undefined}
-          platform={product.binding || "N/A"}
-          rating={avgRating ?? (product.rating || 4)}
+          platform={product.binding || undefined}
+          rating={avgRating ?? 0}
           ratingsCount={reviewsCount}
+          reviewsLoaded={reviewsLoaded}
           ratingBreakdown={ratingBreakdown}
           inStock={product.stock > 0}
           price={product.price}
-          installmentText="Pay monthly or pay over time with Treemiix credit"
           features={parsedFeatures}
         />
       </div>
@@ -236,10 +258,10 @@ const ProductMainSection = ({
           price={product.price}
           shippingPrice={0}
           shippingDestination="Ukraine"
-          deliveryDateText="Tomorrow, Sep 18"
-          orderWithinText="10 hrs 30 mins"
+          deliveryDateText={deliveryDateText}
           isSecureTransaction={true}
           onAddToCart={handleAddToCart}
+          onBuyNow={handleBuyNow}
         />
       </div>
     </section>
@@ -248,6 +270,7 @@ const ProductMainSection = ({
 
 interface ImageModalProps {
   isOpen: boolean;
+  title: string;
   onClose: () => void;
   images: string[];
   initialIndex: number;
@@ -255,6 +278,7 @@ interface ImageModalProps {
 
 const ImageModal = ({
   isOpen,
+  title,
   onClose,
   images,
   initialIndex,
@@ -365,7 +389,7 @@ const ImageModal = ({
           {/* Information */}
           <div className="flex w-full flex-col gap-[20px] lg:w-[400px] lg:shrink-0">
             <h2 className="text-[20px] leading-[130%] text-[#333333] sm:text-[24px] lg:text-3xl">
-              Gaming Headset HyperX Cloud Alpha
+              {title}
             </h2>
 
             <div className="grid grid-cols-4 gap-[8px] sm:grid-cols-5 sm:gap-[12px] lg:grid-cols-4 lg:gap-[16px]">
@@ -409,8 +433,10 @@ const ImageModal = ({
 
 const ProductGallery = ({
   imageScrs,
+  title,
 }: {
   imageScrs: string[];
+  title: string;
 }) => {
   const [selectedImageIndex, setSelectedImageIndex] =
     useState(0);
@@ -459,6 +485,7 @@ const ProductGallery = ({
     <div className="flex w-full flex-col gap-[16px] sm:flex-row sm:gap-[20px] xl:gap-[37px]">
       <ImageModal
         isOpen={isModalOpen}
+        title={title}
         onClose={() => setIsModalOpen(false)}
         images={imageScrs}
         initialIndex={selectedImageIndex}
@@ -614,6 +641,7 @@ interface ProductInfoProps {
   platform?: string;
   rating: number;
   ratingsCount: number;
+  reviewsLoaded?: boolean;
   ratingBreakdown?: RatingBreakdownItem[];
   inStock: boolean;
   price: number;
@@ -630,6 +658,7 @@ const ProductInfo = ({
   platform,
   rating,
   ratingsCount,
+  reviewsLoaded = true,
   ratingBreakdown,
   inStock,
   price,
@@ -659,15 +688,25 @@ const ProductInfo = ({
           className="w-fit text-[14px] text-[#496B94] hover:underline sm:text-[16px]"
           href={storeHref}
         >
-          Visit the {storeName}
+          {/* "Visit the X Store", without doubling names that already end with "Store" */}
+          Visit the {/\bstore$/i.test(storeName.trim()) ? storeName : `${storeName} Store`}
         </Link>
 
-        <span className="mt-[3px] text-[13px] sm:text-sm">
-          <strong>Platform</strong>: {platform}
-        </span>
+        {platform && (
+          <span className="mt-[3px] text-[13px] sm:text-sm">
+            <strong>Platform</strong>: {platform}
+          </span>
+        )}
       </div>
 
       {/* Rating */}
+      {!reviewsLoaded ? (
+        <div className="mb-[20px] h-[24px] sm:mb-[28px]" aria-hidden="true" />
+      ) : ratingsCount === 0 ? (
+        <p className="mb-[20px] text-[14px] text-[#828282] sm:mb-[28px] sm:text-[16px]">
+          No reviews yet
+        </p>
+      ) : (
       <div className="mb-[20px] flex flex-wrap items-center gap-x-[8px] gap-y-[6px] sm:mb-[28px]">
         <div
           className="relative flex cursor-pointer items-center gap-[5px]"
@@ -721,9 +760,10 @@ const ProductInfo = ({
         </div>
 
         <span className="text-[13px] text-[#496B94] sm:text-[16px]">
-          {ratingsCount.toLocaleString("en-US")} ratings
+          {ratingsCount.toLocaleString("en-US")} {ratingsCount === 1 ? "rating" : "ratings"}
         </span>
       </div>
+      )}
 
       <div className="mb-[20px] w-full border-t border-[#EFEFEF] sm:mb-[28px]" />
 
@@ -744,9 +784,11 @@ const ProductInfo = ({
         </span>
       </div>
 
-      <p className="text-[14px] leading-[150%] text-[#333333] sm:text-[16px]">
-        {installmentText}
-      </p>
+      {installmentText && (
+        <p className="text-[14px] leading-[150%] text-[#333333] sm:text-[16px]">
+          {installmentText}
+        </p>
+      )}
 
       {primeDeliveryNote && (
         <p className="mb-[20px] mt-[6px] text-[14px] sm:mb-[28px] sm:text-[16px]">
@@ -779,14 +821,13 @@ interface ProductBuyBoxProps {
   shippingPrice?: number;
   shippingDestination?: string;
   deliveryDateText?: string;
-  orderWithinText?: string;
   locationText?: string;
   initialQuantity?: number;
   maxQuantity?: number;
   onAddToCart?: (
     quantity: number,
   ) => Promise<boolean> | boolean;
-  onBuyNow?: (quantity: number) => void;
+  onBuyNow?: (quantity: number) => Promise<boolean> | boolean;
   isSecureTransaction?: boolean;
 }
 
@@ -795,13 +836,14 @@ const ProductBuyBox = ({
   shippingPrice,
   shippingDestination,
   deliveryDateText,
-  orderWithinText,
   isSecureTransaction,
   onAddToCart,
+  onBuyNow,
 }: ProductBuyBoxProps) => {
   const [quantity, setQuantity] = useState<number>(1);
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
+  const [buying, setBuying] = useState(false);
   const totalPrice = (price * quantity).toFixed(2);
 
   const decreaseQuantity = () => setQuantity((prev) => Math.max(1, prev - 1));
@@ -817,6 +859,14 @@ const ProductBuyBox = ({
     if (success) {
       setAdded(true);
     }
+  };
+
+  const handleBuyNow = async () => {
+    if (!onBuyNow || buying || adding) return;
+    setBuying(true);
+    const success = await onBuyNow(quantity);
+    // On success the page navigates to the cart; keep the button busy until then
+    if (!success) setBuying(false);
   };
 
   return (
@@ -840,30 +890,14 @@ const ProductBuyBox = ({
       {/* Shipping */}
       <div className="mb-[20px] flex items-start justify-between gap-[10px]">
         <span className="min-w-0 text-[14px] leading-[145%] sm:text-[16px]">
-          ${shippingPrice} Shipping &amp; Import Fees
-          Deposit to {shippingDestination}{" "}
-          <Link
-            className="text-[#496B94] hover:underline"
-            href="#"
-          >
-            Details
-          </Link>
+          {shippingPrice ? `$${shippingPrice} shipping` : "Free shipping"} &amp; import fees deposit to{" "}
+          {shippingDestination}
         </span>
-
-        <Image
-          src="/catalog/chewron_down.svg"
-          width={24}
-          height={24}
-          alt=""
-          aria-hidden="true"
-          className="shrink-0 -rotate-90 filter-[brightness(0)_saturate(100%)_invert(55%)_sepia(0%)_saturate(0%)_hue-rotate(182deg)_brightness(94%)_contrast(91%)]"
-        />
       </div>
 
       {/* Delivery */}
       <span className="mb-[24px] text-[14px] leading-[145%] sm:text-[16px]">
-        Delivery {deliveryDateText}. Order within{" "}
-        {orderWithinText}
+        Estimated delivery: <strong className="font-medium">{deliveryDateText}</strong>
       </span>
 
       {/* Location */}
@@ -960,11 +994,11 @@ const ProductBuyBox = ({
         </div>
       </button>
 
-      {/* Second action */}
+      {/* Second action: add to cart and open the cart */}
       <button
         type="button"
-        onClick={handleAddToCart}
-        disabled={adding}
+        onClick={handleBuyNow}
+        disabled={adding || buying}
         className="
           mb-[24px] min-h-[46px] w-full
           rounded-[20px]
@@ -980,7 +1014,7 @@ const ProductBuyBox = ({
           sm:text-lg
         "
       >
-        {added ? "Added to Cart" : "Buy Now"}
+        {buying ? "Opening cart..." : "Buy Now"}
       </button>
 
       {isSecureTransaction && (

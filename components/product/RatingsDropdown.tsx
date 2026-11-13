@@ -90,7 +90,7 @@ export default function RatingsDropdown({
 
       <div className="border-t border-[#EFEFEF] pt-6 flex justify-center">
         <Link
-          href="#"
+          href="#reviews"
           className="flex items-center gap-2 text-[18px] text-[#828282] hover:text-[#333333] transition-colors"
         >
           See all customer reviews
