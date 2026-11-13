@@ -1,3 +1,5 @@
+import { apiErrorMessage } from "@/lib/apiError";
+
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://treemiix-backend.onrender.com/api";
@@ -192,20 +194,8 @@ async function request<T>(
   }
 
   if (!response.ok) {
-    const payload = data as
-      | { message?: string; title?: string; errors?: Record<string, string[]> }
-      | null;
-
-    let message =
-      payload?.message ||
-      payload?.title ||
-      `Request failed with HTTP ${response.status}`;
-
-    if (payload?.errors) {
-      message = Object.values(payload.errors).flat().join(" ");
-    }
-
-    throw new SellerApiError(response.status, message);
+    // Backend text ({ message }, plain text, validation errors), never a bare "Conflict"
+    throw new SellerApiError(response.status, apiErrorMessage(data, response.status));
   }
 
   return data as T;

@@ -3,6 +3,7 @@
 import { useCallback, useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { saveAuthSession } from "@/lib/authSession";
+import { apiErrorMessage } from "@/lib/apiError";
 import LegalModal, { type LegalDocument } from "./LegalModal";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
@@ -253,9 +254,13 @@ export default function AuthForm() {
           );
           return;
         }
+        // Backend text, including ASP.NET validation errors (e.g. password rules)
         throw new Error(
-          data.message ||
-            (isLogin ? "Invalid email or password." : "Registration failed."),
+          apiErrorMessage(
+            data,
+            res.status,
+            isLogin ? "Invalid email or password." : "Registration failed.",
+          ),
         );
       }
 

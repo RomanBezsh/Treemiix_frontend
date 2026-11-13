@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useIsAdmin } from "@/lib/useIsAdmin";
 
 const menuItems = [
   {
@@ -63,12 +64,18 @@ const menuItems = [
 
 export default function AccountSidebar() {
   const pathname = usePathname();
+  const isAdmin = useIsAdmin();
+
+  // Admins cannot open a store: "Seller Center" becomes "Admin panel"
+  const items = isAdmin
+    ? menuItems.map((item) => (item.key === "seller" ? { ...item, title: "Admin panel", href: "/admin" } : item))
+    : menuItems;
 
   return (
     <aside className="w-full font-[var(--font-roboto)]">
       {/* Mobile navigation */}
       <nav className="flex w-full gap-[8px] overflow-x-auto rounded-[16px] bg-[#F8F8F8] p-[8px] shadow-[0_2px_5px_rgba(0,0,0,0.08)] lg:hidden">
-        {menuItems.map((item) => {
+        {items.map((item) => {
           const isActive =
             item.href === "/account"
               ? pathname === "/account"
@@ -104,7 +111,7 @@ export default function AccountSidebar() {
       {/* Desktop navigation */}
       <div className="hidden min-h-[520px] w-full flex-col overflow-hidden rounded-[20px] bg-[#F8F8F8] shadow-[0_2px_5px_rgba(0,0,0,0.08)] lg:flex">
         <nav className="flex flex-col py-[16px]">
-          {menuItems.map((item) => {
+          {items.map((item) => {
             const isActive =
               item.href === "/account"
                 ? pathname === "/account"

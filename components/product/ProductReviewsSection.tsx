@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { readApiError } from "@/lib/apiError";
 import {
   ChangeEvent,
   FormEvent,
@@ -161,8 +162,7 @@ const ProductReviewsSection = ({ productId = "default" }: { productId?: string }
         });
         if (!res.ok) {
             // e.g. "You have already reviewed this product"
-            const body = await res.json().catch(() => null);
-            setSubmitError(body?.message || "Couldn't submit your review. Please try again.");
+            setSubmitError(await readApiError(res, "Couldn't submit your review. Please try again."));
             setSubmitting(false);
             return;
         }

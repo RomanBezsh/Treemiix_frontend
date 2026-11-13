@@ -22,6 +22,7 @@ import {
 import Image from "next/image";
 import ProductMediaFields from "@/components/products/ProductMediaFields";
 import { clearAuthSession, saveAuthSession } from "@/lib/authSession";
+import { getSessionRole } from "@/lib/adminAuth";
 import { productImagePaths } from "@/lib/media";
 import {
   createSellerProduct,
@@ -184,6 +185,8 @@ export default function SellerApplication() {
   // The initial seller/plan request failed (server error, rate limit, network): show a retry
   // instead of the onboarding wizard, which would wrongly suggest the user has no store
   const [loadFailed, setLoadFailed] = useState(false);
+  // The backend does not let admins become sellers, so the onboarding is not offered to them
+  const [isAdmin, setIsAdmin] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [hasToken, setHasToken] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -270,6 +273,12 @@ export default function SellerApplication() {
 
       setHasToken(true);
       setUserEmail(localStorage.getItem("userEmail"));
+
+      if (getSessionRole() === "Admin") {
+        setIsAdmin(true);
+        setLoading(false);
+        return;
+      }
 
       try {
         const [planData, sellerData] = await Promise.all([
@@ -554,6 +563,27 @@ export default function SellerApplication() {
     return (
       <div className="flex min-h-[420px] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-[#49516D]" />
+      </div>
+    );
+  }
+
+  if (isAdmin) {
+    return (
+      <div className="mx-auto max-w-[720px] rounded-[24px] bg-[#F8F8F8] p-8 text-center shadow-[0_2px_8px_rgba(0,0,0,0.08)] sm:p-12">
+        <LockKeyhole className="mx-auto mb-4 h-10 w-10 text-[#49516D]" />
+        <h1 className="text-[28px] font-bold text-[#333]">
+          Admin accounts can&apos;t open a store
+        </h1>
+        <p className="mt-3 text-[15px] text-[#666]">
+          You are signed in as an administrator{userEmail ? ` (${userEmail})` : ""}. Seller applications and
+          stores are managed in the admin panel.
+        </p>
+        <Link
+          href="/admin"
+          className="mt-6 inline-flex h-[48px] items-center justify-center rounded-[12px] bg-gradient-to-r from-[#FFDB5A] to-[#FF825A] px-8 text-[16px] font-medium text-white"
+        >
+          Go to admin panel
+        </Link>
       </div>
     );
   }

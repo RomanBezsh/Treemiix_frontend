@@ -1,3 +1,4 @@
+import { readApiError } from "@/lib/apiError";
 // Product media helpers shared by the admin panel and Seller Center.
 // Files are stored by the backend (POST /upload/media, /upload/import).
 
@@ -20,9 +21,7 @@ export const toAbsoluteMediaUrl = (path: string) =>
   path.startsWith("/") ? `${MEDIA_BASE_URL}${path}` : path;
 
 async function errorMessageOf(res: Response): Promise<string> {
-  const body = await res.json().catch(() => null);
-  if (typeof body === "string") return body;
-  return body?.message || body?.title || res.statusText || `HTTP ${res.status}`;
+  return readApiError(res);
 }
 
 /** Uploads one file and returns its absolute URL. Throws on failure. */

@@ -10,6 +10,7 @@ import AdminOrdersManager, { OrderItem } from "@/components/admin/AdminOrdersMan
 import AdminCategoriesManager, { CategoryItem } from "@/components/admin/AdminCategoriesManager";
 import AdminSellersManager from "@/components/admin/AdminSellersManager";
 import { isAdminSession } from "@/lib/adminAuth";
+import { readApiError } from "@/lib/apiError";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://treemiix-backend.onrender.com/api";
 
@@ -163,18 +164,7 @@ export default function AdminPage() {
     });
 
     if (!res.ok) {
-      let message = `Unable to create product (HTTP ${res.status}).`;
-      try {
-        const error = await res.json();
-        if (error?.errors) {
-          message = Object.values(error.errors).flat().join(" ");
-        } else if (error?.title) {
-          message = error.title;
-        }
-      } catch {
-        // Keep the HTTP status message when the response is not JSON.
-      }
-      throw new Error(message);
+      throw new Error(await readApiError(res, `Unable to create product (HTTP ${res.status}).`));
     }
 
     const created = await res.json();
@@ -230,7 +220,7 @@ export default function AdminPage() {
     try {
       const res = await fetch(`${API_BASE_URL}/products/${id}`, { method: "DELETE", headers: getHeaders() });
       if (!res.ok) {
-        alert(`Failed to delete product (HTTP ${res.status}).`);
+        alert(`Failed to delete product: ${await readApiError(res)}`);
         return;
       }
     } catch {

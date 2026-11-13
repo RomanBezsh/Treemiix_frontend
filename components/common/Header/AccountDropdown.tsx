@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { clearAuthSession } from "@/lib/authSession";
+import { useIsAdmin } from "@/lib/useIsAdmin";
 
 const accountLinks = [
   { title: "Account", href: "/account" },
@@ -25,6 +26,11 @@ export default function AccountDropdown({
   isAuthenticated = false,
 }: AccountDropdownProps) {
   const router = useRouter();
+  const isAdmin = useIsAdmin();
+  // Admins cannot open a store: they get the admin panel instead of Seller Center
+  const links = isAdmin
+    ? accountLinks.map((item) => (item.href === "/sell/apply" ? { title: "Admin panel", href: "/admin" } : item))
+    : accountLinks;
 
   const handleLogout = () => {
     clearAuthSession();
@@ -137,7 +143,7 @@ export default function AccountDropdown({
           Your Account
         </span>
 
-        {accountLinks.map((item) => (
+        {links.map((item) => (
           <Link
             key={item.title}
             href={item.href}
