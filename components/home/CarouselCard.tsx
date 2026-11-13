@@ -37,49 +37,38 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
   };
 
   return (
-    <div className="flex flex-col w-full max-w-[280px] min-h-[360px] rounded-[20px] justify-between pt-5 px-5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] product-card-enter animate-fade-in-up hover-lift sm:w-[340px] sm:min-h-[400px] lg:w-[380px] lg:min-h-[440px]">
+    <div className="transition-[translate,scale,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_10px_22px_rgba(0,0,0,0.12)] active:scale-[0.99] flex h-full w-full min-w-0 flex-col justify-between rounded-[16px] bg-[#F8F8F8] px-3 pb-3 pt-3.5 shadow-[0px_2px_4px_0px_#00000033] sm:rounded-[20px] sm:px-5 sm:pt-5 2xl:h-115 2xl:w-92 2xl:px-7.5 2xl:pb-2.75 2xl:pt-6">
 
-      <div className="flex flex-row justify-between items-center mb-3 px-2">
-        <h2 className="text-[18px] sm:text-[24px] font-semibold line-clamp-1 webkit-line-clamp-1">{title}</h2>
-      </div>
-      <div className="relative flex-1 flex items-center justify-center min-h-[180px] sm:min-h-[220px] max-h-[260px]">
+      <div className="mb-2 flex flex-row items-center justify-between sm:mb-3.5">
+        <h2 className="truncate text-[16px] font-semibold sm:text-[20px] 2xl:text-[24px]">{title}</h2>
+      </div >
+      <div className="flex flex-row items-center justify-center sm:justify-between">
 
         <button
           type="button"
           onClick={showPrevious}
           aria-label="Previous product"
-          className="
-            absolute left-0 top-1/2
-            flex justify-center items-center
-            border-0 w-[32px] h-[32px] sm:w-[40px] sm:h-[40px]
-            rounded-[50%]
-            bg-white/90
-            shadow-[0_2px_8px_rgba(0,0,0,0.12)]
-            hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)]
-            transition-all duration-300
-            -translate-y-1/2
-            --rotate: -180deg
-          "
+          className="hidden shrink-0 items-center justify-center rounded-[14px] border-0 shadow-[0_2px_4px_0px_#00000033] sm:-ml-4 sm:flex sm:h-12 sm:w-12 2xl:-ml-7 2xl:h-19 2xl:w-19 2xl:rounded-[20px]"
         >
           <Image
             src="/home/carousel_chewron.svg"
             alt="carousel_chewron"
-            width={20}
-            height={40}
-            className="rotate-180 transition-transform duration-300 hover:scale-105"
+            width={17 * 2}
+            height={37 * 2}
+            className="h-auto w-[60%] rotate-180 2xl:w-auto"
           />
         </button>
 
         <Link
           href={productHref}
-          className="relative flex items-center justify-center w-full max-h-full overflow-hidden"
+          className="relative flex aspect-[208/255] w-full min-w-0 max-w-[208px] items-center justify-center sm:mx-2 2xl:mx-0 2xl:h-[255px] 2xl:w-[208px]"
         >
           <Image
             src={activeProduct.imageSrc}
             alt={activeProduct.title}
-            width={200}
-            height={220}
-            className="max-w-full max-h-full object-contain mx-auto"
+            width={208}
+            height={255}
+            className="max-h-full max-w-full w-auto h-auto object-contain transition-all duration-300"
           />
         </Link>
 
@@ -87,48 +76,38 @@ const CarouselCard = ({ title, imageSrc, href, items = [] }: CarouselCardProps) 
           type="button"
           onClick={showNext}
           aria-label="Next product"
-          className="
-            absolute right-0 top-1/2
-            flex justify-center items-center
-            border-0 w-[32px] h-[32px] sm:w-[40px] sm:h-[40px]
-            rounded-[50%]
-            bg-white/90
-            shadow-[0_2px_8px_rgba(0,0,0,0.12)]
-            hover:shadow-[0_4px_12px_rgba(0,0,0,0.18)]
-            transition-all duration-300
-            -translate-y-1/2
-          "
+          className="hidden shrink-0 items-center justify-center rounded-[14px] border-0 shadow-[0_2px_4px_0px_#00000033] sm:-mr-4 sm:flex sm:h-12 sm:w-12 2xl:-mr-7 2xl:h-19 2xl:w-19 2xl:rounded-[20px]"
         >
           <Image
             src="/home/carousel_chewron.svg"
             alt="carousel_chewron"
-            width={20}
-            height={40}
-            className="transition-transform duration-300 hover:scale-105"
+            width={17 * 2}
+            height={37 * 2}
+            className="h-auto w-[60%] 2xl:w-auto"
           />
         </button>
       </div >
-      <div className="px-2 mt-2">
-        <p className="text-[13px] sm:text-[16px] text-[#333333] font-medium line-clamp-2 webkit-line-clamp-2 mb-1">{activeProduct.title}</p>
-        <div className="flex flex-row gap-1 mt-1 mb-1">
+      <div>
+        <p className="mt-2 line-clamp-1 text-[13px] text-[#333333] sm:text-[16px] 2xl:mt-0 2xl:text-[18px]">{activeProduct.title}</p>
+        <div className="my-1 flex flex-row gap-0.5 sm:gap-1.5 2xl:my-1.5">
           {Array.from({ length: 5 }, (_, index) => (
             <img
               key={index}
               src={index < (activeProduct.rating ?? 0) ? "/common/star_filled.svg" : "/common/star_empty.svg"}
               alt={index < (activeProduct.rating ?? 0) ? "Filled star" : "Empty star"}
-              className="w-3 h-3 sm:w-3.5 sm:h-3.5"
+              className="h-3 w-3 sm:h-auto sm:w-auto"
             />
           ))}
         </div>
-        <p className="text-lg sm:text-xl font-light text-[#2D2D2D]">
-          <span className="text-[13px] sm:text-[16px] inline-block align-top font-light mr-1">$</span>
+        <p className="text-[22px] font-light text-[#2D2D2D] sm:text-3xl 2xl:text-4xl">
+          <span className="inline-block align-top text-[12px] font-light sm:text-[16px] 2xl:text-[18px]">$</span>
           {activeProduct.price.toFixed(2)}
         </p>
       </div>
 
     </div >
   );
-};
+}
 
 
 export default CarouselCard;

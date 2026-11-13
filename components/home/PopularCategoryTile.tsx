@@ -15,16 +15,17 @@ const PopularCategoryTile = ({
   return (
     <Link
       href={href}
-      className="relative w-[170px] h-[200px] shrink-0 overflow-hidden rounded-lg bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] transition-transform hover:scale-[1.02] flex flex-col items-center"
+      className="relative block aspect-[271/556] w-full min-w-0 overflow-hidden rounded-lg sm:aspect-auto sm:h-[360px] lg:h-[460px] 2xl:h-139 2xl:w-67.75 2xl:shrink-0 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] transition-[translate,scale,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_10px_22px_rgba(0,0,0,0.12)] active:scale-[0.99]"
     >
       <Image
         src={imageSrc}
         alt={category}
-        width={170}
-        height={140}
-        className="w-full h-[140px] object-cover object-center mb-3"
+        width={432}
+        height={378}
+        className="absolute -right-1/4 top-[12%] h-[68%] w-[160%] max-w-none object-cover 2xl:top-auto 2xl:mt-17.5 2xl:h-[378px] 2xl:w-[432px]"
       />
-      <h3 className="px-2 text-[13px] font-normal text-[#333333] line-clamp-2 text-center leading-tight">
+
+      <h3 className="absolute bottom-2 left-2 right-2 text-[13px] font-normal leading-tight text-[#333333] sm:bottom-4 sm:left-4 sm:text-[18px] 2xl:text-[22px]">
         {category}
       </h3>
     </Link>

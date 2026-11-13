@@ -52,6 +52,8 @@ function CatalogContent() {
   const [categories, setCategories] = useState<{ id: string; title: string }[]>([]);
   const [brands, setBrands] = useState<{ id: string; title: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  // Below lg the filters sidebar is collapsed behind a "Filters" button.
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   // Filter states
@@ -316,8 +318,28 @@ function CatalogContent() {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="flex flex-row ml-12.5 mr-24.25 gap-23.25 w-full max-w-[1700px] px-8 py-6">
-        <Filter 
+      <div className="flex w-full max-w-[1700px] flex-col gap-4 px-4 py-4 sm:px-6 lg:ml-12.5 lg:mr-24.25 lg:flex-row lg:gap-23.25 lg:px-8 lg:py-6">
+        <button
+          type="button"
+          onClick={() => setFiltersOpen((open) => !open)}
+          aria-expanded={filtersOpen}
+          aria-controls="catalog-filters"
+          className="flex h-[44px] w-full items-center justify-between rounded-[12px] bg-[#F8F8F8] px-4 text-[16px] font-medium text-[#333333] shadow-[0_2px_4px_rgba(0,0,0,0.12)] lg:hidden"
+        >
+          <span>
+            Filters
+            {activeChips.length > 0 && (
+              <span className="ml-2 rounded-full bg-[#7C9BC0] px-2 py-0.5 text-[12px] text-white">
+                {activeChips.length}
+              </span>
+            )}
+          </span>
+          <span aria-hidden="true" className={`transition-transform ${filtersOpen ? "rotate-180" : ""}`}>
+            ▾
+          </span>
+        </button>
+        <div id="catalog-filters" className={`${filtersOpen ? "block" : "hidden"} lg:contents`}>
+        <Filter
           categories={categories}
           brands={brands}
           selectedCategories={selectedCategories}
@@ -340,7 +362,8 @@ function CatalogContent() {
           minRating={minRating}
           onRatingChange={(r) => setMinRating(r)}
         />
-        <div className="flex flex-col flex-1">
+        </div>
+        <div className="flex min-w-0 flex-col flex-1">
           <CategoryHeader
             title={headerCategory?.title || "All Products"}
             description={

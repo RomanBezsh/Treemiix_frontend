@@ -27,10 +27,45 @@ export default function Header() {
   const [isAllDropdownOpen, setIsAllDropdownOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] =
     useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [searchValue, setSearchValue] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [displayName, setDisplayName] = useState("Customer");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleSignOut = () => {
+    clearAuthSession();
+    setIsAuthenticated(false);
+    setCartCount(0);
+    setIsMenuOpen(false);
+    router.push("/");
+    window.dispatchEvent(new Event("cart-updated"));
+  };
+  const [menuPathname, setMenuPathname] = useState(pathname);
+
+  // Close the mobile menu after navigation
+  if (menuPathname !== pathname) {
+    setMenuPathname(pathname);
+    setIsMenuOpen(false);
+  }
+
+  // Escape closes the menu, page scroll is locked while it is open
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsMenuOpen(false);
+    };
+    const previousOverflow = document.body.style.overflow;
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isMenuOpen]);
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -71,6 +106,11 @@ export default function Header() {
         ? localStorage.getItem("token")
         : null;
     setIsAuthenticated(Boolean(token));
+    setDisplayName(
+      localStorage.getItem("userFirstName") ||
+        localStorage.getItem("userEmail") ||
+        "Customer",
+    );
 
     const loadCartCount = async () => {
       if (!token) {
@@ -129,8 +169,31 @@ export default function Header() {
   return (
     <header className="w-full font-[var(--font-roboto)] text-white">
       {/* Top header */}
-      <div className="bg-[#49516D]">
-        <div className="mx-auto flex min-h-[72px] w-full max-w-[1920px] items-center gap-[14px] px-[14px] py-[10px] sm:px-[20px] lg:gap-[28px] lg:px-[40px] xl:px-[80px] 2xl:px-[120px]">
+      <div className="bg-[#49516D] transition-colors duration-300">
+        <div className="mx-auto flex min-h-[72px] w-full max-w-[1920px] flex-wrap items-center gap-x-[12px] gap-y-[10px] px-[14px] py-[10px] sm:px-[20px] md:flex-nowrap md:gap-[14px] lg:gap-[28px] lg:px-[40px] xl:px-[80px] 2xl:px-[120px]">
+          {/* Mobile menu button */}
+          <button
+            type="button"
+            onClick={() => setIsMenuOpen(true)}
+            aria-label="Open navigation menu"
+            aria-expanded={isMenuOpen}
+            className="
+              group flex h-[42px] w-[32px] shrink-0 items-center justify-center
+              transition-transform duration-200 ease-out
+              active:scale-[0.92]
+              md:hidden
+            "
+          >
+            <Image
+              src="/header/menu_button_icon.svg"
+              alt=""
+              width={32}
+              height={23}
+              aria-hidden="true"
+              className="h-[20px] w-[28px]"
+            />
+          </button>
+
           {/* Logo */}
           <Link
             href="/"
@@ -159,11 +222,11 @@ export default function Header() {
               group hidden min-h-[45px] shrink-0 items-center gap-2
               rounded-[14px] border-2 border-white px-3 py-1 text-left
               transition-all duration-200 ease-out
-              hover:-translate-y-[1px]
+              hover:-translate-y-[2px]
               hover:bg-white/10
               hover:shadow-[0_4px_10px_rgba(0,0,0,0.12)]
               active:translate-y-0
-              active:scale-[0.98]
+              active:scale-[0.97]
               xl:flex
             "
           >
@@ -196,8 +259,9 @@ export default function Header() {
             onSubmit={handleSearchSubmit}
             ref={allDropdownRef}
             className="
-              relative flex h-[42px] min-w-0 flex-1
+              relative order-last flex h-[42px] min-w-0 basis-full
               overflow-visible rounded-[26px] bg-white
+              md:order-none md:flex-1 md:basis-auto
               transition-shadow duration-200 ease-out
               focus-within:shadow-[0_4px_14px_rgba(0,0,0,0.18)]
               lg:h-[45px]
@@ -237,9 +301,10 @@ export default function Header() {
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               className="
-                min-w-0 flex-1 bg-white px-[14px]
+                min-w-0 flex-1 rounded-l-[26px] bg-white px-[16px]
                 text-[14px] text-[#49516D]
                 outline-none
+                sm:rounded-l-none sm:px-[14px]
               "
             />
 
@@ -287,37 +352,20 @@ export default function Header() {
                 rounded-[14px] border-2 border-white
                 px-3 py-1 leading-tight
                 transition-all duration-200 ease-out
-                hover:-translate-y-[1px]
+                hover:-translate-y-[2px]
                 hover:bg-white/10
                 hover:shadow-[0_4px_10px_rgba(0,0,0,0.12)]
                 active:translate-y-0
-                active:scale-[0.98]
+                active:scale-[0.97]
               "
             >
-              {isAuthenticated ? (
-                <>
-                  <span className="text-[14px] font-medium text-white">
-                    Hello,
-                  </span>
-                  <span className="text-[14px] font-medium text-white">
-                    {typeof window !== "undefined"
-                      ? localStorage.getItem("userFirstName") ||
-                        localStorage.getItem("userEmail") ||
-                        "Customer"
-                      : "Customer"}
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="text-[14px] font-medium text-white">
-                    Hello, Sign in
-                  </span>
+              <span className="max-w-[140px] truncate text-[14px] font-medium text-white">
+                {isAuthenticated ? `Hello, ${displayName}` : "Hello, Sign in"}
+              </span>
 
-                  <span className="text-[14px] font-medium text-white">
-                    Account
-                  </span>
-                </>
-              )}
+              <span className="text-[14px] font-medium text-white">
+                Account
+              </span>
             </button>
 
             <AccountDropdown
@@ -329,12 +377,13 @@ export default function Header() {
 
           {/* Mobile account */}
           <Link
-            href="/account"
-            aria-label="Open account"
+            href={isAuthenticated ? "/account" : "/auth"}
+            aria-label={isAuthenticated ? "Open account" : "Sign in"}
             className="
-              group flex h-[42px] w-[42px] shrink-0
+              group ml-auto flex h-[42px] w-[42px] shrink-0
               items-center justify-center
-              rounded-[12px] border border-white/70
+              rounded-full border-2 border-white/80
+              md:ml-0 md:rounded-[12px] md:border md:border-white/70
               transition-all duration-200 ease-out
               hover:bg-white/10
               hover:shadow-[0_3px_8px_rgba(0,0,0,0.12)]
@@ -364,11 +413,11 @@ export default function Header() {
               rounded-[14px] border-2 border-white
               px-3 py-1 leading-tight
               transition-all duration-200 ease-out
-              hover:-translate-y-[1px]
+              hover:-translate-y-[2px]
               hover:bg-white/10
               hover:shadow-[0_4px_10px_rgba(0,0,0,0.12)]
               active:translate-y-0
-              active:scale-[0.98]
+              active:scale-[0.97]
               2xl:flex
             "
           >
@@ -380,6 +429,8 @@ export default function Header() {
               &amp; Orders
             </span>
           </Link>
+
+          {/* Theme: slot reserved for the theme toggle, the theme is not connected yet */}
 
           {/* Cart */}
           <Link
@@ -435,19 +486,19 @@ export default function Header() {
       </div>
 
       {/* Bottom navigation */}
-      <div className="bg-[#9EA5B8]">
+      <div className="hidden bg-[#9EA5B8] transition-colors duration-300 md:block">
         <div className="mx-auto flex min-h-[42px] w-full max-w-[1920px] items-center gap-[20px] px-[14px] sm:px-[20px] lg:px-[40px] xl:px-[80px] 2xl:px-[120px]">
           {/* Menu */}
           <button
             type="button"
+            onClick={() => setIsMenuOpen(true)}
             aria-label="Open navigation menu"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-expanded={isMenuOpen}
             className="
               group flex shrink-0 items-center justify-center
               transition-transform duration-200 ease-out
               hover:scale-[1.08]
               active:scale-[0.92]
-              lg:hidden
             "
           >
             <Image
@@ -478,7 +529,7 @@ export default function Header() {
                   shrink-0 whitespace-nowrap py-2
                   text-[14px] font-medium text-white
                   transition-all duration-200 ease-out
-                  hover:-translate-y-[1px]
+                  hover:-translate-y-[2px]
                   hover:text-white/75
                   active:translate-y-0
                   sm:text-[15px]
@@ -492,95 +543,93 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden bg-[#49516D] border-t border-white/10">
-          <div className="mx-auto px-[14px] sm:px-[20px] lg:px-[40px] py-[20px]">
-            <div className="flex flex-col gap-[16px]">
-              {navigationLinks.map((link) => (
-                <Link
-                  key={link.title}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="
-                    flex items-center justify-between py-[14px] px-[4px]
-                    text-[16px] font-medium text-white
-                    border-b border-white/10 last:border-b-0
-                    hover:bg-white/10 transition-colors
-                  "
-                >
-                  {link.title}
-                  <Image
-                    src="/home/vector.svg"
-                    alt="arrow"
-                    width={16}
-                    height={6}
-                    className="transition-transform duration-200"
-                  />
-                </Link>
-              ))}
-              <div className="pt-[16px] border-t border-white/10">
-                {isAuthenticated ? (
-                  <div className="flex flex-col gap-[12px]">
-                    <Link
-                      href="/account"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-[12px] py-[12px] text-[15px] font-medium text-white hover:bg-white/10 transition-colors rounded-[12px]"
-                    >
-                      <span>Account</span>
-                    </Link>
-                    <Link
-                      href="/account/orders"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-[12px] py-[12px] text-[15px] font-medium text-white hover:bg-white/10 transition-colors rounded-[12px]"
-                    >
-                      <span>Returns & Orders</span>
-                    </Link>
-                    <button
-                      onClick={() => {
-                        clearAuthSession();
-                        setIsMobileMenuOpen(false);
-                        router.push("/");
-                        window.dispatchEvent(new Event("cart-updated"));
-                      }}
-                      className="flex items-center gap-[12px] py-[12px] text-[15px] font-medium text-white hover:bg-white/10 transition-colors rounded-[12px]"
-                    >
-                      <span>Sign out</span>
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-[12px]">
-                    <Link
-                      href="/auth"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="
-                        flex w-full items-center justify-center py-[14px] px-[4px]
-                        rounded-[14px]
-                        bg-gradient-to-br from-[#FFDB5A] to-[#FF825A]
-                        text-[16px] font-medium text-white
-                        shadow-[0px_2px_4px_rgba(0,0,0,0.2)]
-                        hover:-translate-y-[1px]
-                        hover:scale-[1.02]
-                        hover:shadow-[0_5px_10px_rgba(0,0,0,0.18)]
-                        active:translate-y-0
-                        active:scale-[0.98]
-                        transition-all duration-200 ease-out
-                      "
-                    >
-                      Sign in
-                    </Link>
-                    <Link
-                      href="/auth"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="text-[12px] text-[#828282] text-center hover:text-[#555555] transition-colors"
-                    >
-                      New customer? <span className="text-[#496B94]">Start here.</span>
-                    </Link>
-                  </div>
-                )}
-              </div>
+      {/* Navigation drawer (burger menu) */}
+      {isMenuOpen && (
+        <div
+          className="fixed inset-0 z-[90] bg-black/40"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setIsMenuOpen(false);
+          }}
+        >
+          <nav
+            aria-label="Menu"
+            className="flex h-full w-[82%] max-w-[320px] flex-col overflow-y-auto bg-[#49516D] shadow-[4px_0_20px_rgba(0,0,0,0.25)]"
+          >
+            <div className="flex items-center justify-between px-[20px] py-[16px]">
+              <Link href="/" onClick={() => setIsMenuOpen(false)} aria-label="Go to home page">
+                <Image src="/header/tmlogo.svg" alt="TM logo" width={90} height={42} className="h-auto w-[68px]" />
+              </Link>
+              <button
+                type="button"
+                onClick={() => setIsMenuOpen(false)}
+                aria-label="Close navigation menu"
+                className="flex h-[38px] w-[38px] items-center justify-center rounded-full text-[28px] leading-none text-white transition-colors hover:bg-white/10"
+              >
+                ×
+              </button>
             </div>
-          </div>
+
+            <ul className="flex flex-col border-t border-white/15 py-[8px]">
+              {navigationLinks.map((link) => (
+                <li key={link.title}>
+                  <Link
+                    href={link.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`block px-[20px] py-[12px] text-[16px] font-medium transition-colors hover:bg-white/10 ${
+                      pathname === link.href && link.href !== "/" ? "bg-white/10 text-white" : "text-white/90"
+                    }`}
+                  >
+                    {link.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            <ul className="flex flex-col border-t border-white/15 py-[8px]">
+              {[
+                { title: "Your Account", href: "/account" },
+                { title: "Returns & Orders", href: "/account/orders" },
+                { title: "Cart", href: "/cart" },
+              ].map((link) => (
+                <li key={link.title}>
+                  <Link
+                    href={link.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block px-[20px] py-[12px] text-[15px] text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+                  >
+                    {link.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            {/* Theme: slot reserved for the theme toggle row, the theme is not connected yet */}
+
+            <div className="mt-auto border-t border-white/15 px-[20px] py-[16px]">
+              {isAuthenticated ? (
+                <div className="flex flex-col gap-[10px]">
+                  <p className="truncate text-[14px] text-white/80">
+                    Signed in as <span className="font-medium text-white">{displayName}</span>
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="transition-[translate,scale,box-shadow,background-color,border-color,color,opacity] duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] flex h-[42px] items-center justify-center rounded-[21px] border-2 border-white/80 text-[15px] font-medium text-white hover:bg-white/10"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/auth"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="transition-[translate,scale,box-shadow,background-color,border-color,color,opacity] duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] flex h-[42px] items-center justify-center rounded-[21px] bg-[linear-gradient(90deg,#FFDB5A_0%,#FF825A_100%)] text-[15px] font-medium text-white"
+                >
+                  Sign in
+                </Link>
+              )}
+            </div>
+          </nav>
         </div>
       )}
     </header>

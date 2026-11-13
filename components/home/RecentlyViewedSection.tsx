@@ -12,10 +12,16 @@ interface RecentlyViewedSectionProps {
     imageUrl?: string;
     rating?: number;
   }[];
+  /** Layout classes of the section wrapper (order and margins on the home page). */
+  className?: string;
+  /** Carousel item widths, see Carousel.itemClassName. */
+  itemClassName?: string;
 }
 
 export default function RecentlyViewedSection({
   products,
+  className = "mb-10",
+  itemClassName,
 }: RecentlyViewedSectionProps) {
   const router = useRouter();
   const [userRecentlyViewed, setUserRecentlyViewed] = useState<any[]>([]);
@@ -64,8 +70,8 @@ export default function RecentlyViewedSection({
   if (visibleRecentlyViewed.length === 0) return null;
 
   return (
-    <div className="mb-10">
-      <Carousel title="Recently Viewed" width="max-w-[1378px]">
+    <div className={className}>
+      <Carousel title="Recently Viewed" width="max-w-[1378px]" itemClassName={itemClassName}>
         {visibleRecentlyViewed.map((product) => (
           <RecentlyViewedCard
             key={product.id}

@@ -57,7 +57,7 @@ export default function AccountDropdown({
       aria-hidden={!isOpen}
       className={`
         absolute right-0 top-[calc(100%+8px)] z-50
-        w-full max-w-[432px] rounded-[20px] bg-[#F8F8F8] p-6
+        w-[432px] max-w-[calc(100vw-32px)] rounded-[20px] bg-[#F8F8F8] p-6
         shadow-[0px_2px_4px_rgba(0,0,0,0.2)]
         origin-top
         transition-all duration-200 ease-out
@@ -146,7 +146,7 @@ export default function AccountDropdown({
 
       {/* Lists & Account */}
       <div className="flex gap-6 text-[12px] text-[#828282]">
-        <div className="flex flex-col gap-2">
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
           <span className="font-medium text-[#828282]">
             Your Lists
           </span>
@@ -168,9 +168,9 @@ export default function AccountDropdown({
           ))}
         </div>
 
-        <div className="w-[1px] bg-[#EFEFEF]" />
+        <div className="w-[1px] shrink-0 bg-[#EFEFEF]" />
 
-        <div className="flex flex-col gap-2">
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
           <span className="font-medium text-[#828282]">
             Your Account
           </span>

@@ -284,7 +284,7 @@ export default function AuthForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col bg-[#F8F8F8] w-125.5 h-min-143.5 h-max-190.25 rounded-[50px] px-12 pt-13.75 pb-15 font-normal shadow-[0_2px_4px_0_#00000033]"
+      className="flex flex-col bg-[#F8F8F8] w-full max-w-125.5 h-min-143.5 h-max-190.25 rounded-[32px] px-6 pt-10 pb-10 sm:rounded-[50px] sm:px-12 sm:pt-13.75 sm:pb-15 font-normal shadow-[0_2px_4px_0_#00000033]"
     >
       <div className="flex row gap-7.75">
         <h2
@@ -327,7 +327,7 @@ export default function AuthForm() {
               }
               if (serverError) setServerError(null);
             }}
-            className="w-101.5 h-16.5 p-3.75 mt-5 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)] text-center text-[20px] tracking-[0.4em]"
+            className="w-full h-16.5 p-3.75 mt-5 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)] text-center text-[20px] tracking-[0.4em]"
             type="text"
             inputMode="numeric"
             autoComplete="one-time-code"
@@ -342,7 +342,7 @@ export default function AuthForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-[#7C9BC0] w-101.5 h-15 mt-8 text-[20px] text-white font-medium rounded-[10px] shadow-[0_2px_4px_0_#00000033] hover:opacity-95 disabled:opacity-50"
+            className="bg-[#7C9BC0] w-full h-15 mt-8 text-[20px] text-white font-medium rounded-[10px] shadow-[0_2px_4px_0_#00000033] hover:opacity-95 disabled:opacity-50"
           >
             {isLoading ? "Processing..." : "Verify code"}
           </button>
@@ -365,7 +365,7 @@ export default function AuthForm() {
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleInputChange}
-                className="w-101.5 h-16.5 p-3.75 mt-8 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
+                className="w-full h-16.5 p-3.75 mt-8 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
                 type="text"
                 placeholder="First name"
                 required
@@ -375,7 +375,7 @@ export default function AuthForm() {
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleInputChange}
-                className="w-101.5 h-16.5 p-3.75 mt-5 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
+                className="w-full h-16.5 p-3.75 mt-5 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
                 type="text"
                 placeholder="Last name"
                 required
@@ -387,7 +387,7 @@ export default function AuthForm() {
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            className={`w-101.5 h-16.5 p-3.75 mt-${isLogin ? "12" : "5"} rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]`}
+            className={`w-full h-16.5 p-3.75 mt-${isLogin ? "12" : "5"} rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]`}
             type="email"
             placeholder="Email"
             required
@@ -400,7 +400,7 @@ export default function AuthForm() {
             name="password"
             value={formData.password}
             onChange={handleInputChange}
-            className="w-101.5 h-16.5 p-3.75 mt-5 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
+            className="w-full h-16.5 p-3.75 mt-5 rounded-[10px] shadow-[0_2px_4px_0_rgba(0,0,0,0.2)]"
             type="password"
             placeholder="Password"
             required
@@ -438,7 +438,7 @@ export default function AuthForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-[#7C9BC0] w-101.5 h-15 mt-10 text-[20px] text-white font-medium rounded-[10px] shadow-[0_2px_4px_0_#00000033] hover:opacity-95 disabled:opacity-50"
+            className="bg-[#7C9BC0] w-full h-15 mt-10 text-[20px] text-white font-medium rounded-[10px] shadow-[0_2px_4px_0_#00000033] hover:opacity-95 disabled:opacity-50"
           >
             {isLoading ? "Processing..." : isLogin ? "Log in" : "Sign up"}
           </button>

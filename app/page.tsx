@@ -207,29 +207,40 @@ export default async function Home() {
     }
   );
 
+  // Two items per view on phones (as in Figma), default widths from sm
+  const homeCarouselItem =
+    "w-[calc(50%-6px)] sm:w-[calc(50%-8px)] lg:w-[calc(33.333%-14px)] xl:w-[calc(25%-15px)] 2xl:w-[calc(20%-16px)]";
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center font-sans mb-100">
+    <div className="mb-16 flex flex-1 flex-col items-center justify-center font-sans 2xl:mb-100">
       <img
-        className="w-full object-cover"
+        className="h-[200px] w-full object-cover sm:h-auto"
         src="/background/main.jpg"
         alt="Logo"
       />
 
-      <div className="relative z-10 -mt-43 w-full max-w-[1534px]">
-        <div className="grid grid-cols-4 gap-5 mb-5">
+      {/* Mobile order follows Figma; from md the desktop order is restored via md:order-* */}
+      <div className="relative z-10 -mt-12 flex w-full max-w-[1534px] flex-col gap-8 px-4 sm:-mt-24 sm:px-6 md:gap-5 2xl:-mt-43 2xl:px-0">
+        {/* Product carousels + banners */}
+        <div className="animate-fade-in-up order-1 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
           {carouselGroups.map((group, index) => (
-            <CarouselCard
-              key={carouselTitles[index]}
-              title={carouselTitles[index]}
-              imageSrc={group[0]?.imageSrc || FALLBACK_IMAGE}
-              href="/catalog"
-              items={group}
-            />
+            <div key={carouselTitles[index]} className={`min-w-0 ${index === 2 ? "hidden md:block" : ""}`}>
+              <CarouselCard
+                title={carouselTitles[index]}
+                imageSrc={group[0]?.imageSrc || FALLBACK_IMAGE}
+                href="/catalog"
+                items={group}
+              />
+            </div>
           ))}
-          <div className="flex flex-col gap-2.75">
+          <div className="hidden min-w-0 flex-col gap-2.75 md:flex">
             <HeroBanner />
             <PromoBanner />
           </div>
+        </div>
+
+        {/* Category quad cards */}
+        <div className="animate-fade-in-up order-4 grid grid-cols-1 gap-5 sm:grid-cols-2 md:order-2 xl:grid-cols-4">
           {quadGroups.map((group, index) => (
             <CategoryQuadCard
               key={quadTitles[index]}
@@ -240,7 +251,7 @@ export default async function Home() {
           ))}
         </div>
 
-        <div className="flex flex-row gap-6 justify-between mb-5">
+        <div className="order-3 flex flex-col gap-8 md:order-3 2xl:flex-row 2xl:justify-between 2xl:gap-5">
           <PopularProductsSection href="/catalog" items={popularItems} />
           <PopularCategoriesSection
             href="/catalog"
@@ -248,11 +259,17 @@ export default async function Home() {
           />
         </div>
 
-        <SalesSection items={saleCardItems} />
+        <SalesSection
+          items={saleCardItems}
+          className="order-5 -mx-4 sm:-mx-6 md:order-4 md:mb-5 2xl:mx-0"
+          itemClassName={homeCarouselItem}
+        />
 
-        <AuthBanner />
+        <div className="animate-fade-in-up order-2 empty:hidden md:order-5">
+          <AuthBanner />
+        </div>
 
-        <div className="flex flex-row gap-5 justify-between mb-10">
+        <div className="order-6 grid grid-cols-2 gap-3 sm:gap-5 md:mb-5 xl:grid-cols-4 2xl:flex 2xl:flex-row 2xl:justify-between">
           <CarouselCard
             title="Backend Products"
             imageSrc={
@@ -301,7 +318,11 @@ export default async function Home() {
           />
         </div>
 
-        <RecentlyViewedSection products={products} />
+        <RecentlyViewedSection
+          products={products}
+          className="order-7 -mx-4 mb-10 sm:-mx-6 2xl:mx-0"
+          itemClassName={homeCarouselItem}
+        />
       </div>
     </div>
   );

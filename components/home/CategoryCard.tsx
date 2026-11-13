@@ -11,34 +11,32 @@ const CategoryCard = ({ title, imageSrc, href }: CategoryCardProps) => {
   return (
     <Link
       href={href}
-      className="flex flex-col w-full max-w-[280px] min-h-[300px] rounded-[20px] pt-5 px-5 bg-[#F8F8F8] shadow-[0px_2px_4px_0px_#00000033] transition-transform hover:scale-[1.02] sm:w-[360px] sm:min-h-[340px] lg:w-[400px] lg:min-h-[380px]"
+      className="flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[16px] bg-[#F8F8F8] px-3 pb-3 pt-3.5 shadow-[0px_2px_4px_0px_#00000033] transition-[translate,scale,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_10px_22px_rgba(0,0,0,0.12)] active:scale-[0.99] sm:rounded-[20px] sm:px-5 sm:pt-5 2xl:h-115 2xl:w-92 2xl:px-7.5 2xl:pb-0 2xl:pt-6"
     >
 
-      <div className="flex flex-row justify-between items-center mb-3 px-2">
-        <h2 className="text-[18px] sm:text-[24px] font-semibold line-clamp-1 webkit-line-clamp-1">{title}</h2>
+      <div className="mb-2 flex flex-row items-center justify-between gap-2 sm:mb-3.5">
+        <h2 className="truncate text-[16px] font-semibold sm:text-[20px] 2xl:text-[24px]">{title}</h2>
 
-        <span className="flex flex-row items-center">
-          <span className="text-[#333333] text-[12px] sm:text-[13px] mr-2">More</span>
+        <span className="flex shrink-0 flex-row items-center">
+          <span className="text-[#333333] text-[13px] mr-2.25">More</span>
           <Image
             src="/home/vector.svg"
             alt="vector"
-            width={18}
-            height={6}
+            width={22}
+            height={8}
           />
         </span>
       </div >
-      <div className="relative flex items-center justify-center w-full h-full max-h-[240px] sm:max-h-[300px] overflow-hidden">
-        <Image
-          src={imageSrc}
-          alt={title}
-          width={308}
-          height={360}
-          className="max-w-full max-h-full object-contain mx-auto"
-        />
-      </div>
+      <Image
+        src={imageSrc}
+        alt={title}
+        width={308}
+        height={360}
+        className="mx-auto h-auto w-full max-w-[308px] object-contain"
+      />
     </Link >
   );
-};
+}
 
 
 export default CategoryCard;

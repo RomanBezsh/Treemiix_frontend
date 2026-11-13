@@ -8,22 +8,22 @@ interface PopularCategoriesSectionProps {
   items: PopularCategoryTileProps[];
 }
 
-export default function PopularCategoriesSection({ href, items }: PopularCategoriesSectionProps) {
+const PopularCategoriesSection = ({ href, items }: PopularCategoriesSectionProps) => {
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-row justify-between items-center mb-2 px-2">
-        <h2 className="text-[16px] sm:text-2xl font-semibold text-[#333333] line-clamp-1 webkit-line-clamp-1">Most popular categories of the week</h2>
-        <Link className="flex flex-row items-center" href={href}>
-          <span className="text-[#333333] text-[12px] sm:text-[13px] mr-2">More</span>
+    <div className="flex w-full min-w-0 flex-col 2xl:h-158.75 2xl:w-213.25">
+      <div className="mb-4 flex flex-row items-center justify-between gap-3 sm:mb-7">
+        <h2 className="text-[20px] font-semibold text-[#333333] sm:text-2xl">Most popular categories of the week</h2>
+        <Link className="flex shrink-0 flex-row items-center" href={href}>
+          <span className="text-[#333333] text-[13px] mr-2.25">More</span>
           <Image
             src="/home/vector.svg"
             alt="vector"
-            width={18}
-            height={6}
+            width={22}
+            height={8}
           />
         </Link>
       </div>
-      <div className="flex flex-row gap-4 sm:gap-5">
+      <div className="grid grid-cols-3 gap-2.5 sm:gap-4 2xl:flex 2xl:flex-row 2xl:gap-4.75">
         {items.map((item) => (
           <PopularCategoryTile key={item.category} {...item} />
         ))}
@@ -31,3 +31,6 @@ export default function PopularCategoriesSection({ href, items }: PopularCategor
     </div>
   );
 }
+
+
+export default PopularCategoriesSection;

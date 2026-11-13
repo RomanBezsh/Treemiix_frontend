@@ -12,14 +12,20 @@ interface SalesSectionProps {
     price: number;
     rating: number;
   }[];
+  /** Layout classes of the section wrapper (order and margins on the home page). */
+  className?: string;
+  /** Carousel item widths, see Carousel.itemClassName. */
+  itemClassName?: string;
 }
 
-export default function SalesSection({ items }: SalesSectionProps) {
+export default function SalesSection({ items, className = "mb-10", itemClassName }: SalesSectionProps) {
   const router = useRouter();
 
+  if (items.length === 0) return null;
+
   return (
-    <div className="mb-10">
-      <Carousel title="Sales" href="/catalog?sale=1" width="max-w-[1534px]">
+    <div className={className}>
+      <Carousel title="Sales" href="/catalog?sale=1" width="max-w-[1534px]" itemClassName={itemClassName}>
         {items.map((product, index) => (
           <SimpleProductCard
             key={index}

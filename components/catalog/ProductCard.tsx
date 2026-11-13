@@ -39,7 +39,7 @@ const ProductCard = ({
 
   return (
     <div
-      className="flex flex-col items-center w-full max-w-[271px] min-h-[420px] bg-[#F8F8F8] rounded-[10px] px-4 pt-3 cursor-pointer hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-shadow duration-300"
+      className="flex flex-col items-center w-full sm:max-w-[271px] min-h-[420px] bg-[#F8F8F8] rounded-[10px] px-4 pt-3 cursor-pointer hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-shadow duration-300"
       onClick={handleClick}
     >
       <div className="flex flex-row w-full items-center justify-between mb-4">
