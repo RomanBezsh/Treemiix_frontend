@@ -72,7 +72,7 @@ function formatDate(value: string | null): string {
 }
 
 export default function AdminSellersManager() {
-  const [filter, setFilter] = useState<StatusFilter>("PendingVerification");
+  const [filter, setFilter] = useState<StatusFilter>("All");
   const [sellers, setSellers] = useState<AdminSeller[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -85,9 +85,7 @@ export default function AdminSellersManager() {
 
   const load = useCallback(async () => {
     try {
-      const data = await getAdminSellers(
-        filter === "All" ? undefined : filter,
-      );
+      const data = await getAdminSellers();
       setSellers(data);
       setError(null);
     } catch (loadError) {
@@ -95,12 +93,12 @@ export default function AdminSellersManager() {
     } finally {
       setLoading(false);
     }
-  }, [filter]);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
 
-    getAdminSellers(filter === "All" ? undefined : filter)
+    getAdminSellers()
       .then((data) => {
         if (cancelled) return;
         setSellers(data);
@@ -116,7 +114,7 @@ export default function AdminSellersManager() {
     return () => {
       cancelled = true;
     };
-  }, [filter]);
+  }, []);
 
   const refresh = () => {
     setLoading(true);
@@ -124,11 +122,32 @@ export default function AdminSellersManager() {
     void load();
   };
 
+  const statusCounts = useMemo(() => {
+    const counts: Record<SellerStatus, number> = {
+      Draft: 0,
+      PendingVerification: 0,
+      Active: 0,
+      Rejected: 0,
+      Suspended: 0,
+      Inactive: 0,
+    };
+    for (const seller of sellers) {
+      if (seller.status in counts) {
+        counts[seller.status] += 1;
+      }
+    }
+    return counts;
+  }, [sellers]);
+
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return sellers;
 
     return sellers.filter((seller) => {
+      if (filter !== "All" && seller.status !== filter) {
+        return false;
+      }
+      if (!query) return true;
+
       const haystack = [
         seller.storeName,
         seller.storeSlug,
@@ -136,6 +155,7 @@ export default function AdminSellersManager() {
         seller.userFirstName,
         seller.userLastName,
         seller.legalName,
+        seller.country,
       ]
         .filter(Boolean)
         .join(" ")
@@ -143,7 +163,7 @@ export default function AdminSellersManager() {
 
       return haystack.includes(query);
     });
-  }, [search, sellers]);
+  }, [filter, search, sellers]);
 
   const runAction = async (
     seller: AdminSeller,
@@ -218,14 +238,15 @@ export default function AdminSellersManager() {
           <select
             value={filter}
             onChange={(event) => {
-              setLoading(true);
               setFilter(event.target.value as StatusFilter);
             }}
             className="h-[42px] rounded-[10px] border border-[#DDD] bg-white px-3 text-[13px] text-[#333] outline-none"
           >
             {statusFilters.map((status) => (
               <option key={status} value={status}>
-                {status === "All" ? "All statuses" : statusLabels[status]}
+                {status === "All"
+                  ? `All statuses (${sellers.length})`
+                  : `${statusLabels[status]} (${statusCounts[status]})`}
               </option>
             ))}
           </select>
@@ -262,7 +283,26 @@ export default function AdminSellersManager() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="rounded-[14px] border border-dashed border-[#D8DCE5] bg-white p-10 text-center text-[14px] text-[#888]">
-          No sellers found for this filter.
+          {sellers.length > 0 ? (
+            <div className="flex flex-col items-center gap-3">
+              <p>
+                No sellers match the current filter ({sellers.length} total{" "}
+                {sellers.length === 1 ? "seller" : "sellers"} available).
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setFilter("All");
+                  setSearch("");
+                }}
+                className="inline-flex h-[36px] items-center rounded-[10px] border border-[#D8DCE5] bg-white px-4 text-[13px] font-medium text-[#49516D] hover:bg-[#F3F5F9]"
+              >
+                Show all sellers
+              </button>
+            </div>
+          ) : (
+            "No sellers found for this filter."
+          )}
         </div>
       ) : (
         <div className="overflow-x-auto rounded-[14px] border border-[#EAECF0] bg-white">

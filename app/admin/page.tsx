@@ -79,13 +79,32 @@ export default function AdminPage() {
       }
 
       try {
-        const sellerRes = await fetch(`${API_BASE_URL}/sellers`, { headers });
-        if (sellerRes.ok) {
-          const data = await sellerRes.json();
+        let loadedSellers: { id: string; storeName: string }[] = [];
+        const sellerRes = await fetch(`${API_BASE_URL}/sellers`, { headers }).catch(() => null);
+        if (sellerRes?.ok) {
+          const data = await sellerRes.json().catch(() => []);
           if (Array.isArray(data) && data.length > 0) {
-            setSellers(data);
+            loadedSellers = data;
             connected = true;
           }
+        }
+
+        if (loadedSellers.length === 0) {
+          const adminSellerRes = await fetch(`${API_BASE_URL}/admin/sellers`, { headers }).catch(() => null);
+          if (adminSellerRes?.ok) {
+            const adminData = await adminSellerRes.json().catch(() => []);
+            if (Array.isArray(adminData) && adminData.length > 0) {
+              loadedSellers = adminData.map((s: { id: string; storeName?: string }) => ({
+                id: s.id,
+                storeName: s.storeName || "Unnamed store",
+              }));
+              connected = true;
+            }
+          }
+        }
+
+        if (loadedSellers.length > 0) {
+          setSellers(loadedSellers);
         }
       } catch {
         // Fallback

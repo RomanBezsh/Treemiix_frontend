@@ -254,11 +254,241 @@ export function submitSellerOnboarding(): Promise<{
   return request("/sellers/onboarding/submit", { method: "POST" });
 }
 
-export function getAdminSellers(
+const SELLER_STATUS_BY_INDEX: SellerStatus[] = [
+  "Active",
+  "Inactive",
+  "Suspended",
+  "PendingVerification",
+  "Draft",
+  "Rejected",
+];
+
+const SELLER_STATUS_MAP = new Map<string, SellerStatus>(
+  SELLER_STATUS_BY_INDEX.map((status) => [status.toLowerCase(), status]),
+);
+
+const BUSINESS_TYPE_BY_INDEX: SellerBusinessType[] = [
+  "Individual",
+  "SoleProprietor",
+  "Company",
+];
+
+const BUSINESS_TYPE_MAP = new Map<string, SellerBusinessType>(
+  BUSINESS_TYPE_BY_INDEX.map((type) => [type.toLowerCase(), type]),
+);
+
+const SUBSCRIPTION_STATUS_BY_INDEX: SellerSubscriptionStatus[] = [
+  "None",
+  "Active",
+  "PastDue",
+  "Canceled",
+];
+
+const SUBSCRIPTION_STATUS_MAP = new Map<string, SellerSubscriptionStatus>(
+  SUBSCRIPTION_STATUS_BY_INDEX.map((status) => [status.toLowerCase(), status]),
+);
+
+type SellerUserSummary = {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function asString(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+function asNullableString(value: unknown): string | null {
+  return typeof value === "string" ? value : null;
+}
+
+function normalizeSellerStatus(value: unknown): SellerStatus {
+  if (typeof value === "number" && value >= 0 && value < SELLER_STATUS_BY_INDEX.length) {
+    return SELLER_STATUS_BY_INDEX[value];
+  }
+  if (typeof value === "string") {
+    const matched = SELLER_STATUS_MAP.get(value.trim().toLowerCase());
+    if (matched) return matched;
+  }
+  return "Active";
+}
+
+function normalizeBusinessType(value: unknown): SellerBusinessType {
+  if (typeof value === "number" && value >= 0 && value < BUSINESS_TYPE_BY_INDEX.length) {
+    return BUSINESS_TYPE_BY_INDEX[value];
+  }
+  if (typeof value === "string") {
+    const matched = BUSINESS_TYPE_MAP.get(value.trim().toLowerCase());
+    if (matched) return matched;
+  }
+  return "Company";
+}
+
+function normalizeSubscriptionStatus(
+  value: unknown,
+  status: SellerStatus,
+): SellerSubscriptionStatus {
+  if (
+    typeof value === "number" &&
+    value >= 0 &&
+    value < SUBSCRIPTION_STATUS_BY_INDEX.length
+  ) {
+    return SUBSCRIPTION_STATUS_BY_INDEX[value];
+  }
+  if (typeof value === "string") {
+    const matched = SUBSCRIPTION_STATUS_MAP.get(value.trim().toLowerCase());
+    if (matched) return matched;
+  }
+  return status === "Active" ? "Active" : "None";
+}
+
+function normalizeAdminSeller(
+  raw: Record<string, unknown>,
+  userMap?: Map<string, SellerUserSummary>,
+): AdminSeller {
+  const id = String(raw.id ?? "");
+  const userId = String(raw.userId ?? "");
+  const nestedUser = isRecord(raw.user) ? raw.user : undefined;
+  const mappedUser = userId ? userMap?.get(userId) : undefined;
+  const status = normalizeSellerStatus(raw.status);
+
+  return {
+    id,
+    userId,
+    userEmail:
+      asString(raw.userEmail) ||
+      asString(nestedUser?.email) ||
+      mappedUser?.email ||
+      "",
+    userFirstName:
+      asString(raw.userFirstName) ||
+      asString(nestedUser?.firstName) ||
+      mappedUser?.firstName ||
+      "",
+    userLastName:
+      asString(raw.userLastName) ||
+      asString(nestedUser?.lastName) ||
+      mappedUser?.lastName ||
+      "",
+    storeName: String(raw.storeName ?? ""),
+    storeSlug: String(raw.storeSlug ?? ""),
+    logoUrl: asNullableString(raw.logoUrl),
+    description: asNullableString(raw.description),
+    businessType: normalizeBusinessType(raw.businessType),
+    legalName: asNullableString(raw.legalName),
+    country: asNullableString(raw.country),
+    supportEmail: asNullableString(raw.supportEmail),
+    supportPhone: asNullableString(raw.supportPhone),
+    taxNumber: asNullableString(raw.taxNumber),
+    legalAddress: asNullableString(raw.legalAddress),
+    bankAccount: asNullableString(raw.bankAccount),
+    rating: typeof raw.rating === "number" ? raw.rating : Number(raw.rating) || 0,
+    status,
+    commissionRate:
+      typeof raw.commissionRate === "number"
+        ? raw.commissionRate
+        : Number(raw.commissionRate) || 0.1,
+    onboardingStep:
+      typeof raw.onboardingStep === "number" ? raw.onboardingStep : 4,
+    createdAt:
+      typeof raw.createdAt === "string"
+        ? raw.createdAt
+        : new Date().toISOString(),
+    submittedAt: asNullableString(raw.submittedAt),
+    approvedAt: asNullableString(raw.approvedAt),
+    rejectedAt: asNullableString(raw.rejectedAt),
+    rejectionReason: asNullableString(raw.rejectionReason),
+    subscriptionStatus: normalizeSubscriptionStatus(
+      raw.subscriptionStatus,
+      status,
+    ),
+    subscriptionPaidUntil: asNullableString(raw.subscriptionPaidUntil),
+    canSell: typeof raw.canSell === "boolean" ? raw.canSell : status === "Active",
+  };
+}
+
+export async function getAdminSellers(
   status?: SellerStatus,
 ): Promise<AdminSeller[]> {
   const query = status ? `?status=${status}` : "";
-  return request<AdminSeller[]>(`/admin/sellers${query}`);
+  let adminError: unknown = null;
+
+  try {
+    const adminData = await request<unknown[]>(`/admin/sellers${query}`);
+    if (Array.isArray(adminData) && (adminData.length > 0 || status)) {
+      return adminData.filter(isRecord).map((item) => normalizeAdminSeller(item));
+    }
+  } catch (err) {
+    adminError = err;
+  }
+
+  let sellersFailed = false;
+  const [rawSellers, rawUsers] = await Promise.all([
+    request<unknown[]>("/sellers").catch(() => {
+      sellersFailed = true;
+      return [] as unknown[];
+    }),
+    request<unknown[]>("/users").catch(() => [] as unknown[]),
+  ]);
+
+  const userMap = new Map<string, SellerUserSummary>();
+  if (Array.isArray(rawUsers)) {
+    for (const entry of rawUsers) {
+      if (!isRecord(entry) || !entry.id) continue;
+      userMap.set(String(entry.id), {
+        email: asString(entry.email),
+        firstName: asString(entry.firstName),
+        lastName: asString(entry.lastName),
+      });
+    }
+  }
+
+  const discovered: Record<string, unknown>[] = Array.isArray(rawSellers)
+    ? rawSellers.filter(isRecord)
+    : [];
+
+  if (discovered.length === 0) {
+    const rawProducts = await request<unknown[]>("/products?isActive=true").catch(
+      () => [] as unknown[],
+    );
+    if (Array.isArray(rawProducts)) {
+      for (const product of rawProducts) {
+        if (!isRecord(product)) continue;
+        if (isRecord(product.seller)) {
+          discovered.push({
+            ...product.seller,
+            id: product.seller.id ?? product.sellerId,
+          });
+        } else if (product.sellerId) {
+          discovered.push({
+            id: product.sellerId,
+          });
+        }
+      }
+    }
+  }
+
+  const deduplicated = new Map<string, AdminSeller>();
+  for (const item of discovered) {
+    const normalized = normalizeAdminSeller(item, userMap);
+    if (!normalized.id) continue;
+    if (!deduplicated.has(normalized.id)) {
+      deduplicated.set(normalized.id, normalized);
+    }
+  }
+
+  const normalizedList = Array.from(deduplicated.values());
+  if (normalizedList.length === 0 && adminError && sellersFailed) {
+    throw adminError;
+  }
+
+  return status
+    ? normalizedList.filter((seller) => seller.status === status)
+    : normalizedList;
 }
 
 export function getAdminSeller(id: string): Promise<AdminSeller> {
